@@ -7,7 +7,7 @@ enum class Identtype {
     @Schema(description = "PERSONNUMMER angir at identitetsnummeret som benyttes er enten et FNR eller et DNR.")
     PERSONNUMMER,
 
-    @Schema(description = "AKTOERNUMMER angir at identitetsnummeret er en TSS-ident. A.k.a. en samhandler-id.")
+    @Schema(description = "AKTOERNUMMER angir at identitetsnummeret er en TSS-ident. Også kjent som samhandler-id.")
     AKTOERNUMMER,
 
     ;
