@@ -38,8 +38,3 @@ jobs:
               nais_variabler_filnavn: feature-$module.yaml
           done
         if: steps.changed_modules.outputs.modules != ''
-
-      # Bygger alle moduler om ingen endringer blir oppdaget
-      - name: Build all modules
-        run: mvn clean install test -B -e -fae -Pit -f pom.xml
-        if: steps.changed_modules.outputs.modules == ''
