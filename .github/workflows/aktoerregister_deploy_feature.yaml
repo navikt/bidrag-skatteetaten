@@ -1,4 +1,4 @@
-name: Deploy feature
+name: Deploy feature aktoerregister
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
       - '!main'
       - '!dependabot/**'
     paths:
-      - '**\bidrag-aktoerregister\**'
+      - 'bidrag-aktoerregister/**'
 
 jobs:
   build_and_deploy:
