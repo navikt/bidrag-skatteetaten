@@ -1,0 +1,28 @@
+SKATT_URL: http://localhost:8097
+SAK_URL: http://localhost:8098
+PERSON_URL: http://localhost:8099
+AZURE_OPENID_CONFIG_ISSUER: http://localhost:${mock-oauth2-server.port}/aad
+TOPIC_VEDTAK: bidrag.vedtak-feature-test
+TOPIC_PDL_AKTOR_V2: pdl.aktor-v2-test
+AKTOR_V2_GROUP_ID: aktor-v2.bidrag-regnskap-test
+BIDRAG_BOT_SLACK_OAUTH_TOKEN: ikkeGyldigToken
+
+scheduler:
+  sendkrav:
+    cron: "-" #Disabled
+  avstemning:
+    cron: "-" #Disabled
+  påløpkjøring:
+    cron: "-" #Disabled
+
+atlas.kafka.zookeeper.session.timeout.ms: 60000
+atlas.kafka.zookeeper.connection.timeout.ms: 30000
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: bidrag-regnskap
