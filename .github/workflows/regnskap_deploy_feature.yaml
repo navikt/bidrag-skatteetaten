@@ -19,3 +19,5 @@ jobs:
     with:
       maven_options: -B -q -fae -Pit -f bidrag-regnskap
       maven_test_lifecycle: verify
+      ktlint_options: -f bidrag-regnskap
+      dockerfile_with_path: ./bidrag-regnskap/Dockerfile

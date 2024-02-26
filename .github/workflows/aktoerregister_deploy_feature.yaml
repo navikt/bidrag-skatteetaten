@@ -18,4 +18,5 @@ jobs:
     secrets: inherit
     with:
       maven_options: -B -q -fae -f bidrag-aktoerregister
-
+      ktlint_options: -f bidrag-aktoerregister
+      dockerfile_with_path: ./bidrag-aktoerregister/Dockerfile
