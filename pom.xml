@@ -51,19 +51,12 @@
             <id>github</id>
             <url>https://maven.pkg.github.com/navikt/bidrag-felles</url>
         </repository>
-    </repositories>
-    <distributionManagement>
         <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/navikt/bidrag-felles</url>
+            <id>confluent</id>
+            <name>Confluent kafka</name>
+            <url>https://packages.confluent.io/maven/</url>
         </repository>
-    </distributionManagement>
-    <scm>
-        <developerConnection>scm:git:git@github.com:navikt/bidrag-felles.git</developerConnection>
-        <connection>scm:git:git@github.com:navikt/bidrag-fellest.git</connection>
-        <url>https://github.com/navikt/bidrag-felles.git</url>
-        <tag>HEAD</tag>
-    </scm>
+    </repositories>
 
     <profiles>
         <profile>
@@ -93,13 +86,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <forkCount>0</forkCount>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
