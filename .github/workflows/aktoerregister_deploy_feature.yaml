@@ -20,3 +20,4 @@ jobs:
       maven_options: -B -q -fae -f bidrag-aktoerregister
       ktlint_options: -f bidrag-aktoerregister
       dockerfile_with_path: ./bidrag-aktoerregister/Dockerfile
+      docker_context: ./bidrag-aktoerregister
