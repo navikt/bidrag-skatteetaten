@@ -7,6 +7,7 @@ Bidrag-regnskap er en applikasjon for å opprette og sende konteringer til Skatt
 fakturaer kan sendes ut for bidragssaker. Dette kan både være løpende betalinger eller engangsbeløp
 i form av gebyrer.
 
+
 ### Oppdrag
 
 Bidrag-regnskap lytter på hendelser fra Bidrag-vedtak og lagrer hendelsene som et oppdrag.
