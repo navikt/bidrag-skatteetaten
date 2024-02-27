@@ -1,0 +1,18 @@
+name: bidrag-aktoerregister-feature
+dbinstancename: bidrag-aktoerregister-feature
+dbname: bidrag-aktoerregister-feature
+ingresses:
+  - https://bidrag-aktoerregister-feature.intern.dev.nav.no
+kafka:
+  pool: nav-dev
+env:
+  SPRING_PROFILES_ACTIVE: dev
+  JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+  BIDRAG_PERSON_URL: https://bidrag-person-feature.dev-fss-pub.nais.io/bidrag-person
+  BIDRAG_PERSON_SCOPE: dev-fss.bidrag.bidrag-person-feature
+  BIDRAG_PERSON_HOST: bidrag-person-feature.dev-fss-pub.nais.io
+  BIDRAG_SAMHANDLER_URL: https://bidrag-samhandler-feature.intern.dev.nav.no
+  BIDRAG_SAMHANDLER_HOST: bidrag-samhandler-feature.intern.dev.nav.no
+  BIDRAG_SAMHANDLER_SCOPE: dev-gcp.bidrag.bidrag-samhandler-feature
+  TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
+  KAFKA_GROUP_ID: bidrag-aktoerregister-feature
