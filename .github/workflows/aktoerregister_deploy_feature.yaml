@@ -5,8 +5,8 @@ on:
       - '**'
       - '!main'
       - '!dependabot/**'
-    paths:
-      - '!bidrag-regnskap/**'
+    paths-ignore:
+      - 'bidrag-regnskap/**'
 
 jobs:
   build_and_deploy:
