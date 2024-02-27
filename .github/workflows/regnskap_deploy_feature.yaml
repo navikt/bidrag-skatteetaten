@@ -22,3 +22,4 @@ jobs:
       ktlint_options: -f bidrag-regnskap
       dockerfile_with_path: ./bidrag-regnskap/Dockerfile
       docker_context: ./bidrag-regnskap
+      nais_variabler_filnavn: bidrag-regnskap/feature.yaml

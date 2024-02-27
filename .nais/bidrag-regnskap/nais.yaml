@@ -1,0 +1,96 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: {{ name }}
+  namespace: bidrag
+  labels:
+    team: bidrag
+spec:
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
+  secureLogs:
+    enabled: true
+  image: {{ image }}
+  liveness:
+    path: /actuator/health
+    initialDelay: 30
+    timeout: 1
+    periodSeconds: 5
+    failureThreshold: 10
+  readiness:
+    path: /actuator/health
+    initialDelay: 20
+    timeout: 1
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 8192Mi
+    requests:
+      cpu: 500m
+      memory: 4096Mi
+  replicas:
+    disableAutoScaling: true
+    max: 2
+    min: 2
+  maskinporten:
+    enabled: true
+    scopes:
+      consumes:
+        - name: "nav:bidrag/v1/bidragskrav"
+        - name: "nav:bidrag/v1/bidragskravq2"
+        - name: "nav:bidrag/v1/bidragskravq4"
+  ingresses:
+  {{#each ingresses as |url|}}
+    - {{url}}
+  {{/each}}
+  kafka:
+    pool: {{ kafka.pool }}
+  envFrom:
+    - secret: bidrag-regnskap-sftp-private-key
+    - secret: bidrag-bot-slack-oauth-token
+    - secret: {{ elin_subscription_key }}
+  env:
+  {{#each env}}
+    - name: {{@key}}
+      value: "{{this}}"
+  {{/each}}
+  gcp:
+    sqlInstances:
+      - name: {{ database.navn }}
+        type: POSTGRES_15
+        databases:
+          - name: bidrag-regnskap-db
+            envVarPrefix: DB
+    buckets:
+      - name: {{ bucket.navn }}
+  accessPolicy:
+    outbound:
+      external:
+        - host: {{ env.SAK_HOST }}
+        - host: {{ env.PERSON_HOST }}
+        - host: {{ env.SKATT_HOST }}
+        - host: {{ env.SFTP_HOST }}
+          ports:
+            - port: 22
+        - host: slack.com
+        - host: api.slack.com
+      rules:
+        - application: bidrag-stubs
+          namespace: bidrag
+          cluster: dev-gcp
+    inbound:
+      rules:
+      {{#each azure.inbound.rules}}
+      - application: {{this.application}}
+        namespace: {{this.namespace}}
+        cluster: {{this.cluster}}
+      {{/each}}
