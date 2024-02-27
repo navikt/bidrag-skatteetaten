@@ -6,7 +6,7 @@ on:
       - '!main'
       - '!dependabot/**'
     paths:
-      - 'bidrag-aktoerregister/**'
+      - '!bidrag-regnskap/**'
 
 jobs:
   build_and_deploy:
