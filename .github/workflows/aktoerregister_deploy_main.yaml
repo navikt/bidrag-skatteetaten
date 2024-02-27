@@ -1,0 +1,22 @@
+name: Deploy main aktoerregister
+on:
+  pull_request:
+    types: [ ready_for_review, opened, synchronize ]
+    paths-ignore:
+      - '**/bidrag-regnskap/**'
+
+jobs:
+  build_and_deploy:
+    name: "Build and deploy to main"
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f bidrag-aktoerregister
+      ktlint_options: -f bidrag-aktoerregister
+      dockerfile_with_path: ./bidrag-aktoerregister/Dockerfile
+      docker_context: ./bidrag-aktoerregister
+      nais_variabler_filnavn: bidrag-aktoerregister/main.yaml
+      nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
