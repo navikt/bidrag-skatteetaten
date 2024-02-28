@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub.config
+package no.nav.bidrag.elin.stub.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule

@@ -1,8 +1,8 @@
-package no.nav.bidrag.elin-stub.skatt.controller
+package no.nav.bidrag.elin.stub.skatt.controller
 
-import no.nav.bidrag.elin-stub.skatt.dto.reskontro.Input
-import no.nav.bidrag.elin-stub.skatt.dto.reskontro.Output
-import no.nav.bidrag.elin-stub.skatt.service.ReskontroStubService
+import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Input
+import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Output
+import no.nav.bidrag.elin.stub.skatt.service.ReskontroStubService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PatchMapping

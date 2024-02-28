@@ -1,10 +1,10 @@
-package no.nav.bidrag.elin-stub.skatt.service
+package no.nav.bidrag.elin.stub.skatt.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
 import no.nav.bidrag.domene.enums.regnskap.Årsakskode
-import no.nav.bidrag.elin-stub.SECURE_LOGGER
+import no.nav.bidrag.elin.stub.SECURE_LOGGER
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.Feilmelding
 import no.nav.bidrag.transport.regnskap.krav.KravResponse

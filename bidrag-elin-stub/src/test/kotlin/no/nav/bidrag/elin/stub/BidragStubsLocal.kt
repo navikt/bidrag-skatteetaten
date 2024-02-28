@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub
+package no.nav.bidrag.elin.stub
 
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.SpringApplication
@@ -15,7 +15,9 @@ import org.springframework.test.context.ActiveProfiles
 class BidragStubsLocal
 
 fun main(args: Array<String>) {
-    val app = SpringApplication(BidragStubsLocal::class.java)
+    val app = SpringApplication(
+        BidragStubsLocal::class.java,
+    )
     app.setAdditionalProfiles("local", "nais")
     app.run(*args)
 }

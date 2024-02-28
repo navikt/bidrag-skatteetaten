@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub.aop
+package no.nav.bidrag.elin.stub.aop
 
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.slf4j.LoggerFactory

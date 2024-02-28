@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub.skatt.dto.reskontro
+package no.nav.bidrag.elin.stub.skatt.dto.reskontro
 
 data class Output(
     val innParametre: Input,
