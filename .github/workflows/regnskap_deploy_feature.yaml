@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '**/bidrag-aktoerregister/**'
       - '**/bidrag-reskontro/**'
+      - '**/bidrag-elin-stub/**'
 
 jobs:
   build_and_deploy:

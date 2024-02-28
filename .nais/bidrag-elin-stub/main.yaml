@@ -1,0 +1,15 @@
+name: bidrag-elin-stub
+ingress: https://bidrag-elin-stub.intern.dev.nav.no
+azureAccessInbound:
+  - application: bidrag-regnskap-feature
+    namespace: bidrag
+    cluster: dev-gcp
+  - application: bidrag-regnskap
+    namespace: bidrag
+    cluster: dev-gcp
+  - application: bidrag-reskontro-feature
+    namespace: bidrag
+    cluster: dev-gcp
+  - application: bidrag-reskontro
+    namespace: bidrag
+    cluster: dev-gcp

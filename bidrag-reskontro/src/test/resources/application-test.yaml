@@ -1,5 +1,5 @@
-SKATT_URL: https://bidrag-stubs.intern.dev.nav.no/ekstern/skatt
-SKATT_SCOPE: dev-gcp.bidrag.bidrag-stubs
+SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/ekstern/skatt
+SKATT_SCOPE: dev-gcp.bidrag.bidrag-elin-stub
 
 BIDRAG_PERSON_URL: http://localhost:${wiremock.server.port}/person
 
