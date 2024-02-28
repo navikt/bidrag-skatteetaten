@@ -84,7 +84,7 @@ spec:
         - host: slack.com
         - host: api.slack.com
       rules:
-        - application: bidrag-stubs
+        - application: bidrag-elin-stub
           namespace: bidrag
           cluster: dev-gcp
     inbound:

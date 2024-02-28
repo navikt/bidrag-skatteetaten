@@ -1,5 +1,5 @@
-SKATT_URL: https://bidrag-stubs.intern.dev.nav.no/ekstern/skatt
-SKATT_SCOPE: dev-gcp.bidrag.bidrag-stubs
+SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/ekstern/skatt
+SKATT_SCOPE: dev-gcp.bidrag.bidrag-elin-stub
 AZURE_APP_TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851
 AZURE_APP_CLIENT_ID:
 AZURE_APP_CLIENT_SECRET:
