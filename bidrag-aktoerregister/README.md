@@ -1,6 +1,7 @@
 # Bidrag-Aktoerregister
 
-![](https://github.com/navikt/bidrag-aktoerregister/actions/workflows/build-and-deploy.yaml/badge.svg)
+[![continuous integration](https://github.com/navikt/bidrag-skatteetaten/actions/workflows/aktoerregister_deploy_main.yaml/badge.svg?branch=main)](https://github.com/navikt/bidrag-skatteetaten/actions/workflows/aktoerregister_deploy_main.yaml)
+[![release bidrag-regnskap](https://github.com/navikt/bidrag-skatteetaten/actions/workflows/aktoerregister_deploy_prod.yaml/badge.svg)](https://github.com/navikt/bidrag-skatteetaten/actions/workflows/aktoerregister_deploy_prod.yaml)
 
 * DEV-Intern: https://bidrag-aktoerregister.intern.dev.nav.no/ (må være koblet til naisdevice for å få tilgang).
 * DEV-Ekstern: https://bidrag-aktoerregister.ekstern.dev.nav.no/.
