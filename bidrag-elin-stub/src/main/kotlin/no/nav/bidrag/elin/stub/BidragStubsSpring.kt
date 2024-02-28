@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub
+package no.nav.bidrag.elin.stub
 
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.Logger

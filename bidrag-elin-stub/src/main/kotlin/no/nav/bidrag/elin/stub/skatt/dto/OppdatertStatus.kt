@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub.skatt.dto
+package no.nav.bidrag.elin.stub.skatt.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 

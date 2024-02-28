@@ -1,4 +1,4 @@
-package no.nav.bidrag.elin-stub.skatt.controller
+package no.nav.bidrag.elin.stub.skatt.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import no.nav.bidrag.elin-stub.skatt.dto.OppdatertStatus
-import no.nav.bidrag.elin-stub.skatt.service.KravStubService
+import no.nav.bidrag.elin.stub.skatt.dto.OppdatertStatus
+import no.nav.bidrag.elin.stub.skatt.service.KravStubService
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.bidrag.transport.regnskap.krav.KravResponse
 import no.nav.bidrag.transport.regnskap.krav.Kravliste
