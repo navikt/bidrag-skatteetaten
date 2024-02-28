@@ -23,3 +23,4 @@ jobs:
       docker_context: ./bidrag-aktoerregister
       nais_variabler_filnavn: bidrag-aktoerregister/feature.yaml
       nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
+      image_suffix: bidrag-aktoerregister
