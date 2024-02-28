@@ -12,11 +12,11 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class])
 @EnableAspectJAutoProxy
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
-class BidragStubsLocal
+class BidragElinStubLocal
 
 fun main(args: Array<String>) {
     val app = SpringApplication(
-        BidragStubsLocal::class.java,
+        BidragElinStubLocal::class.java,
     )
     app.setAdditionalProfiles("local", "nais")
     app.run(*args)
