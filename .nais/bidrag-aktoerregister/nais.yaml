@@ -15,7 +15,7 @@ spec:
   gcp:
     sqlInstances:
       - name: {{ dbinstancename }}
-        type: POSTGRES_12
+        type: POSTGRES_15
         databases:
         - name: {{ dbname }}
           envVarPrefix: DB
