@@ -25,10 +25,10 @@ spec:
     path: /actuator/prometheus
   resources:
     limits:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 500m
+      memory: 1024Mi
     requests:
-      cpu: 200m
+      cpu: 250m
       memory: 512Mi
   maskinporten:
     enabled: true
