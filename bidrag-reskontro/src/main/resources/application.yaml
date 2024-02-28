@@ -1,0 +1,36 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,health"
+
+springdoc:
+  packages-to-scan: no.nav.bidrag.reskontro.controller
+  swagger-ui:
+    path: /
+    display-request-duration: true
+    try-it-out-enabled: true
+
+maskinporten:
+  tokenUrl: ${MASKINPORTEN_ISSUER}token
+  audience: ${MASKINPORTEN_ISSUER}
+  clientId: ${MASKINPORTEN_CLIENT_ID}
+  scope: ${MASKINPORTEN_SCOPES}
+  privateKey: ${MASKINPORTEN_CLIENT_JWK}
+  validInSeconds: 120 #120 er maks antall sekunder et maskinporten Jwt-token kan være gyldig.
+
+spring.config.activate.on-profile: nais,lokal-nais
+
+no.nav.security.jwt:
+  client:
+    registration:
+      bidrag-reskontro:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+  issuer.aad:
+    discovery_url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/v2.0/.well-known/openid-configuration
+    accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}

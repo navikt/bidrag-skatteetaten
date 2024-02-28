@@ -44,6 +44,7 @@
     <modules>
         <module>bidrag-regnskap</module>
         <module>bidrag-aktoerregister</module>
+        <module>bidrag-reskontro</module>
     </modules>
 
     <repositories>

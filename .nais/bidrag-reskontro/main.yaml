@@ -1,0 +1,10 @@
+name: bidrag-reskontro
+ingresses:
+  - https://bidrag-reskontro.intern.dev.nav.no
+maskinporten:
+  url: https://test.maskinporten.no
+env:
+  SKATT_URL: https://bidrag-stubs.intern.dev.nav.no #TODO()
+  SKATT_HOST: bidrag-stubs.intern.dev.nav.no #TODO()
+  MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav"
+  JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
