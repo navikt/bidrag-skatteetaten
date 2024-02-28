@@ -1,7 +1,9 @@
 name: Deploy main aktoerregister
 on:
-  pull_request:
-    types: [ ready_for_review, opened, synchronize ]
+  push:
+    branches:
+      - '**'
+      - '!main'
     paths-ignore:
       - '**/bidrag-regnskap/**'
 
