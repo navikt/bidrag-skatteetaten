@@ -6,6 +6,8 @@ import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.entities.Hendelse
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
+import no.nav.bidrag.aktoerregister.persistence.repository.SekvensnummerOgIdent
+import no.nav.bidrag.domene.ident.Ident
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
@@ -16,19 +18,27 @@ class HendelseService(
 
     fun hentHendelser(sekvensunummer: Int, antallHendelser: Int): List<HendelseDTO> {
         val hendelser =
-            hendelseRepository.findBySekvensnummerGreaterThan(sekvensunummer, Pageable.ofSize(antallHendelser))
+            hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Pageable.ofSize(antallHendelser))
 
-        return hendelser.distinctBy { it.aktørIdent }
+        return hendelser.distinctBy { it.aktoerIdent }
             .map {
                 HendelseDTO(
                     sekvensnummer = it.sekvensnummer,
                     aktoerId = AktoerIdDTO(
-                        aktoerId = it.aktørIdent,
-                        identtype = Identtype.valueOf(it.aktør.aktørType),
+                        aktoerId = it.aktoerIdent,
+                        identtype = finnIdenttype(it),
                     ),
                 )
             }
             .sortedBy { it.sekvensnummer }
+    }
+
+    private fun finnIdenttype(sekvensnummerOgIdent: SekvensnummerOgIdent): Identtype {
+        return if (Ident(sekvensnummerOgIdent.aktoerIdent).erPersonIdent()) {
+            Identtype.PERSONNUMMER
+        } else {
+            Identtype.AKTOERNUMMER
+        }
     }
 
     fun opprettHendelserPåAktør(aktør: Aktør, originalIdent: String?, oppdaterteFelter: List<String> = listOf()) {
