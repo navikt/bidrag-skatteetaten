@@ -16,7 +16,7 @@ class HendelseService(
 
     fun hentHendelser(sekvensunummer: Int, antallHendelser: Int): List<HendelseDTO> {
         val hendelser =
-            hendelseRepository.getAllBySekvensnummerGreaterThan(sekvensunummer, Pageable.ofSize(antallHendelser))
+            hendelseRepository.findBySekvensnummerGreaterThan(sekvensunummer, Pageable.ofSize(antallHendelser))
 
         return hendelser.distinctBy { it.aktørIdent }
             .map {

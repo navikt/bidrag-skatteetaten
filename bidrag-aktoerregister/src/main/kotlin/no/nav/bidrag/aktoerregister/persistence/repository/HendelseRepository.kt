@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface HendelseRepository : JpaRepository<Hendelse, Int> {
 
-    fun getAllBySekvensnummerGreaterThan(sekvensnummer: Int, pageable: Pageable): List<Hendelse>
+    fun findBySekvensnummerGreaterThan(sekvensnummer: Int, pageable: Pageable): List<Hendelse>
 }
