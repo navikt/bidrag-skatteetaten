@@ -1,0 +1,11 @@
+name: bidrag-reskontro-legacy
+ingresses:
+  - https://bidrag-reskontro-legacy.intern.nav.no
+env:
+  JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
+azure:
+  inbound:
+    rules:
+      - application: bidrag-reskontro
+        namespace: bidrag
+        cluster: prod-gcp
