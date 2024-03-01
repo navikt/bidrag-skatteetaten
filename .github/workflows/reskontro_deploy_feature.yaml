@@ -5,10 +5,11 @@ on:
       - '**'
       - '!main'
       - '!dependabot/**'
-    paths-ignore:
-      - '**/bidrag-aktoerregister/**'
-      - '**/bidrag-regnskap/**'
-      - '**/bidrag-elin-stub/**'
+    paths:
+      - '.nais/bidrag-reskontro/**.yaml'
+      - '.github/workflows/reskontro_deploy_feature.yaml'
+      - 'pom.xml'
+      - '**/bidrag-reskontro/**'
 
 jobs:
   build_and_deploy:
