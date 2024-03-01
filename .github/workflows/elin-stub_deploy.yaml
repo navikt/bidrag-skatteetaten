@@ -4,10 +4,11 @@ on:
     branches:
       - '**'
       - '!main'
-    paths-ignore:
-      - '**/bidrag-aktoerregister/**'
-      - '**/bidrag-regnskap/**'
-      - '**/bidrag-reskontro/**'
+    paths:
+      - '.nais/bidrag-elin-stub/**.yaml'
+      - '.github/workflows/elin-stub_deploy.yaml'
+      - 'pom.xml'
+      - '**/bidrag-elin-stub/**'
 
 jobs:
   build_and_deploy:
