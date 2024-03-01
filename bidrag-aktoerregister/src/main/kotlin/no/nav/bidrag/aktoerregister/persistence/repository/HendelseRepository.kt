@@ -21,5 +21,7 @@ interface HendelseRepository : JpaRepository<Hendelse, Int> {
 
 interface SekvensnummerOgIdent {
     val sekvensnummer: Int
+
+    @Suppress("ktlint:standard:property-naming")
     val aktoer_ident: String
 }
