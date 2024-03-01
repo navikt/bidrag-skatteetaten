@@ -1,5 +1,6 @@
 package no.nav.bidrag.aktoerregister.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
 import no.nav.bidrag.aktoerregister.dto.HendelseDTO
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
@@ -11,26 +12,28 @@ import no.nav.bidrag.domene.ident.Ident
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 
+private val LOGGER = KotlinLogging.logger { }
+
 @Service
 class HendelseService(
     private val hendelseRepository: HendelseRepository,
 ) {
 
     fun hentHendelser(sekvensunummer: Int, antallHendelser: Int): List<HendelseDTO> {
-        val hendelser =
-            hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Limit.of(antallHendelser))
+        LOGGER.info { "HENDELSE: Henter hendelser fra sekvensnummer: $sekvensunummer. Antall hendelser: $antallHendelser." }
+        val hendelser = hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Limit.of(antallHendelser))
 
-        return hendelser.distinctBy { it.aktoer_ident }
-            .map {
-                HendelseDTO(
-                    sekvensnummer = it.sekvensnummer,
-                    aktoerId = AktoerIdDTO(
-                        aktoerId = it.aktoer_ident,
-                        identtype = finnIdenttype(it),
-                    ),
-                )
-            }
-            .sortedBy { it.sekvensnummer }
+        val hendelseDTOer = hendelser.distinctBy { it.aktoer_ident }.map {
+            HendelseDTO(
+                sekvensnummer = it.sekvensnummer,
+                aktoerId = AktoerIdDTO(
+                    aktoerId = it.aktoer_ident,
+                    identtype = finnIdenttype(it),
+                ),
+            )
+        }.sortedBy { it.sekvensnummer }
+        LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
+        return hendelseDTOer
     }
 
     private fun finnIdenttype(sekvensnummerOgIdent: SekvensnummerOgIdent): Identtype {
