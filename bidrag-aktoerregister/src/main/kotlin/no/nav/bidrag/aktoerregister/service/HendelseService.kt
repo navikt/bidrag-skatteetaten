@@ -8,7 +8,7 @@ import no.nav.bidrag.aktoerregister.persistence.entities.Hendelse
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.SekvensnummerOgIdent
 import no.nav.bidrag.domene.ident.Ident
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,14 +18,14 @@ class HendelseService(
 
     fun hentHendelser(sekvensunummer: Int, antallHendelser: Int): List<HendelseDTO> {
         val hendelser =
-            hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Pageable.ofSize(antallHendelser))
+            hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Limit.of(antallHendelser))
 
-        return hendelser.distinctBy { it.aktoerIdent }
+        return hendelser.distinctBy { it.aktoer_ident }
             .map {
                 HendelseDTO(
                     sekvensnummer = it.sekvensnummer,
                     aktoerId = AktoerIdDTO(
-                        aktoerId = it.aktoerIdent,
+                        aktoerId = it.aktoer_ident,
                         identtype = finnIdenttype(it),
                     ),
                 )
@@ -34,7 +34,7 @@ class HendelseService(
     }
 
     private fun finnIdenttype(sekvensnummerOgIdent: SekvensnummerOgIdent): Identtype {
-        return if (Ident(sekvensnummerOgIdent.aktoerIdent).erPersonIdent()) {
+        return if (Ident(sekvensnummerOgIdent.aktoer_ident).erPersonIdent()) {
             Identtype.PERSONNUMMER
         } else {
             Identtype.AKTOERNUMMER
