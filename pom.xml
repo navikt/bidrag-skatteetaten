@@ -23,14 +23,14 @@
         <bidrag-felles.version>2024.02.14.132138</bidrag-felles.version>
         <jackson.version>2.16.1</jackson.version>
         <kotest.version>5.8.0</kotest.version>
-        <ktlint.version>1.1.1</ktlint.version>
+        <ktlint.version>1.2.1</ktlint.version>
         <mockk.version>1.13.9</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>3.2.0</nav-token-support.version>
         <kotlin-logging-jvm.version>6.0.3</kotlin-logging-jvm.version>
-        <slack-api.version>1.38.1</slack-api.version>
-        <shedlock.version>5.11.0</shedlock.version>
-        <jsch.version>0.2.16</jsch.version>
+        <slack-api.version>1.38.2</slack-api.version>
+        <shedlock.version>5.12.0</shedlock.version>
+        <jsch.version>0.2.17</jsch.version>
         <google-cloud-storage.version>2.33.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.1.1</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>2.3.0</springdoc-openapi-ui.version>
@@ -38,7 +38,7 @@
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
         <maven-avro-plugin.version>1.11.3</maven-avro-plugin.version>
-        <avro-serializer.version>7.5.3</avro-serializer.version>
+        <avro-serializer.version>7.6.0</avro-serializer.version>
     </properties>
 
     <modules>
