@@ -16,8 +16,8 @@ import no.nav.bidrag.reskontro.dto.consumer.Bidragssak
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
 import no.nav.bidrag.reskontro.dto.consumer.Retur
-import no.nav.bidrag.reskontro.dto.request.SaksnummerRequest
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
+import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.ResponseEntity
