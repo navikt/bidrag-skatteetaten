@@ -32,7 +32,11 @@ class HendelseService(
                 ),
             )
         }.sortedBy { it.sekvensnummer }
-        LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
+        if (hendelseDTOer.isNotEmpty()) {
+            LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
+        } else {
+            LOGGER.info { "HENDELSE: Ingen nye hendelser fra sekvensnummer $sekvensunummer." }
+        }
         return hendelseDTOer
     }
 
