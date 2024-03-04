@@ -60,3 +60,4 @@ spec:
           namespace: {{this.namespace}}
           cluster: {{this.cluster}}
       {{/each}}
+  webproxy: true
