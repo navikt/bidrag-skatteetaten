@@ -25,3 +25,4 @@ jobs:
       nais_variabler_filnavn: bidrag-regnskap/prod.yaml
       nais_hovedfil_navn: bidrag-regnskap/nais.yaml
       image_suffix: bidrag-regnskap
+      tag: bidrag-regnskap
