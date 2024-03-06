@@ -27,3 +27,4 @@ jobs:
       nais_variabler_filnavn: bidrag-reskontro/feature.yaml
       nais_hovedfil_navn: bidrag-reskontro/nais.yaml
       image_suffix: bidrag-reskontro
+      tag: bidrag-reskontro

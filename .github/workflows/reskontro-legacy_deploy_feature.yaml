@@ -28,3 +28,4 @@ jobs:
       nais_hovedfil_navn: bidrag-reskontro-legacy/nais.yaml
       image_suffix: bidrag-reskontro-legacy
       nais_cluster: fss
+      tag: bidrag-reskontro-legacy
