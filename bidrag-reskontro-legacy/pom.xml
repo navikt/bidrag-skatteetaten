@@ -16,9 +16,8 @@
 
 	<repositories>
 		<repository>
-			<id>m2internal</id>
-			<name>NAV Maven2 Internal Repository</name>
-			<url>http://maven.adeo.no/m2internal</url>
+			<id>internal-mirror-github-navikt</id>
+			<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
 		</repository>
 	</repositories>
 
