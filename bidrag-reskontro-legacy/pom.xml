@@ -16,8 +16,9 @@
 
 	<repositories>
 		<repository>
-			<id>repo_internal</id>
-			<url>https://repo.adeo.no/repository/nexus2-m2internal/</url>
+			<id>m2internal</id>
+			<name>NAV Maven2 Internal Repository</name>
+			<url>dav:http://maven.adeo.no/nexus/content/repositories/m2internal</url>
 		</repository>
 	</repositories>
 
