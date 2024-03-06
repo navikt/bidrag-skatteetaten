@@ -17,7 +17,7 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    uses: navikt/bidrag-workflow/.github/workflows/deploy_self_hosted.yaml@main
     secrets: inherit
     with:
       maven_options: -B -q -fae -f bidrag-reskontro-legacy
@@ -27,5 +27,4 @@ jobs:
       nais_variabler_filnavn: bidrag-reskontro-legacy/feature.yaml
       nais_hovedfil_navn: bidrag-reskontro-legacy/nais.yaml
       image_suffix: bidrag-reskontro-legacy
-      nais_cluster: fss
       tag: bidrag-reskontro-legacy
