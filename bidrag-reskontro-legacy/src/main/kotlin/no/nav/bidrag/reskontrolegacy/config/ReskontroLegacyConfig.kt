@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.MdcFilter
-import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import no.spn.www.BisysReskWSSoapProxy
 import org.springframework.beans.factory.annotation.Value
@@ -18,10 +17,16 @@ import org.springframework.context.annotation.Import
 
 @EnableAspectJAutoProxy
 @Configuration
-@OpenAPIDefinition(info = Info(title = "bidrag-reskontro-legacy", version = "v1"), security = [SecurityRequirement(name = "bearer-key")])
+@OpenAPIDefinition(
+    info = Info(
+        title = "bidrag-reskontro-legacy",
+        version = "v1",
+        description = "Henter ut informasjon gjeld og innebetalte beløp fra Elin via gammelt soap grensesnitt.",
+    ),
+    security = [SecurityRequirement(name = "bearer-key")],
+)
 @SecurityScheme(bearerFormat = "JWT", name = "bearer-key", scheme = "bearer", type = SecuritySchemeType.HTTP)
 @EnableJwtTokenValidation
-@EnableOAuth2Client(cacheEnabled = true)
 @Import(DefaultCorsFilter::class, MdcFilter::class)
 class ReskontroLegacyConfig {
 
