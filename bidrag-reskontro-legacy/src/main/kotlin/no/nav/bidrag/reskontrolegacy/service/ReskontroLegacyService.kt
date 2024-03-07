@@ -8,6 +8,7 @@ import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSkyldnerDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.SaksinformasjonBarnDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssak.SkyldnerDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import no.spn.www.BisysReskWSSoapProxy
@@ -40,6 +41,7 @@ class ReskontroLegacyService(
                     personident = Personident(it._SFnr),
                     restGjeldOffentlig = it._DbpBelGjeldOff,
                     restGjeldPrivat = it._DbpBelGjeldPrivTot,
+                    // TODO(Må sjekke opp om det under er riktig felt for denne verdien)
                     sumIkkeUtbetalt = it._DbidUtbetTot,
                     sumForskuddUtbetalt = it._DforskUtbetTot,
                     periode = Datoperiode(
@@ -64,7 +66,32 @@ class ReskontroLegacyService(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
-        TODO("Not yet implemented")
+        val bidragSak = respons._UtParameter._ColCbidragSak.cbidragSak[0]
+        val skyldner = respons._UtParameter._ColCpersOrg.cpersOrg[0]
+        return BidragssakMedSkyldnerDto(
+            skyldner = SkyldnerDto(
+                personident = Personident(skyldner._Sfnr),
+                innbetaltBeløpUfordelt = skyldner._DinnbetBelopUford,
+                gjeldIlagtGebyr = skyldner._DgjeldGebyrIlagtTI,
+            ),
+            bidragssak = BidragssakDto(
+                saksnummer = Saksnummer(bidragSak._NBidragsSaksnr.toString()),
+                bmGjeldFastsettelsesgebyr = bidragSak._DbmGjeldFastsGebyr,
+                bpGjeldFastsettelsesgebyr = bidragSak._DbpGjeldFastGebyr,
+                bmGjeldRest = bidragSak._DbmGjeldRest,
+                barn = bidragSak._ColCbarnISak.cbarnISak.map {
+                    SaksinformasjonBarnDto(
+                        personident = Personident(it._SFnr),
+                        restGjeldOffentlig = it._DbpBelGjeldOff,
+                        restGjeldPrivat = it._DbpBelGjeldPrivTot,
+                        sumForskuddUtbetalt = it._DforskUtbetTot,
+                        restGjeldPrivatAndel = it._DbpBelGjeldPrivAndel,
+                        sumInnbetaltAndel = it._DbidUtbetAndel,
+                        sumForskuddUtbetaltAndel = it._DforskUtbetAndel,
+                    )
+                },
+            ),
+        )
     }
 
     fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
