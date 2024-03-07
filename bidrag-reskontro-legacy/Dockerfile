@@ -2,7 +2,7 @@ FROM ghcr.io/navikt/baseimages/temurin:21
 LABEL maintainer="Team Bidrag" \
       email="bidrag@nav.no"
 
-COPY ./target/app.jar app.jar
+COPY app.jar app.jar
 
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75"
 ENV SPRING_PROFILES_ACTIVE=nais
