@@ -5,7 +5,7 @@ management:
         include: "prometheus,health"
 
 springdoc:
-  packages-to-scan: no.nav.bidrag
+  packages-to-scan: no.nav.bidrag.reskontrolegacy.controller
   swagger-ui:
     path: /
     display-request-duration: true
