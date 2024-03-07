@@ -13,8 +13,10 @@ import no.spn.www.BisysReskWSSoapProxy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.Import
 
+@EnableAspectJAutoProxy
 @Configuration
 @OpenAPIDefinition(info = Info(title = "bidrag-reskontro-legacy", version = "v1"), security = [SecurityRequirement(name = "bearer-key")])
 @SecurityScheme(bearerFormat = "JWT", name = "bearer-key", scheme = "bearer", type = SecuritySchemeType.HTTP)
