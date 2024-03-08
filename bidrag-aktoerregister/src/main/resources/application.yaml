@@ -2,7 +2,7 @@ logging:
   level:
     org:
       hibernate:
-        sql: info
+        sql: debug
         type: trace
         orm:
           jdbc:
