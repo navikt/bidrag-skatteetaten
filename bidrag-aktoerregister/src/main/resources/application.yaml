@@ -3,10 +3,10 @@ logging:
     org:
       hibernate:
         sql: info
-        type:
-          descriptor:
-            sql:
-              BasicBinder: info
+        type: trace
+        orm:
+          jdbc:
+            bind: trace
 
 spring:
   flyway:
