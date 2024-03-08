@@ -9,6 +9,8 @@ import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.http.client.observation.ClientRequestObservationConvention
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -33,4 +35,7 @@ class RestConfig {
             .failOnUnknownProperties(false)
             .serializationInclusion(JsonInclude.Include.NON_NULL)
     }
+
+    @Bean
+    fun clientRequestObservationConvention(): ClientRequestObservationConvention = DefaultClientRequestObservationConvention()
 }
