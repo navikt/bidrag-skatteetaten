@@ -46,6 +46,7 @@ class AktoerregisterController(
     @PostMapping(path = ["/aktoer"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> {
         return try {
+            SECURE_LOGGER.info("Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}")
             val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
             ResponseEntity.ok(aktoer)
         } catch (e: AktørNotFoundException) {
