@@ -2,11 +2,11 @@ logging:
   level:
     org:
       hibernate:
-        sql: INFO
+        sql: info
         type:
           descriptor:
             sql:
-              BasicBinder: TRACE
+              BasicBinder: info
 
 spring:
   flyway:
