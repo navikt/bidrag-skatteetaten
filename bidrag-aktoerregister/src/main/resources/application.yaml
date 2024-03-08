@@ -1,13 +1,3 @@
-logging:
-  level:
-    org:
-      hibernate:
-        sql: debug
-        type: trace
-        orm:
-          jdbc:
-            bind: trace
-
 spring:
   flyway:
     schemas: migrations
@@ -16,7 +6,6 @@ spring:
     hibernate:
       ddl-auto: none
     database: POSTGRESQL
-    show-sql: on
   datasource:
     hikari:
       maximum-pool-size: '4'
