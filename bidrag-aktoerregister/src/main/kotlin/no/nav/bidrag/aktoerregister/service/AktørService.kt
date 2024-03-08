@@ -116,7 +116,11 @@ class AktørService(
             // blitt opprettet som en ny aktør.
             if (originalIdent != null && originalIdent != nyAktør.aktørIdent) {
                 aktørRepository.findByAktørIdent(nyAktør.aktørIdent)?.let {
-                    LOGGER.info { "Sletter aktør: ${it.aktørIdent}" }
+                    LOGGER.info { "Sletter aktør grunnet duplikat. Se secure logs." }
+                    SECURE_LOGGER.info(
+                        "Sletter aktør grunnet duplikat. " +
+                            "Original ident: $originalIdent, ny aktør ident: ${nyAktør.aktørIdent}, gammel ident: ${it.aktørIdent}",
+                    )
                     slettetAktørIdent = it.aktørIdent
                     it.hendelser.forEach { hendelse ->
                         hendelseRepository.delete(hendelse)
