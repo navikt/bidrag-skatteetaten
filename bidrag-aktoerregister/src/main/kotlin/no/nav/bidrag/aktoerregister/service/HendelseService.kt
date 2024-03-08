@@ -22,15 +22,18 @@ class HendelseService(
         LOGGER.info { "HENDELSE: Henter hendelser fra sekvensnummer: $sekvensunummer. Antall hendelser: $antallHendelser." }
         val hendelser = hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, antallHendelser)
 
-        val hendelseDTOer = hendelser.distinctBy { it.aktoer_ident }.map {
-            HendelseDTO(
-                sekvensnummer = it.sekvensnummer,
-                aktoerId = AktoerIdDTO(
-                    aktoerId = it.aktoer_ident,
-                    identtype = finnIdenttype(it),
-                ),
-            )
-        }.sortedBy { it.sekvensnummer }
+        val hendelseDTOer = hendelser
+            .sortedByDescending { it.sekvensnummer }
+            .distinctBy { it.aktoer_ident }
+            .map {
+                HendelseDTO(
+                    sekvensnummer = it.sekvensnummer,
+                    aktoerId = AktoerIdDTO(
+                        aktoerId = it.aktoer_ident,
+                        identtype = finnIdenttype(it),
+                    ),
+                )
+            }.sortedBy { it.sekvensnummer }
         if (hendelseDTOer.isNotEmpty()) {
             LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
         } else {
