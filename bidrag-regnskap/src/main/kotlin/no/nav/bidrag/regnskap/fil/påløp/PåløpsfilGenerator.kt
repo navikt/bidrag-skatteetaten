@@ -244,10 +244,6 @@ class PåløpsfilGenerator(
             if (kontering.oppdragsperiode?.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true) {
                 return@forEach
             }
-            // Om konteringen er forsøkt overført tidligere på noen andre konteringer i oppdragsperioden så
-            if (kontering.oppdragsperiode?.konteringer?.any { it.overføringstidspunkt != null && it.behandlingsstatusOkTidspunkt == null } == true) {
-                return@forEach
-            }
 
             val saksnummer = kontering.oppdragsperiode?.oppdrag?.sakId!!
             var current = sakerMap[saksnummer]
