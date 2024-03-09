@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Protected
-class ReskontroLegacyController(private val reskontroLegacyService: ReskontroLegacyService) {
-
+class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyService) {
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
         description = "Henter saksinformasjon om bidragssaken",
