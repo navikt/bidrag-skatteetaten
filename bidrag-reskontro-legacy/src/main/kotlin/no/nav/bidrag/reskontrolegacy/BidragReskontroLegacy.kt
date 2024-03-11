@@ -1,4 +1,4 @@
-package no.nav.bidrag.reskontro
+package no.nav.bidrag.reskontrolegacy
 
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.Logger
