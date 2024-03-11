@@ -5,6 +5,7 @@ AZURE_APP_CLIENT_ID:
 AZURE_APP_CLIENT_SECRET:
 server.port: 8999
 NAIS_APP_NAME: bidrag-reskontro-legacy
+ELIN_URL: https://bidrag-elin-stub.intern.dev.nav.no
 
 no.nav.security.jwt:
   client:
@@ -17,5 +18,5 @@ no.nav.security.jwt:
           client-secret: 123
           client-auth-method: client_secret_basic
   issuer.aad:
-    discovery_url: http://localhost:${mock-oauth2-server.port:0}/aad/.well-known/openid-configuration
+    discovery_url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/v2.0/.well-known/openid-configuration
     accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}

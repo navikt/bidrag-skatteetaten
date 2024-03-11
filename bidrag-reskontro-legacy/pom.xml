@@ -28,6 +28,16 @@
 			<version>1.11</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ibm.ws</groupId>
+			<artifactId>webservices</artifactId>
+			<version>5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.ws.webservices.thinclient</groupId>
+			<artifactId>thinclient</artifactId>
+			<version>8.5.0</version>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.xml.rpc</groupId>
 			<artifactId>jakarta.xml.rpc-api</artifactId>
 			<version>1.1.4</version>
