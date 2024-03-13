@@ -63,7 +63,6 @@ class PåløpskjøringService(
                 genererPåløpsfil(påløp)
             }
 
-            settOverføringstidspunktPåKonteringer(påløp)
             opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
             avsluttDriftsavvik(påløp)
             fullførPåløp(påløp)
@@ -151,27 +150,6 @@ class PåløpskjøringService(
         LOGGER.info("Påløpsfil er ferdig skrevet for periode ${påløp.forPeriode} og lastet opp til filsluse.")
     }
 
-    private fun settOverføringstidspunktPåKonteringer(påløp: Påløp) {
-        val timestamp = LocalDateTime.now()
-        var antallBehandlet = 0
-
-        LOGGER.debug("Starter å sette overføringstidspunkt konteringer.")
-        val konteringer = ArrayList(persistenceService.hentAlleIkkeOverførteKonteringer())
-        Lists.partition(konteringer, PARTISJONSSTØRRELSE).forEach { konteringerPartition ->
-            konteringerPartition.forEach {
-                it.overføringstidspunkt = timestamp
-                it.behandlingsstatusOkTidspunkt = timestamp
-            }
-            persistenceService.lagreKonteringer(konteringerPartition)
-            antallBehandlet += konteringerPartition.size
-
-            medLyttere { it.rapporterKonteringerFullført(påløp, antallBehandlet, konteringer.size) }
-        }
-
-        medLyttere { it.konteringerFullførtFerdig(påløp, konteringer.size) }
-        LOGGER.debug("Fullført setting av overføringstidspunkt for konteringer.")
-    }
-
     private fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp) {
         val påløpsfilGenerator = PåløpsfilGenerator(gcpFilBucket, filoverføringTilElinKlient, persistenceService)
         påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, lyttere)
@@ -216,10 +194,6 @@ interface PåløpskjøringLytter {
     fun påløpFullført(påløp: Påløp)
 
     fun påløpFeilet(påløp: Påløp, feilmelding: String)
-
-    fun rapporterKonteringerFullført(påløp: Påløp, antallFullført: Int, totaltAntall: Int)
-
-    fun konteringerFullførtFerdig(påløp: Påløp, totaltAntall: Int)
 
     fun lastOppFilTilGcpBucket(påløp: Påløp, melding: String)
 
