@@ -244,6 +244,9 @@ class PåløpsfilGenerator(
             if (kontering.oppdragsperiode?.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true) {
                 return@forEach
             }
+            if (kontering.oppdragsperiode?.oppdrag?.harFeiledeKonteringer == true) {
+                return@forEach
+            }
 
             val saksnummer = kontering.oppdragsperiode?.oppdrag?.sakId!!
             var current = sakerMap[saksnummer]

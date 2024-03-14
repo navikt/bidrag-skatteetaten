@@ -8,6 +8,7 @@ import no.nav.bidrag.domene.enums.regnskap.Årsakskode
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.fil.påløp.PåløpsfilGenerator
+import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
 import no.nav.bidrag.regnskap.persistence.entity.Driftsavvik
 import no.nav.bidrag.regnskap.persistence.entity.Påløp
@@ -35,6 +36,7 @@ class PåløpskjøringService(
     private val filoverføringTilElinKlient: FiloverføringTilElinKlient,
     private val skattConsumer: SkattConsumer,
     private val meterRegistry: MeterRegistry,
+    private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
     @Autowired(required = false) private val lyttere: List<PåløpskjøringLytter> = emptyList(),
 ) {
 
@@ -49,6 +51,9 @@ class PåløpskjøringService(
 
         medLyttere { it.påløpStartet(påløp, schedulertKjøring, genererFil) }
         try {
+            // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
+            sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+
             validerDriftsavvik(påløp, schedulertKjøring)
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
             persistenceService.registrerPåløpStartet(påløp.påløpId, LocalDateTime.now())
