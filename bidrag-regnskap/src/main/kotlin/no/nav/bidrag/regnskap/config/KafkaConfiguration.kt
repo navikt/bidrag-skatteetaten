@@ -33,8 +33,8 @@ class KafkaConfiguration(
     fun defaultErrorHandler(@Value("\${KAFKA_MAX_RETRY:-1}") maxRetry: Int): DefaultErrorHandler {
         // Max retry should not be set in production
         val backoffPolicy = if (maxRetry == -1) ExponentialBackOff() else ExponentialBackOffWithMaxRetries(maxRetry)
-        backoffPolicy.multiplier = 2.0
-        backoffPolicy.maxInterval = 1800000L // 30 mins
+        backoffPolicy.multiplier = 1.2
+        backoffPolicy.maxInterval = 300000L // 5 mins
         LOGGER.info(
             "Initializing Kafka errorhandler with backoffpolicy {}, maxRetry={}",
             backoffPolicy,
