@@ -31,7 +31,7 @@
         <slack-api.version>1.38.2</slack-api.version>
         <shedlock.version>5.12.0</shedlock.version>
         <jsch.version>0.2.17</jsch.version>
-        <google-cloud-storage.version>2.35.0</google-cloud-storage.version>
+        <google-cloud-storage.version>2.36.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.1.1</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>2.3.0</springdoc-openapi-ui.version>
         <logback-encoder.version>7.4</logback-encoder.version>
