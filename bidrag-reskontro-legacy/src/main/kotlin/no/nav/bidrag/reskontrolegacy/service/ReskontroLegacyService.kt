@@ -35,7 +35,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohPrSakPrBarn")
 
-        val bidragSak = respons!!.utParameter.colCbidragSak.cbidragSak[0]
+        val bidragSak = respons.utParameter.colCbidragSak.cbidragSak[0]
         return BidragssakDto(
             saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
             bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
@@ -70,7 +70,7 @@ class ReskontroLegacyService(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
-        val bidragSak = respons!!.utParameter.colCbidragSak.cbidragSak[0]
+        val bidragSak = respons.utParameter.colCbidragSak.cbidragSak[0]
         val skyldner = respons.utParameter.colCpersOrg.cpersOrg[0]
         return BidragssakMedSkyldnerDto(
             skyldner = SkyldnerDto(
@@ -104,7 +104,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohTransPrSak")
 
-        return opprettTransaksjonerRespons(respons!!)
+        return opprettTransaksjonerRespons(respons)
     }
 
     fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto {
@@ -113,7 +113,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohTransPrPersPrOrg")
 
-        return opprettTransaksjonerRespons(respons!!)
+        return opprettTransaksjonerRespons(respons)
     }
 
     fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto {
@@ -122,7 +122,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohTransPrTransID")
 
-        return opprettTransaksjonerRespons(respons!!)
+        return opprettTransaksjonerRespons(respons)
     }
 
     fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
@@ -131,7 +131,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohInnkrevInfo")
 
-        val skyldner = respons!!.utParameter.colCpersOrg.cpersOrg[0]
+        val skyldner = respons.utParameter.colCpersOrg.cpersOrg[0]
         val gjeldendeBetalingsordning = respons.utParameter.colCgjeldBetOrdn.cgjeldBetOrdn[0]
         val nyUtbetalingsordning = respons.utParameter.colCnyBetOrdn.cnyBetOrdn[0]
         return InnkrevingssaksinformasjonDto(
