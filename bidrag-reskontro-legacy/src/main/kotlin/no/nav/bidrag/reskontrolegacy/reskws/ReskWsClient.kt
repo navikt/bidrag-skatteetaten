@@ -2,12 +2,18 @@ package no.nav.bidrag.reskontrolegacy.reskws
 
 import no.nav.bidrag.reskontrolegacy.generated.CResknObjectHolder
 import no.nav.bidrag.reskontrolegacy.generated.RohInnkrevInfo
+import no.nav.bidrag.reskontrolegacy.generated.RohInnkrevInfoResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohPrPersPrSakPrBarn
+import no.nav.bidrag.reskontrolegacy.generated.RohPrPersPrSakPrBarnResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohPrSakPrBarn
 import no.nav.bidrag.reskontrolegacy.generated.RohRMEndreFNR
+import no.nav.bidrag.reskontrolegacy.generated.RohRMEndreFNRResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohTransPrPersPrOrg
+import no.nav.bidrag.reskontrolegacy.generated.RohTransPrPersPrOrgResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohTransPrSak
+import no.nav.bidrag.reskontrolegacy.generated.RohTransPrSakResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohTransPrTransID
+import no.nav.bidrag.reskontrolegacy.generated.RohTransPrTransIDResponse
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport
 import org.springframework.ws.soap.client.core.SoapActionCallback
 import java.time.LocalDate
@@ -21,10 +27,12 @@ class ReskWsClient : WebServiceGatewaySupport() {
             naksjonsKode = 1
             nBidragsSaksnr = saksnummer
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohTransPrSakResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohPrSakPrBarn"),
-        ) as CResknObjectHolder?
+        ) as RohTransPrSakResponse
+
+        return rohTransPrSakResponse.rohTransPrSakResult
     }
 
     fun rohPrPersPrSakPrBarn(fødselsnummer: String): CResknObjectHolder? {
@@ -32,10 +40,11 @@ class ReskWsClient : WebServiceGatewaySupport() {
             naksjonsKode = 2
             sfnrorgnr = fødselsnummer
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohPrPersPrSakPrBarnResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohPrPersPrSakPrBarn"),
-        ) as CResknObjectHolder?
+        ) as RohPrPersPrSakPrBarnResponse
+        return rohPrPersPrSakPrBarnResponse.rohPrPersPrSakPrBarnResult
     }
 
     fun rohTransPrSak(saksnummer: Int): CResknObjectHolder? {
@@ -46,10 +55,11 @@ class ReskWsClient : WebServiceGatewaySupport() {
             dtdatoTom = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar(9999, 1, 1))
             nmaxReturTrans = Int.MAX_VALUE
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohTransPrSakResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohTransPrSak"),
-        ) as CResknObjectHolder?
+        ) as RohTransPrSakResponse
+        return rohTransPrSakResponse.rohTransPrSakResult
     }
 
     fun rohTransPrPersPrOrg(fødselsnummer: String): CResknObjectHolder? {
@@ -60,10 +70,11 @@ class ReskWsClient : WebServiceGatewaySupport() {
             dtdatoTom = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar(9999, 1, 1))
             nmaxReturTrans = Int.MAX_VALUE
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohTransPrPersPrOrgResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohTransPrPersPrOrg"),
-        ) as CResknObjectHolder?
+        ) as RohTransPrPersPrOrgResponse
+        return rohTransPrPersPrOrgResponse.rohTransPrPersPrOrgResult
     }
 
     fun rohTransPrTransID(transaksjonsid: String): CResknObjectHolder? {
@@ -73,10 +84,11 @@ class ReskWsClient : WebServiceGatewaySupport() {
             dtdatoFom = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar(1900, 1, 1))
             dtdatoTom = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar(9999, 1, 1))
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohTransPrTransIDResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohTransPrTransID"),
-        ) as CResknObjectHolder?
+        ) as RohTransPrTransIDResponse
+        return rohTransPrTransIDResponse.rohTransPrTransIDResult
     }
 
     fun rohInnkrevInfo(fødselsnummer: String): CResknObjectHolder? {
@@ -84,10 +96,11 @@ class ReskWsClient : WebServiceGatewaySupport() {
             naksjonsKode = 6
             sfnrorgnr = fødselsnummer
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohInnkrevInfoResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohInnkrevInfo"),
-        ) as CResknObjectHolder?
+        ) as RohInnkrevInfoResponse
+        return rohInnkrevInfoResponse.rohInnkrevInfoResult
     }
 
     fun rohRMEndreFNR(saksnummer: Int, fødselsnummerBarn: String, fødselsnummerNyRm: String): CResknObjectHolder? {
@@ -101,9 +114,10 @@ class ReskWsClient : WebServiceGatewaySupport() {
             sfnrNy = fødselsnummerNyRm
             dtdatoGjelderFOM = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar(now.year, now.dayOfMonth, now.dayOfMonth))
         }
-        return webServiceTemplate.marshalSendAndReceive(
+        val rohRMEndreFNRResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohRMEndreFNR"),
-        ) as CResknObjectHolder?
+        ) as RohRMEndreFNRResponse
+        return rohRMEndreFNRResponse.rohRMEndreFNRResult
     }
 }
