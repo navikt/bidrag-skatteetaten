@@ -35,6 +35,7 @@ object TestData {
         gjelderIdent: String = PersonidentGenerator.genererFødselsnummer(),
         utsattTilDato: LocalDate? = null,
         endretTidspunkt: LocalDateTime? = null,
+        harFeiledeKonteringer: Boolean = false,
     ): Oppdrag {
         return Oppdrag(
             oppdragId = oppdragId,
@@ -47,6 +48,7 @@ object TestData {
             mottakerIdent = mottakerIdent,
             utsattTilDato = utsattTilDato,
             endretTidspunkt = endretTidspunkt,
+            harFeiledeKonteringer = harFeiledeKonteringer,
         )
     }
 
@@ -140,11 +142,13 @@ object TestData {
         transaksjonskode: String = Transaksjonskode.A1.name,
         overforingsperiode: String = YearMonth.now().toString(),
         overforingstidspunkt: LocalDateTime? = null,
+        behandlingsstatusOkTidspunkt: LocalDateTime? = null,
         type: String = Type.NY.name,
         søknadstype: String = Søknadstype.EN.name,
         sendtIPalopsperiode: String? = null,
         opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
         vedtakId: Int = 654321,
+        sisteReferansekode: String? = null,
     ): Kontering {
         return Kontering(
             konteringId = konteringId,
@@ -152,11 +156,13 @@ object TestData {
             transaksjonskode = transaksjonskode,
             overføringsperiode = overforingsperiode,
             overføringstidspunkt = overforingstidspunkt,
+            behandlingsstatusOkTidspunkt = behandlingsstatusOkTidspunkt,
             type = type,
             søknadType = søknadstype,
             sendtIPåløpsperiode = sendtIPalopsperiode,
             opprettetTidspunkt = opprettetTidspunkt,
             vedtakId = vedtakId,
+            sisteReferansekode = sisteReferansekode,
         )
     }
 
