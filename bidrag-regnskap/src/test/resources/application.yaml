@@ -1,4 +1,4 @@
-SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/ekstern/skatt
+SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/bidrag/v1/bidragskrav/
 SKATT_SCOPE: dev-gcp.bidrag.bidrag-elin-stub
 SAK_URL: https://bidrag-sak-feature.dev-fss-pub.nais.io
 SAK_SCOPE: dev-fss.bidrag.bidrag-sak-feature
