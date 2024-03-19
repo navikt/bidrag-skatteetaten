@@ -105,7 +105,7 @@ class KravService(
             LOGGER.error("Kallet mot skatt feilet på noe uventet! Feil: ${e.message}, stacktrace: ${e.stackTraceToString()}")
         }
 
-        LOGGER.info("Overføring til skatt fullført for oppdrag: $oppdragIdListe")
+        LOGGER.info("Overføring til skatt gjennomført for oppdrag: $oppdragIdListe")
     }
 
     private fun hentSisteReferansekoder(oppdrag: Oppdrag) = oppdrag.oppdragsperioder.flatMap { oppdragsperiode ->
