@@ -21,19 +21,19 @@
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
         <bidrag-felles.version>2024.03.04.145243</bidrag-felles.version>
-        <jackson.version>2.16.2</jackson.version>
+        <jackson.version>2.17.0</jackson.version>
         <kotest.version>5.8.1</kotest.version>
         <ktlint.version>1.2.1</ktlint.version>
         <mockk.version>1.13.10</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>3.2.0</nav-token-support.version>
         <kotlin-logging-jvm.version>6.0.3</kotlin-logging-jvm.version>
-        <slack-api.version>1.38.2</slack-api.version>
+        <slack-api.version>1.38.3</slack-api.version>
         <shedlock.version>5.12.0</shedlock.version>
         <jsch.version>0.2.17</jsch.version>
-        <google-cloud-storage.version>2.35.0</google-cloud-storage.version>
+        <google-cloud-storage.version>2.36.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.1.1</spring-cloud-contract-wiremock.version>
-        <springdoc-openapi-ui.version>2.3.0</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.4.0</springdoc-openapi-ui.version>
         <logback-encoder.version>7.4</logback-encoder.version>
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
