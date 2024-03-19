@@ -46,7 +46,7 @@ class SendKravScheduler(
         val oppdragMedIkkeOverførteKonteringer = hentOppdragMedIkkeOverførteKonteringerHvorKonteringIkkeErUtsatt()
 
         if (oppdragMedIkkeOverførteKonteringer.isEmpty()) {
-            LOGGER.info { "Det finnes ingen oppdrag med unsendte konteringer som ikke skal utsettes." }
+            LOGGER.info { "Det finnes ingen oppdrag med unsendte konteringer som ikke skal utsettes eller som har feiledet." }
             return
         }
 
