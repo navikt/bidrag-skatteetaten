@@ -14,6 +14,7 @@ import no.nav.bidrag.domene.enums.regnskap.Type
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
+import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.regnskap.util.PeriodeUtils.hentAllePerioderMellomDato
@@ -32,6 +33,7 @@ class PåløpskjøringServiceTest {
     private val filoverføringTilElinKlient = mockk<FiloverføringTilElinKlient>(relaxed = true)
     private val skattConsumer = mockk<SkattConsumer>(relaxed = true)
     private val meterRegistry = mockk<MeterRegistry>(relaxed = true)
+    private val sjekkAvBehandlingsstatusScheduler = mockk<SjekkAvBehandlingsstatusScheduler>(relaxed = true)
 
     private val påløpskjøringService =
         PåløpskjøringService(
@@ -42,6 +44,7 @@ class PåløpskjøringServiceTest {
             filoverføringTilElinKlient,
             skattConsumer,
             meterRegistry,
+            sjekkAvBehandlingsstatusScheduler,
         )
 
     @Test
