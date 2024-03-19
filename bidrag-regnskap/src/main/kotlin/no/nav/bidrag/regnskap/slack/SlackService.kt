@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service
 @Service
 class SlackService(
     @Value("\${BIDRAG_BOT_SLACK_OAUTH_TOKEN}") private val oauthToken: String,
+    @Value("\${SLACK_CHANNEL_ID}") private val channel: String,
 ) {
 
     companion object {
-        const val CHANNEL = "C0556GXJPMF"
         private val LOGGER = KotlinLogging.logger { }
     }
 
     fun sendMelding(melding: String, threadTs: String? = null): SlackMelding {
         val response = Slack.getInstance().methods(oauthToken).chatPostMessage {
-            it.channel(CHANNEL)
+            it.channel(channel)
                 .threadTs(threadTs)
                 .text(melding)
         }

@@ -17,6 +17,7 @@ ELIN_SUBSCRIPTION_KEY: ingenSubKeyLokaltKunForApiPortalen
 NAIS_CLIENT_ID: "localhost:bidrag:bidrag-regnskap"
 NAIS_CLUSTER_NAME: localhost
 KONTERINGER_FORELDET_DATO: 2006-04
+SLACK_CHANNEL_ID: C05HQPLTFAA
 
 springdoc:
   packages-to-scan: no.nav.bidrag.regnskap.controller
