@@ -8,20 +8,20 @@ import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.domene.tid.Datoperiode
 import no.nav.bidrag.reskontro.consumer.SkattReskontroConsumer
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
-import no.nav.bidrag.reskontro.dto.request.SaksnummerRequest
-import no.nav.bidrag.reskontro.dto.response.innkrevingssak.Bidragssak
-import no.nav.bidrag.reskontro.dto.response.innkrevingssak.BidragssakMedSkyldner
-import no.nav.bidrag.reskontro.dto.response.innkrevingssak.SaksinformasjonBarn
-import no.nav.bidrag.reskontro.dto.response.innkrevingssak.Skyldner
-import no.nav.bidrag.reskontro.dto.response.innkrevingssaksinformasjon.GjeldendeBetalingsordning
-import no.nav.bidrag.reskontro.dto.response.innkrevingssaksinformasjon.Innkrevingssakshistorikk
-import no.nav.bidrag.reskontro.dto.response.innkrevingssaksinformasjon.Innkrevingssaksinformasjon
-import no.nav.bidrag.reskontro.dto.response.innkrevingssaksinformasjon.NyBetalingsordning
-import no.nav.bidrag.reskontro.dto.response.innkrevingssaksinformasjon.Skyldnerinformasjon
-import no.nav.bidrag.reskontro.dto.response.transaksjoner.Transaksjon
-import no.nav.bidrag.reskontro.dto.response.transaksjoner.Transaksjoner
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.bidrag.transport.person.PersonRequest
+import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
+import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSkyldnerDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssak.SaksinformasjonBarnDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssak.SkyldnerDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.GjeldendeBetalingsordningDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssakshistorikkDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.NyBetalingsordningDto
+import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.SkyldnerinformasjonDto
+import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonDto
+import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -29,18 +29,18 @@ import java.time.LocalDateTime
 
 @Service
 class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsumer) {
-    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): Bidragssak {
+    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto {
         val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
         val innkrevingssak = validerOutput(innkrevingssakResponse)
 
-        return Bidragssak(
+        return BidragssakDto(
             saksnummer = Saksnummer(innkrevingssak.bidragssak!!.bidragssaksnummer.toString()),
             bmGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bmGjeldFastsettelsesgebyr,
             bpGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bpGjeldFastsettelsesgebyr,
             bmGjeldRest = innkrevingssak.bidragssak.bmGjeldRest,
             barn =
             innkrevingssak.bidragssak.perBarnISak?.map {
-                SaksinformasjonBarn(
+                SaksinformasjonBarnDto(
                     personident = Personident(it.fodselsnummer!!),
                     restGjeldOffentlig = it.restGjeldOffentlig!!,
                     restGjeldPrivat = it.restGjeldPrivat!!,
@@ -57,26 +57,26 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         )
     }
 
-    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldner {
+    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto {
         val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåPerson(personRequest.ident)
         val innkrevingssak = validerOutput(innkrevingssakResponse)
 
-        return BidragssakMedSkyldner(
+        return BidragssakMedSkyldnerDto(
             skyldner =
-            Skyldner(
+            SkyldnerDto(
                 personident = Personident(innkrevingssak.skyldner!!.fodselsOrgnr!!),
                 innbetaltBeløpUfordelt = innkrevingssak.skyldner.innbetBelopUfordelt,
                 gjeldIlagtGebyr = innkrevingssak.skyldner.gjeldIlagtGebyr,
             ),
             bidragssak =
-            Bidragssak(
+            BidragssakDto(
                 saksnummer = Saksnummer(innkrevingssak.bidragssak!!.bidragssaksnummer.toString()),
                 bmGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bmGjeldFastsettelsesgebyr,
                 bpGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bpGjeldFastsettelsesgebyr,
                 bmGjeldRest = innkrevingssak.bidragssak.bmGjeldRest,
                 barn =
                 innkrevingssak.bidragssak.perBarnISak?.map {
-                    SaksinformasjonBarn(
+                    SaksinformasjonBarnDto(
                         personident = Personident(it.fodselsnummer!!),
                         restGjeldOffentlig = it.restGjeldOffentlig!!,
                         restGjeldPrivat = it.restGjeldPrivat!!,
@@ -90,31 +90,31 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         )
     }
 
-    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): Transaksjoner {
+    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
         val transaksjonerResponse =
             skattReskontroConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest.saksnummer.verdi.toLong())
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): Transaksjoner {
+    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto {
         val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåPerson(personRequest.ident)
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): Transaksjoner {
+    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto {
         val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): Innkrevingssaksinformasjon {
+    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
         val innkrevingsinformasjonResponse = skattReskontroConsumer.hentInformasjonOmInnkrevingssaken(personRequest.ident)
         val innkrevingsinformasjon = validerOutput(innkrevingsinformasjonResponse)
-        return Innkrevingssaksinformasjon(
+        return InnkrevingssaksinformasjonDto(
             skyldnerinformasjon =
-            Skyldnerinformasjon(
+            SkyldnerinformasjonDto(
                 personident = Personident(innkrevingsinformasjon.skyldner!!.fodselsOrgnr!!),
                 sumLøpendeBidrag = innkrevingsinformasjon.skyldner.sumLopendeBidrag,
                 innkrevingssaksstatus = innkrevingsinformasjon.skyldner.statusInnkrevingssak!!,
@@ -122,7 +122,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                 sisteAktivitet = innkrevingsinformasjon.skyldner.sisteAktivitet!!,
             ),
             gjeldendeBetalingsordning =
-            GjeldendeBetalingsordning(
+            GjeldendeBetalingsordningDto(
                 typeBehandlingsordning = innkrevingsinformasjon.gjeldendeBetalingsordning!!.typeBetalingsordning!!,
                 kilde = Organisasjonsnummer(innkrevingsinformasjon.gjeldendeBetalingsordning.kildeOrgnummer!!),
                 kildeNavn = innkrevingsinformasjon.gjeldendeBetalingsordning.kildeNavn!!,
@@ -134,13 +134,13 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                 sumUbetalt = innkrevingsinformasjon.gjeldendeBetalingsordning.sumUbetalt!!,
             ),
             nyBetalingsordning =
-            NyBetalingsordning(
+            NyBetalingsordningDto(
                 dato = Datoperiode(LocalDateTime.parse(innkrevingsinformasjon.nyBetalingsordning!!.datoFraOgMed!!).toLocalDate(), null),
                 beløp = innkrevingsinformasjon.nyBetalingsordning.belop!!,
             ),
             innkrevingssakshistorikk =
             innkrevingsinformasjon.innkrevingssaksHistorikk!!.map {
-                Innkrevingssakshistorikk(
+                InnkrevingssakshistorikkDto(
                     beskrivelse = it.beskrivelse!!,
                     ident = Ident(it.fodselsOrgNr!!),
                     navn = it.navn!!,
@@ -156,10 +156,10 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         validerOutput(endreRmResponse)
     }
 
-    private fun opprettTransaksjonerResponse(transaksjoner: ReskontroConsumerOutput) = Transaksjoner(
+    private fun opprettTransaksjonerResponse(transaksjoner: ReskontroConsumerOutput) = TransaksjonerDto(
         transaksjoner =
         transaksjoner.transaksjoner!!.map {
-            Transaksjon(
+            TransaksjonDto(
                 transaksjonsid = it.transaksjonsId,
                 transaksjonskode = it.kode!!,
                 beskrivelse = it.beskrivelse!!,

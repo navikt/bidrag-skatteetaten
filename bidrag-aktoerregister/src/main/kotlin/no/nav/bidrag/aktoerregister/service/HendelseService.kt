@@ -9,7 +9,6 @@ import no.nav.bidrag.aktoerregister.persistence.entities.Hendelse
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.SekvensnummerOgIdent
 import no.nav.bidrag.domene.ident.Ident
-import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 
 private val LOGGER = KotlinLogging.logger { }
@@ -21,18 +20,25 @@ class HendelseService(
 
     fun hentHendelser(sekvensunummer: Int, antallHendelser: Int): List<HendelseDTO> {
         LOGGER.info { "HENDELSE: Henter hendelser fra sekvensnummer: $sekvensunummer. Antall hendelser: $antallHendelser." }
-        val hendelser = hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, Limit.of(antallHendelser))
+        val hendelser = hendelseRepository.hentAlleHendelserMedSekvensnummerOgIdent(sekvensunummer, antallHendelser)
 
-        val hendelseDTOer = hendelser.distinctBy { it.aktoer_ident }.map {
-            HendelseDTO(
-                sekvensnummer = it.sekvensnummer,
-                aktoerId = AktoerIdDTO(
-                    aktoerId = it.aktoer_ident,
-                    identtype = finnIdenttype(it),
-                ),
-            )
-        }.sortedBy { it.sekvensnummer }
-        LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
+        val hendelseDTOer = hendelser
+            .sortedByDescending { it.sekvensnummer }
+            .distinctBy { it.aktoer_ident }
+            .map {
+                HendelseDTO(
+                    sekvensnummer = it.sekvensnummer,
+                    aktoerId = AktoerIdDTO(
+                        aktoerId = it.aktoer_ident,
+                        identtype = finnIdenttype(it),
+                    ),
+                )
+            }.sortedBy { it.sekvensnummer }
+        if (hendelseDTOer.isNotEmpty()) {
+            LOGGER.info { "HENDELSE: Hendelser fra sekvensnummer ${hendelseDTOer.first().sekvensnummer} til ${hendelseDTOer.last().sekvensnummer} utlevert." }
+        } else {
+            LOGGER.info { "HENDELSE: Ingen nye hendelser fra sekvensnummer $sekvensunummer." }
+        }
         return hendelseDTOer
     }
 

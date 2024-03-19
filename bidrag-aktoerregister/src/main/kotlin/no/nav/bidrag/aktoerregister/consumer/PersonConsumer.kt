@@ -33,7 +33,9 @@ class PersonConsumer(
             SECURE_LOGGER.info("Hentet person med id: ${personIdent.verdi} fra bidrag-person: $response")
             return response
         } catch (e: Exception) {
-            SECURE_LOGGER.error("Noe gikk galt i kallet mot bidrag-sak for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}")
+            SECURE_LOGGER.error(
+                "Noe gikk galt i kallet mot bidrag-person for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}",
+            )
             throw e
         }
     }

@@ -1,11 +1,11 @@
-package no.nav.bidrag.reskontro.controller
+package no.nav.bidrag.reskontrolegacy.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import no.nav.bidrag.reskontro.service.ReskontroService
+import no.nav.bidrag.reskontrolegacy.service.ReskontroLegacyService
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Protected
-class ReskontroController(val reskontroService: ReskontroService) {
+class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyService) {
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
         description = "Henter saksinformasjon om bidragssaken",
@@ -37,7 +37,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): BidragssakDto {
-        return reskontroService.hentInnkrevingssakPåSak(saksnummerRequest)
+        return reskontroLegacyService.hentInnkrevingssakPåSak(saksnummerRequest)
     }
 
     @PostMapping("/innkrevningssak/person")
@@ -54,7 +54,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): BidragssakMedSkyldnerDto {
-        return reskontroService.hentInnkrevingssakPåPerson(personRequest)
+        return reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest)
     }
 
     @PostMapping("/transaksjoner/bidragssak")
@@ -71,7 +71,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
-        return reskontroService.hentTransaksjonerPåBidragssak(saksnummerRequest)
+        return reskontroLegacyService.hentTransaksjonerPåBidragssak(saksnummerRequest)
     }
 
     @PostMapping("/transaksjoner/person")
@@ -88,7 +88,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): TransaksjonerDto {
-        return reskontroService.hentTransaksjonerPåPerson(personRequest)
+        return reskontroLegacyService.hentTransaksjonerPåPerson(personRequest)
     }
 
     @GetMapping("/transaksjoner/transaksjonsid")
@@ -105,7 +105,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): TransaksjonerDto {
-        return reskontroService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
+        return reskontroLegacyService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
     }
 
     @PostMapping("/innkrevingsinformasjon")
@@ -122,7 +122,7 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
-        return reskontroService.hentInformasjonOmInnkrevingssaken(personRequest)
+        return reskontroLegacyService.hentInformasjonOmInnkrevingssaken(personRequest)
     }
 
     @PatchMapping("/endreRmForSak")
@@ -138,6 +138,6 @@ class ReskontroController(val reskontroService: ReskontroService) {
         ],
     )
     fun endreRmForSak(@RequestBody endreRmForSak: EndreRmForSakRequest) {
-        reskontroService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
+        reskontroLegacyService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
     }
 }
