@@ -35,7 +35,7 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohPrSakPrBarn")
 
-        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.get(0)
+        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
             ?: error("Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn")
         return BidragssakDto(
             saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
@@ -71,9 +71,9 @@ class ReskontroLegacyService(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
-        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.get(0)
+        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
             ?: error("Fant ingen bidragssak på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
-        val skyldner = respons.utParameter?.colCpersOrg?.cpersOrg?.get(0)
+        val skyldner = respons.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
             ?: error("Fant ingen skyldner på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
         return BidragssakMedSkyldnerDto(
             skyldner = SkyldnerDto(
@@ -134,13 +134,13 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohInnkrevInfo")
 
-        val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.get(0)
+        val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
             ?: error("Fant ingen skyldner på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
 
-        val gjeldendeBetalingsordning = respons.utParameter?.colCgjeldBetOrdn?.cgjeldBetOrdn?.get(0)
+        val gjeldendeBetalingsordning = respons.utParameter?.colCgjeldBetOrdn?.cgjeldBetOrdn?.getOrNull(0)
             ?: error("Fant ingen gjeldendeBetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
 
-        val nyUtbetalingsordning = respons.utParameter?.colCnyBetOrdn?.cnyBetOrdn?.get(0)
+        val nyUtbetalingsordning = respons.utParameter?.colCnyBetOrdn?.cnyBetOrdn?.getOrNull(0)
             ?: error("Fant ingen nyUtbetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
 
         return InnkrevingssaksinformasjonDto(
