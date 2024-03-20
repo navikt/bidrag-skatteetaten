@@ -6,6 +6,7 @@ import no.nav.bidrag.reskontrolegacy.generated.RohInnkrevInfoResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohPrPersPrSakPrBarn
 import no.nav.bidrag.reskontrolegacy.generated.RohPrPersPrSakPrBarnResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohPrSakPrBarn
+import no.nav.bidrag.reskontrolegacy.generated.RohPrSakPrBarnResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohRMEndreFNR
 import no.nav.bidrag.reskontrolegacy.generated.RohRMEndreFNRResponse
 import no.nav.bidrag.reskontrolegacy.generated.RohTransPrPersPrOrg
@@ -27,12 +28,12 @@ class ReskWsClient : WebServiceGatewaySupport() {
             naksjonsKode = 1
             nBidragsSaksnr = saksnummer
         }
-        val rohTransPrSakResponse = webServiceTemplate.marshalSendAndReceive(
+        val rohPrSakPrBarnResponse = webServiceTemplate.marshalSendAndReceive(
             request,
             SoapActionCallback("http://www.spn.no/rtv/webservices/BisysReskWS/rohPrSakPrBarn"),
-        ) as RohTransPrSakResponse
+        ) as RohPrSakPrBarnResponse
 
-        return rohTransPrSakResponse.rohTransPrSakResult
+        return rohPrSakPrBarnResponse.rohPrSakPrBarnResult
     }
 
     fun rohPrPersPrSakPrBarn(fødselsnummer: String): CResknObjectHolder {
