@@ -14,6 +14,7 @@ import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSk
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import no.nav.security.token.support.core.api.Protected
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,8 +37,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): BidragssakDto? {
-        return reskontroLegacyService.hentInnkrevingssakPåSak(saksnummerRequest)
+    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> {
+        val innkrevingssakPåSak = reskontroLegacyService.hentInnkrevingssakPåSak(saksnummerRequest)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(innkrevingssakPåSak)
     }
 
     @PostMapping("/innkrevningssak/person")
@@ -53,8 +56,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
-        return reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest)
+    fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
+        val innkrevingssakPåPerson = reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(innkrevingssakPåPerson)
     }
 
     @PostMapping("/transaksjoner/bidragssak")
@@ -70,8 +75,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
-        return reskontroLegacyService.hentTransaksjonerPåBidragssak(saksnummerRequest)
+    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> {
+        val transaksjonerPåBidragssak = reskontroLegacyService.hentTransaksjonerPåBidragssak(saksnummerRequest)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(transaksjonerPåBidragssak)
     }
 
     @PostMapping("/transaksjoner/person")
@@ -87,8 +94,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): TransaksjonerDto? {
-        return reskontroLegacyService.hentTransaksjonerPåPerson(personRequest)
+    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> {
+        val transaksjonerPåPerson = reskontroLegacyService.hentTransaksjonerPåPerson(personRequest)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(transaksjonerPåPerson)
     }
 
     @GetMapping("/transaksjoner/transaksjonsid")
@@ -104,8 +113,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): TransaksjonerDto? {
-        return reskontroLegacyService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
+    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
+        val transaksjonerPåTransaksjonsid = reskontroLegacyService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(transaksjonerPåTransaksjonsid)
     }
 
     @PostMapping("/innkrevingsinformasjon")
@@ -121,8 +132,10 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
-        return reskontroLegacyService.hentInformasjonOmInnkrevingssaken(personRequest)
+    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> {
+        val informasjonOmInnkrevingssaken = reskontroLegacyService.hentInformasjonOmInnkrevingssaken(personRequest)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(informasjonOmInnkrevingssaken)
     }
 
     @PatchMapping("/endreRmForSak")

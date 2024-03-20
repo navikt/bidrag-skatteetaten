@@ -5,6 +5,7 @@ import no.nav.bidrag.domene.ident.Organisasjonsnummer
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.domene.tid.Datoperiode
+import no.nav.bidrag.reskontrolegacy.SECURE_LOGGER
 import no.nav.bidrag.reskontrolegacy.generated.CResknObjectHolder
 import no.nav.bidrag.reskontrolegacy.generated.Cretur
 import no.nav.bidrag.reskontrolegacy.reskws.ReskWsClient
@@ -36,7 +37,12 @@ class ReskontroLegacyService(
         validerRespons(respons, "rohPrSakPrBarn")
 
         val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
-            ?: error("Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn")
+
+        if (bidragSak == null) {
+            SECURE_LOGGER.info("Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn")
+            return null
+        }
+
         return BidragssakDto(
             saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
             bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
@@ -72,32 +78,35 @@ class ReskontroLegacyService(
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
         val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
-            ?: error("Fant ingen bidragssak på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
-        val skyldner = respons.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
-            ?: error("Fant ingen skyldner på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
+        val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
+
         return BidragssakMedSkyldnerDto(
-            skyldner = SkyldnerDto(
-                personident = Personident(skyldner.sfnr),
-                innbetaltBeløpUfordelt = skyldner.dinnbetBelopUford,
-                gjeldIlagtGebyr = skyldner.dgjeldGebyrIlagtTI,
-            ),
-            bidragssak = BidragssakDto(
-                saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
-                bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
-                bpGjeldFastsettelsesgebyr = bidragSak.dbpGjeldFastGebyr,
-                bmGjeldRest = bidragSak.dbmGjeldRest,
-                barn = bidragSak.colCbarnISak.cbarnISak.map {
-                    SaksinformasjonBarnDto(
-                        personident = Personident(it.sFnr),
-                        restGjeldOffentlig = it.dbpBelGjeldOff,
-                        restGjeldPrivat = it.dbpBelGjeldPrivTot,
-                        sumForskuddUtbetalt = it.dforskUtbetTot,
-                        restGjeldPrivatAndel = it.dbpBelGjeldPrivAndel,
-                        sumInnbetaltAndel = it.dbidUtbetAndel,
-                        sumForskuddUtbetaltAndel = it.dforskUtbetAndel,
-                    )
-                },
-            ),
+            skyldner = skyldner?.let {
+                SkyldnerDto(
+                    personident = Personident(skyldner.sfnr),
+                    innbetaltBeløpUfordelt = skyldner.dinnbetBelopUford,
+                    gjeldIlagtGebyr = skyldner.dgjeldGebyrIlagtTI,
+                )
+            },
+            bidragssak = bidragSak?.let {
+                BidragssakDto(
+                    saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
+                    bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
+                    bpGjeldFastsettelsesgebyr = bidragSak.dbpGjeldFastGebyr,
+                    bmGjeldRest = bidragSak.dbmGjeldRest,
+                    barn = bidragSak.colCbarnISak.cbarnISak.map {
+                        SaksinformasjonBarnDto(
+                            personident = Personident(it.sFnr),
+                            restGjeldOffentlig = it.dbpBelGjeldOff,
+                            restGjeldPrivat = it.dbpBelGjeldPrivTot,
+                            sumForskuddUtbetalt = it.dforskUtbetTot,
+                            restGjeldPrivatAndel = it.dbpBelGjeldPrivAndel,
+                            sumInnbetaltAndel = it.dbidUtbetAndel,
+                            sumForskuddUtbetaltAndel = it.dforskUtbetAndel,
+                        )
+                    },
+                )
+            },
         )
     }
 
@@ -135,53 +144,54 @@ class ReskontroLegacyService(
         validerRespons(respons, "rohInnkrevInfo")
 
         val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
-            ?: error("Fant ingen skyldner på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
-
-        val gjeldendeBetalingsordning = respons.utParameter?.colCgjeldBetOrdn?.cgjeldBetOrdn?.getOrNull(0)
-            ?: error("Fant ingen gjeldendeBetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
-
-        val nyUtbetalingsordning = respons.utParameter?.colCnyBetOrdn?.cnyBetOrdn?.getOrNull(0)
-            ?: error("Fant ingen nyUtbetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
+        val gjeldendeBetalingsordning = respons?.utParameter?.colCgjeldBetOrdn?.cgjeldBetOrdn?.getOrNull(0)
+        val nyUtbetalingsordning = respons?.utParameter?.colCnyBetOrdn?.cnyBetOrdn?.getOrNull(0)
 
         return InnkrevingssaksinformasjonDto(
-            skyldnerinformasjon = SkyldnerinformasjonDto(
-                personident = Personident(skyldner.sfnr),
-                sumLøpendeBidrag = skyldner.dtotLopBidrag,
-                innkrevingssaksstatus = skyldner.statusInnkrevBeskr,
-                fakturamåte = skyldner.fakturaMaateBeskr,
-                sisteAktivitet = skyldner.sisteAktivitetBeskr,
-            ),
-            gjeldendeBetalingsordning = GjeldendeBetalingsordningDto(
-                typeBehandlingsordning = gjeldendeBetalingsordning.stypeBetOrdBesk,
-                kilde = Organisasjonsnummer(gjeldendeBetalingsordning.sbetKildeFOnr),
-                kildeNavn = gjeldendeBetalingsordning.sbetKildeNavn,
-                datoSisteGiro = LocalDateTime.ofInstant(
-                    gjeldendeBetalingsordning.dtDatoSisteGiro.toGregorianCalendar().toInstant(),
-                    gjeldendeBetalingsordning.dtDatoSisteGiro.toGregorianCalendar().getTimeZone().toZoneId(),
-                ),
-                nesteForfall = LocalDateTime.ofInstant(
-                    gjeldendeBetalingsordning.dtDatoNesteForfall.toGregorianCalendar().toInstant(),
-                    gjeldendeBetalingsordning.dtDatoNesteForfall.toGregorianCalendar().getTimeZone().toZoneId(),
-                ),
-                beløp = gjeldendeBetalingsordning.dBelop,
-                sistEndret = LocalDateTime.ofInstant(
-                    gjeldendeBetalingsordning.dtDatoSistEndret.toGregorianCalendar().toInstant(),
-                    gjeldendeBetalingsordning.dtDatoSistEndret.toGregorianCalendar().getTimeZone().toZoneId(),
-                ),
-                sistEndretÅrsak = gjeldendeBetalingsordning.sAarsakSistEndret,
-                sumUbetalt = gjeldendeBetalingsordning.dSumUbetOrdning,
-            ),
-            nyBetalingsordning = NyBetalingsordningDto(
-                dato = Datoperiode(
-                    LocalDateTime.ofInstant(
-                        nyUtbetalingsordning.dtDatoFOM.toGregorianCalendar().toInstant(),
-                        nyUtbetalingsordning.dtDatoFOM.toGregorianCalendar().getTimeZone().toZoneId(),
-                    ).toLocalDate(),
-                    null,
-                ),
-                beløp = nyUtbetalingsordning.dBelop,
-            ),
-            innkrevingssakshistorikk = respons.utParameter.colCinnkrevAktivHist.cinnkrevAktivHist.map {
+            skyldnerinformasjon = skyldner?.let {
+                SkyldnerinformasjonDto(
+                    personident = Personident(skyldner.sfnr),
+                    sumLøpendeBidrag = skyldner.dtotLopBidrag,
+                    innkrevingssaksstatus = skyldner.statusInnkrevBeskr,
+                    fakturamåte = skyldner.fakturaMaateBeskr,
+                    sisteAktivitet = skyldner.sisteAktivitetBeskr,
+                )
+            },
+            gjeldendeBetalingsordning = gjeldendeBetalingsordning?.let {
+                GjeldendeBetalingsordningDto(
+                    typeBehandlingsordning = gjeldendeBetalingsordning.stypeBetOrdBesk,
+                    kilde = Organisasjonsnummer(gjeldendeBetalingsordning.sbetKildeFOnr),
+                    kildeNavn = gjeldendeBetalingsordning.sbetKildeNavn,
+                    datoSisteGiro = LocalDateTime.ofInstant(
+                        gjeldendeBetalingsordning.dtDatoSisteGiro.toGregorianCalendar().toInstant(),
+                        gjeldendeBetalingsordning.dtDatoSisteGiro.toGregorianCalendar().getTimeZone().toZoneId(),
+                    ),
+                    nesteForfall = LocalDateTime.ofInstant(
+                        gjeldendeBetalingsordning.dtDatoNesteForfall.toGregorianCalendar().toInstant(),
+                        gjeldendeBetalingsordning.dtDatoNesteForfall.toGregorianCalendar().getTimeZone().toZoneId(),
+                    ),
+                    beløp = gjeldendeBetalingsordning.dBelop,
+                    sistEndret = LocalDateTime.ofInstant(
+                        gjeldendeBetalingsordning.dtDatoSistEndret.toGregorianCalendar().toInstant(),
+                        gjeldendeBetalingsordning.dtDatoSistEndret.toGregorianCalendar().getTimeZone().toZoneId(),
+                    ),
+                    sistEndretÅrsak = gjeldendeBetalingsordning.sAarsakSistEndret,
+                    sumUbetalt = gjeldendeBetalingsordning.dSumUbetOrdning,
+                )
+            },
+            nyBetalingsordning = nyUtbetalingsordning?.let {
+                NyBetalingsordningDto(
+                    dato = Datoperiode(
+                        LocalDateTime.ofInstant(
+                            nyUtbetalingsordning.dtDatoFOM.toGregorianCalendar().toInstant(),
+                            nyUtbetalingsordning.dtDatoFOM.toGregorianCalendar().getTimeZone().toZoneId(),
+                        ).toLocalDate(),
+                        null,
+                    ),
+                    beløp = nyUtbetalingsordning.dBelop,
+                )
+            },
+            innkrevingssakshistorikk = respons?.utParameter?.colCinnkrevAktivHist?.cinnkrevAktivHist?.map {
                 InnkrevingssakshistorikkDto(
                     beskrivelse = it.shendBeskr,
                     ident = Ident(it.sfOnr),
@@ -210,9 +220,14 @@ class ReskontroLegacyService(
         søkeparameter: String,
         metodenavn: String,
         elinKallNavn: String,
-    ): TransaksjonerDto {
-        val transaksjoner =
-            respons?.utParameter?.colCtransaksjon?.ctransaksjon ?: error("Fant ingen transaksjoner på $metodenavn: $søkeparameter for $elinKallNavn")
+    ): TransaksjonerDto? {
+        val transaksjoner = respons?.utParameter?.colCtransaksjon?.ctransaksjon
+
+        if (transaksjoner.isNullOrEmpty()) {
+            SECURE_LOGGER.info("Fant ingen transaksjoner på $metodenavn: $søkeparameter for $elinKallNavn")
+            return null
+        }
+
         return TransaksjonerDto(
             transaksjoner = transaksjoner.map {
                 TransaksjonDto(
@@ -230,8 +245,7 @@ class ReskontroLegacyService(
                     beløpIOpprinneligValuta = it.dvalutaOpprBelop,
                     valutakode = it.svalutaKode,
                     saksnummer = Saksnummer(it.nbidragSaksnr.toString()),
-                    periode =
-                    Datoperiode(
+                    periode = Datoperiode(
                         LocalDateTime.ofInstant(
                             it.dtbidPerDatoFom.toGregorianCalendar().toInstant(),
                             it.dtbidPerDatoFom.toGregorianCalendar().getTimeZone().toZoneId(),
@@ -239,8 +253,7 @@ class ReskontroLegacyService(
                         LocalDateTime.ofInstant(
                             it.dtbidPerDatoTom.toGregorianCalendar().toInstant(),
                             it.dtbidPerDatoTom.toGregorianCalendar().getTimeZone().toZoneId(),
-                        ).toLocalDate()
-                            .plusDays(1),
+                        ).toLocalDate().plusDays(1),
                     ),
                     barn = Personident(it.sbarnFnr),
                     delytelsesid = it.sbidragId,
