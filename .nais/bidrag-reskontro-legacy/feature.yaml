@@ -2,7 +2,7 @@ name: bidrag-reskontro-legacy-feature
 ingresses:
   - https://bidrag-reskontro-legacy-feature.intern.dev.nav.no
 env:
-  ELIN_URL: https://elinweb.preprod.local/BisysReskWS/BisysReskWS.asmx
+  ELIN_URL: http://elinweb.preprod.local/BisysReskWS/BisysReskWS.asmx
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
   inbound:
