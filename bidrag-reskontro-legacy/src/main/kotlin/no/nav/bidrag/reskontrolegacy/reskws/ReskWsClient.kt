@@ -23,7 +23,7 @@ import javax.xml.datatype.DatatypeFactory
 
 class ReskWsClient : WebServiceGatewaySupport() {
 
-    fun rohPrSakPrBarn(saksnummer: Int): CResknObjectHolder {
+    fun rohPrSakPrBarn(saksnummer: Int): CResknObjectHolder? {
         val request = RohPrSakPrBarn().apply {
             naksjonsKode = 1
             nBidragsSaksnr = saksnummer
@@ -36,7 +36,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohPrSakPrBarnResponse.rohPrSakPrBarnResult
     }
 
-    fun rohPrPersPrSakPrBarn(fødselsnummer: String): CResknObjectHolder {
+    fun rohPrPersPrSakPrBarn(fødselsnummer: String): CResknObjectHolder? {
         val request = RohPrPersPrSakPrBarn().apply {
             naksjonsKode = 2
             sfnrorgnr = fødselsnummer
@@ -48,7 +48,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohPrPersPrSakPrBarnResponse.rohPrPersPrSakPrBarnResult
     }
 
-    fun rohTransPrSak(saksnummer: Int): CResknObjectHolder {
+    fun rohTransPrSak(saksnummer: Int): CResknObjectHolder? {
         val request = RohTransPrSak().apply {
             naksjonsKode = 3
             nBidragsSaksnr = saksnummer
@@ -63,7 +63,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohTransPrSakResponse.rohTransPrSakResult
     }
 
-    fun rohTransPrPersPrOrg(fødselsnummer: String): CResknObjectHolder {
+    fun rohTransPrPersPrOrg(fødselsnummer: String): CResknObjectHolder? {
         val request = RohTransPrPersPrOrg().apply {
             naksjonsKode = 4
             sfnrorgnr = fødselsnummer
@@ -78,7 +78,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohTransPrPersPrOrgResponse.rohTransPrPersPrOrgResult
     }
 
-    fun rohTransPrTransID(transaksjonsid: String): CResknObjectHolder {
+    fun rohTransPrTransID(transaksjonsid: String): CResknObjectHolder? {
         val request = RohTransPrTransID().apply {
             naksjonsKode = 5
             sTransID = transaksjonsid
@@ -92,7 +92,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohTransPrTransIDResponse.rohTransPrTransIDResult
     }
 
-    fun rohInnkrevInfo(fødselsnummer: String): CResknObjectHolder {
+    fun rohInnkrevInfo(fødselsnummer: String): CResknObjectHolder? {
         val request = RohInnkrevInfo().apply {
             naksjonsKode = 6
             sfnrorgnr = fødselsnummer
@@ -104,7 +104,7 @@ class ReskWsClient : WebServiceGatewaySupport() {
         return rohInnkrevInfoResponse.rohInnkrevInfoResult
     }
 
-    fun rohRMEndreFNR(saksnummer: Int, fødselsnummerBarn: String, fødselsnummerNyRm: String): CResknObjectHolder {
+    fun rohRMEndreFNR(saksnummer: Int, fødselsnummerBarn: String, fødselsnummerNyRm: String): CResknObjectHolder? {
         val now = LocalDate.now()
         val request = RohRMEndreFNR().apply {
             naksjonsKode = 8

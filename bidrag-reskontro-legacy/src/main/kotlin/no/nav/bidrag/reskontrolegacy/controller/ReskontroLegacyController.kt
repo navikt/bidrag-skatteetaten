@@ -36,7 +36,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): BidragssakDto {
+    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): BidragssakDto? {
         return reskontroLegacyService.hentInnkrevingssakPåSak(saksnummerRequest)
     }
 
@@ -53,7 +53,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): BidragssakMedSkyldnerDto {
+    fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
         return reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest)
     }
 
@@ -70,7 +70,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
         return reskontroLegacyService.hentTransaksjonerPåBidragssak(saksnummerRequest)
     }
 
@@ -87,7 +87,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): TransaksjonerDto? {
         return reskontroLegacyService.hentTransaksjonerPåPerson(personRequest)
     }
 
@@ -104,7 +104,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): TransaksjonerDto {
+    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): TransaksjonerDto? {
         return reskontroLegacyService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
     }
 
@@ -121,7 +121,7 @@ class ReskontroLegacyController(val reskontroLegacyService: ReskontroLegacyServi
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
+    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
         return reskontroLegacyService.hentInformasjonOmInnkrevingssaken(personRequest)
     }
 

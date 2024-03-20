@@ -29,13 +29,14 @@ class ReskontroLegacyService(
     private val reskWSSoapProxy: ReskWsClient,
 ) {
 
-    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto {
+    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? {
         val respons = reskWSSoapProxy.rohPrSakPrBarn(
             saksnummerRequest.saksnummer.verdi.toInt(),
         )
         validerRespons(respons, "rohPrSakPrBarn")
 
-        val bidragSak = respons.utParameter.colCbidragSak.cbidragSak[0]
+        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.get(0)
+            ?: error("Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn")
         return BidragssakDto(
             saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
             bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
@@ -65,13 +66,15 @@ class ReskontroLegacyService(
         )
     }
 
-    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto {
+    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
         val respons = reskWSSoapProxy.rohPrPersPrSakPrBarn(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
-        val bidragSak = respons.utParameter.colCbidragSak.cbidragSak[0]
-        val skyldner = respons.utParameter.colCpersOrg.cpersOrg[0]
+        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.get(0)
+            ?: error("Fant ingen bidragssak på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
+        val skyldner = respons.utParameter?.colCpersOrg?.cpersOrg?.get(0)
+            ?: error("Fant ingen skyldner på hentInnkrevingssakPåPerson: ${personRequest.ident.verdi} for rohPrPersPrSakPrBarn")
         return BidragssakMedSkyldnerDto(
             skyldner = SkyldnerDto(
                 personident = Personident(skyldner.sfnr),
@@ -98,42 +101,48 @@ class ReskontroLegacyService(
         )
     }
 
-    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
         val respons = reskWSSoapProxy.rohTransPrSak(
             saksnummerRequest.saksnummer.verdi.toInt(),
         )
         validerRespons(respons, "rohTransPrSak")
 
-        return opprettTransaksjonerRespons(respons)
+        return opprettTransaksjonerRespons(respons, saksnummerRequest.saksnummer.verdi, "hentTransaksjonerPåBidragssak", "rohTransPrSak")
     }
 
-    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto? {
         val respons = reskWSSoapProxy.rohTransPrPersPrOrg(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohTransPrPersPrOrg")
 
-        return opprettTransaksjonerRespons(respons)
+        return opprettTransaksjonerRespons(respons, personRequest.ident.verdi, "hentTransaksjonerPåPerson", "rohTransPrPersPrOrg")
     }
 
-    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto {
+    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto? {
         val respons = reskWSSoapProxy.rohTransPrTransID(
             transaksjonsid.toString(),
         )
         validerRespons(respons, "rohTransPrTransID")
 
-        return opprettTransaksjonerRespons(respons)
+        return opprettTransaksjonerRespons(respons, transaksjonsid.toString(), "hentTransaksjonerPåTransaksjonsid", "rohTransPrTransID")
     }
 
-    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
+    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
         val respons = reskWSSoapProxy.rohInnkrevInfo(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohInnkrevInfo")
 
-        val skyldner = respons.utParameter.colCpersOrg.cpersOrg[0]
-        val gjeldendeBetalingsordning = respons.utParameter.colCgjeldBetOrdn.cgjeldBetOrdn[0]
-        val nyUtbetalingsordning = respons.utParameter.colCnyBetOrdn.cnyBetOrdn[0]
+        val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.get(0)
+            ?: error("Fant ingen skyldner på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
+
+        val gjeldendeBetalingsordning = respons.utParameter?.colCgjeldBetOrdn?.cgjeldBetOrdn?.get(0)
+            ?: error("Fant ingen gjeldendeBetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
+
+        val nyUtbetalingsordning = respons.utParameter?.colCnyBetOrdn?.cnyBetOrdn?.get(0)
+            ?: error("Fant ingen nyUtbetalingsordning på hentInformasjonOmInnkrevingssaken: ${personRequest.ident.verdi} for rohInnkrevInfo")
+
         return InnkrevingssaksinformasjonDto(
             skyldnerinformasjon = SkyldnerinformasjonDto(
                 personident = Personident(skyldner.sfnr),
@@ -196,9 +205,16 @@ class ReskontroLegacyService(
         validerEndreRmRespons(respons, saksnummer)
     }
 
-    private fun opprettTransaksjonerRespons(respons: CResknObjectHolder): TransaksjonerDto {
+    private fun opprettTransaksjonerRespons(
+        respons: CResknObjectHolder?,
+        søkeparameter: String,
+        metodenavn: String,
+        elinKallNavn: String,
+    ): TransaksjonerDto {
+        val transaksjoner =
+            respons?.utParameter?.colCtransaksjon?.ctransaksjon ?: error("Fant ingen transaksjoner på $metodenavn: $søkeparameter for $elinKallNavn")
         return TransaksjonerDto(
-            transaksjoner = respons.utParameter.colCtransaksjon.ctransaksjon.map {
+            transaksjoner = transaksjoner.map {
                 TransaksjonDto(
                     transaksjonsid = it.stransID.toLong(),
                     transaksjonskode = it.stransKode,
