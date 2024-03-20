@@ -29,7 +29,8 @@ import java.time.LocalDateTime
 
 @Service
 class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsumer) {
-    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto {
+
+    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? {
         val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
         val innkrevingssak = validerOutput(innkrevingssakResponse)
 
@@ -57,7 +58,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         )
     }
 
-    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto {
+    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
         val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåPerson(personRequest.ident)
         val innkrevingssak = validerOutput(innkrevingssakResponse)
 
@@ -90,26 +91,26 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         )
     }
 
-    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
         val transaksjonerResponse =
             skattReskontroConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest.saksnummer.verdi.toLong())
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto {
+    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto? {
         val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåPerson(personRequest.ident)
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto {
+    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto? {
         val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
         val transaksjoner = validerOutput(transaksjonerResponse)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
-    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto {
+    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
         val innkrevingsinformasjonResponse = skattReskontroConsumer.hentInformasjonOmInnkrevingssaken(personRequest.ident)
         val innkrevingsinformasjon = validerOutput(innkrevingsinformasjonResponse)
         return InnkrevingssaksinformasjonDto(
