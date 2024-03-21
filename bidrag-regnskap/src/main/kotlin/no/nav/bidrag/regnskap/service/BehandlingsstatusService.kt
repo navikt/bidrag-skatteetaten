@@ -25,17 +25,35 @@ class BehandlingsstatusService(
         konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: HashMap<String, MutableSet<Kontering>>,
     ): HashMap<String, String> {
         val feilmeldinger = hashMapOf<String, String>()
-        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.forEach { (key, value) ->
+        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.forEach { (batchUid, konteringer) ->
             try {
-                val behandlingsstatusResponse = hentBehandlingsstatus(key)
+                val behandlingsstatusResponse = hentBehandlingsstatus(batchUid)
                 val now = LocalDateTime.now()
                 if (behandlingsstatusResponse.batchStatus == Batchstatus.Done) {
-                    value.forEach { it.behandlingsstatusOkTidspunkt = now }
+                    konteringer.forEach {
+                        it.behandlingsstatusOkTidspunkt = now
+                    }
+
+                    // Om alle konteringer knyttet til alle oppdragsperiodene i oppdraget er oversendt ok
+                    // så kan vi garantere at det ikke finnes feilede konteringer
+                    konteringer.firstOrNull()?.let { kontering ->
+                        if (kontering.oppdragsperiode!!.oppdrag!!.oppdragsperioder.flatMap { it.konteringer }
+                                .none { it.behandlingsstatusOkTidspunkt == null }
+                        ) {
+                            kontering.oppdragsperiode.oppdrag!!.harFeiledeKonteringer = false
+                        }
+                    }
                 } else {
-                    feilmeldinger[key] = "Behandling av konteringer for batchuid $key har feilet: $behandlingsstatusResponse\n"
+                    feilmeldinger[batchUid] = "Behandling av konteringer for batchuid $batchUid har feilet: $behandlingsstatusResponse\n"
+                    konteringer.firstOrNull()?.let {
+                        it.oppdragsperiode!!.oppdrag!!.harFeiledeKonteringer = true
+                    }
                 }
             } catch (e: Exception) {
-                feilmeldinger[key] = "Behandling av konteringer for batchuid $key har feilet og kastet exception!: ${e.message}\n"
+                feilmeldinger[batchUid] = "Behandling av konteringer for batchuid $batchUid har feilet og kastet exception!: ${e.message}\n"
+                konteringer.firstOrNull()?.let {
+                    it.oppdragsperiode!!.oppdrag!!.harFeiledeKonteringer = true
+                }
             }
         }
         return feilmeldinger

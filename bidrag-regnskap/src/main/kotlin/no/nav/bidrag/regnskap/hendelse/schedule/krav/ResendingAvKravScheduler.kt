@@ -39,6 +39,7 @@ class ResendingAvKravScheduler(
 
         konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.forEach {
             it.overføringstidspunkt = null
+            it.oppdragsperiode?.oppdrag?.harFeiledeKonteringer = false
         }
 
         persistenceService.konteringRepository.saveAll(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)

@@ -46,7 +46,7 @@ class SendKravScheduler(
         val oppdragMedIkkeOverførteKonteringer = hentOppdragMedIkkeOverførteKonteringerHvorKonteringIkkeErUtsatt()
 
         if (oppdragMedIkkeOverførteKonteringer.isEmpty()) {
-            LOGGER.info { "Det finnes ingen oppdrag med unsendte konteringer som ikke skal utsettes." }
+            LOGGER.info { "Det finnes ingen oppdrag med unsendte konteringer som ikke skal utsettes eller som har feiledet." }
             return
         }
 
@@ -75,9 +75,12 @@ class SendKravScheduler(
 
     private fun hentOppdragMedIkkeOverførteKonteringerHvorKonteringIkkeErUtsatt(): List<Oppdrag> {
         return persistenceService.hentAlleIkkeOverførteKonteringer()
+            .asSequence()
             .flatMap { listOf(it.oppdragsperiode?.oppdrag) }
             .filterNot { it?.utsattTilDato?.isAfter(LocalDate.now()) == true }
+            .filterNot { it?.harFeiledeKonteringer == true }
             .filterNotNull()
             .distinct()
+            .toList()
     }
 }

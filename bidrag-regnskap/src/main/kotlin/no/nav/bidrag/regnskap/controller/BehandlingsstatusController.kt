@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
+import no.nav.bidrag.regnskap.hendelse.schedule.krav.ResendingAvKravScheduler
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.security.token.support.core.api.Protected
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class BehandlingsstatusController(
     private val skattConsumer: SkattConsumer,
     private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
+    private val resendingAvKravScheduler: ResendingAvKravScheduler,
 ) {
 
     @GetMapping("/behandlingsstatus")
@@ -56,6 +58,25 @@ class BehandlingsstatusController(
     )
     fun startSkedulertSjekkAvBehandlingsstatus(): ResponseEntity<Any> {
         sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/resendKravScheduled")
+    @Operation(
+        summary = "Manuelt starter skedulert kjøring av resending av ikke godkjente krav. Denne kjører hver morgen kl 06.",
+        security = [SecurityRequirement(name = "bearer-key")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Startet skedulert kjøring av sjekk på behandlingsstatus.",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun startSkedulertResendingAvKrav(): ResponseEntity<Any> {
+        resendingAvKravScheduler.skedulertResendingAvKrav()
         return ResponseEntity.ok().build()
     }
 }

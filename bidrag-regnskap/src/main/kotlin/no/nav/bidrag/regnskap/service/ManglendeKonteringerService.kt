@@ -37,10 +37,8 @@ class ManglendeKonteringerService(
 
         // Tar ut utsatte eller feilede oppdragsperioder slik at det ikke opprettes
         val (utsatteEllerFeiledeOppdragsperioder, oppdragsperioderSomSkalBehandles) = oppdragsperioder.partition { oppdragsperiode ->
-            oppdragsperiode.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true ||
-                oppdragsperiode.konteringer.any {
-                    it.overføringstidspunkt != null && it.behandlingsstatusOkTidspunkt == null
-                }
+            erOppdragetUtsatt(oppdragsperiode, påløpKjøredato) ||
+                harOppdragetFeiledeKonteringer(oppdragsperiode)
         }
 
         oppdragsperioderSomSkalBehandles.forEach { oppdragsperiode ->
@@ -126,6 +124,15 @@ class ManglendeKonteringerService(
             }
         }
     }
+
+    private fun harOppdragetFeiledeKonteringer(oppdragsperiode: Oppdragsperiode) = oppdragsperiode.oppdrag?.harFeiledeKonteringer == true
+
+    private fun erKonteringeneOverførtMenIkkeFåttBehandlingsstatusOk(oppdragsperiode: Oppdragsperiode) = oppdragsperiode.konteringer.any {
+        it.overføringstidspunkt != null && it.behandlingsstatusOkTidspunkt == null
+    }
+
+    private fun erOppdragetUtsatt(oppdragsperiode: Oppdragsperiode, påløpKjøredato: LocalDate?) =
+        oppdragsperiode.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true
 
     private fun harIkkePassertAktivTilDato(oppdragsperiode: Oppdragsperiode, periode: YearMonth): Boolean {
         return !erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, LocalDate.of(periode.year, periode.month, 1))

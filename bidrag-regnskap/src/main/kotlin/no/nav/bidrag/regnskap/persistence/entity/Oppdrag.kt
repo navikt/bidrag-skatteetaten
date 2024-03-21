@@ -47,6 +47,9 @@ data class Oppdrag(
     @Version
     var endretTidspunkt: LocalDateTime? = null,
 
+    @Column(name = "har_feilede_konteringer")
+    var harFeiledeKonteringer: Boolean = false,
+
     @OneToMany(mappedBy = "oppdrag", cascade = [CascadeType.ALL])
     @OrderBy("oppdragsperiodeId")
     var oppdragsperioder: List<Oppdragsperiode> = emptyList(),

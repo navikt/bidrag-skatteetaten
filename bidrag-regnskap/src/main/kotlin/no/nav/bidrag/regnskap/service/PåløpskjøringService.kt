@@ -8,6 +8,7 @@ import no.nav.bidrag.domene.enums.regnskap.Årsakskode
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.fil.påløp.PåløpsfilGenerator
+import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
 import no.nav.bidrag.regnskap.persistence.entity.Driftsavvik
 import no.nav.bidrag.regnskap.persistence.entity.Påløp
@@ -35,6 +36,7 @@ class PåløpskjøringService(
     private val filoverføringTilElinKlient: FiloverføringTilElinKlient,
     private val skattConsumer: SkattConsumer,
     private val meterRegistry: MeterRegistry,
+    private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
     @Autowired(required = false) private val lyttere: List<PåløpskjøringLytter> = emptyList(),
 ) {
 
@@ -49,6 +51,9 @@ class PåløpskjøringService(
 
         medLyttere { it.påløpStartet(påløp, schedulertKjøring, genererFil) }
         try {
+            // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
+            sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+
             validerDriftsavvik(påløp, schedulertKjøring)
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
             persistenceService.registrerPåløpStartet(påløp.påløpId, LocalDateTime.now())
@@ -63,7 +68,6 @@ class PåløpskjøringService(
                 genererPåløpsfil(påløp)
             }
 
-            settOverføringstidspunktPåKonteringer(påløp)
             opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
             avsluttDriftsavvik(påløp)
             fullførPåløp(påløp)
@@ -151,27 +155,6 @@ class PåløpskjøringService(
         LOGGER.info("Påløpsfil er ferdig skrevet for periode ${påløp.forPeriode} og lastet opp til filsluse.")
     }
 
-    private fun settOverføringstidspunktPåKonteringer(påløp: Påløp) {
-        val timestamp = LocalDateTime.now()
-        var antallBehandlet = 0
-
-        LOGGER.debug("Starter å sette overføringstidspunkt konteringer.")
-        val konteringer = ArrayList(persistenceService.hentAlleIkkeOverførteKonteringer())
-        Lists.partition(konteringer, PARTISJONSSTØRRELSE).forEach { konteringerPartition ->
-            konteringerPartition.forEach {
-                it.overføringstidspunkt = timestamp
-                it.behandlingsstatusOkTidspunkt = timestamp
-            }
-            persistenceService.lagreKonteringer(konteringerPartition)
-            antallBehandlet += konteringerPartition.size
-
-            medLyttere { it.rapporterKonteringerFullført(påløp, antallBehandlet, konteringer.size) }
-        }
-
-        medLyttere { it.konteringerFullførtFerdig(påløp, konteringer.size) }
-        LOGGER.debug("Fullført setting av overføringstidspunkt for konteringer.")
-    }
-
     private fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp) {
         val påløpsfilGenerator = PåløpsfilGenerator(gcpFilBucket, filoverføringTilElinKlient, persistenceService)
         påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, lyttere)
@@ -216,10 +199,6 @@ interface PåløpskjøringLytter {
     fun påløpFullført(påløp: Påløp)
 
     fun påløpFeilet(påløp: Påløp, feilmelding: String)
-
-    fun rapporterKonteringerFullført(påløp: Påløp, antallFullført: Int, totaltAntall: Int)
-
-    fun konteringerFullførtFerdig(påløp: Påløp, totaltAntall: Int)
 
     fun lastOppFilTilGcpBucket(påløp: Påløp, melding: String)
 
