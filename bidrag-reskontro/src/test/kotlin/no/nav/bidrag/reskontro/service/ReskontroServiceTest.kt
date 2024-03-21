@@ -125,7 +125,7 @@ class ReskontroServiceTest {
         val bidragssak =
             reskontroService.hentInnkrevingssakPåSak(
                 saksnummerRequest,
-            )
+            )!!
 
         bidragssak.saksnummer.verdi shouldBe saksnummer.toString()
         bidragssak.bmGjeldRest shouldBe bmGjeldRest

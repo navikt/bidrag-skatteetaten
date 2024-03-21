@@ -1,5 +1,8 @@
 SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no
 SKATT_SCOPE: dev-gcp.bidrag.bidrag-elin-stub
+RESKONTRO_LEGACY_URL: https://bidrag-reskontro-legacy-feature.intern.dev.nav.no
+RESKONTRO_LEGACY_SCOPE: dev-fss.bidrag.reskontro-legacy
+RESKONTRO_LEGACY_ENABLED: true
 
 BIDRAG_PERSON_URL: http://localhost:${wiremock.server.port}/person
 
