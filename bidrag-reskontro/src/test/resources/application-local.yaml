@@ -6,7 +6,7 @@ AZURE_APP_CLIENT_SECRET:
 server.port: 8999
 NAIS_APP_NAME: bidrag-reskontro
 RESKONTRO_LEGACY_URL: https://bidrag-reskontro-legacy-feature.intern.dev.nav.no
-RESKONTRO_LEGACY_SCOPE: dev-fss.bidrag.reskontro-legacy
+RESKONTRO_LEGACY_SCOPE: dev-fss.bidrag.bidrag-reskontro-legacy-feature
 RESKONTRO_LEGACY_ENABLED: true
 
 maskinporten:
@@ -20,13 +20,15 @@ maskinporten:
 no.nav.security.jwt:
   client:
     registration:
-      bidrag-person:
-        token-endpoint-url: http://localhost:${mock-oauth2-server.port:1234}/aad/token
+      bidrag-reskontro-legacy:
+        resource-url: ${RESKONTRO_LEGACY_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${RESKONTRO_LEGACY_SCOPE}/.default
         authentication:
-          client-id: 123
-          client-secret: 123
-          client-auth-method: client_secret_basic
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
   issuer.aad:
-    discovery_url: http://localhost:${mock-oauth2-server.port:0}/aad/.well-known/openid-configuration
+    discovery_url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/v2.0/.well-known/openid-configuration
     accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}

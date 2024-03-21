@@ -2,7 +2,6 @@ package no.nav.bidrag.reskontro.consumer
 
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.reskontro.SECURE_LOGGER
-import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
-import org.springframework.web.client.postForEntity
+import org.springframework.web.client.getForEntity
 import java.net.URI
 
 @Service
@@ -62,10 +61,8 @@ class ReskontroLegacyConsumer(
 
     fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
         SECURE_LOGGER.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid mot reskontro-legacy.")
-        return restTemplate.postForEntity(
-            URI.create("$reskontroLegacyUrl/transaksjoner/transaksjonsid"),
-            transaksjonsid,
-            TransaksjonerDto::class.java,
+        return restTemplate.getForEntity(
+            "$reskontroLegacyUrl/transaksjoner/transaksjonsid?transaksjonsid=$transaksjonsid",
         )
     }
 
@@ -78,13 +75,14 @@ class ReskontroLegacyConsumer(
         )
     }
 
-    fun endreRmForSak(endreRmForSakRequest: EndreRmForSakRequest): ResponseEntity<ReskontroConsumerOutput> {
+    fun endreRmForSak(endreRmForSakRequest: EndreRmForSakRequest) {
         SECURE_LOGGER.info(
-            "Kaller endre RM for sak. NyRM: ${endreRmForSakRequest.nyttFødselsnummer.verdi} i sak ${endreRmForSakRequest.saksnummer.verdi} med barn: ${endreRmForSakRequest.barn.verdi}",
+            "Kaller endre RM for sak. NyRM: ${endreRmForSakRequest.nyttFødselsnummer.verdi} i sak ${endreRmForSakRequest.saksnummer.verdi} med barn: ${endreRmForSakRequest.barn.verdi} mot reskontro-legacy.",
         )
-        return restTemplate.postForEntity(
-            URI.create("$reskontroLegacyUrl/innkrevingsinformasjon"),
+        restTemplate.patchForObject(
+            URI.create("$reskontroLegacyUrl/endreRmForSak"),
             endreRmForSakRequest,
+            Any::class.java,
         )
     }
 }

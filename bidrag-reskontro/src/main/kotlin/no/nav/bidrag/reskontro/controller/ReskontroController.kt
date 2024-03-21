@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 class ReskontroController(
     private val reskontroService: ReskontroService,
     private val reskontroLegacyService: ReskontroLegacyService,
-    @Value("\${RESKONTRO_LEGACY_ENABLED") private val reskontroLegacyEnabled: Boolean,
+    @Value("#{new Boolean('\${RESKONTRO_LEGACY_ENABLED}')}") private val reskontroLegacyEnabled: Boolean,
 ) {
 
     @PostMapping("/innkrevningssak/bidragssak")
