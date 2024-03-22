@@ -9,6 +9,7 @@ env:
   MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav" #TODO()
   RESKONTRO_LEGACY_URL: https://bidrag-reskontro-legacy.intern.nav.no
   RESKONTRO_LEGACY_SCOPE: prod-fss.bidrag.bidrag-reskontro-legacy
+  RESKONTRO_LEGACY_HOST: bidrag-reskontro-legacy.intern.nav.no
   RESKONTRO_LEGACY_ENABLED: true
   JAVA_OPTS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
