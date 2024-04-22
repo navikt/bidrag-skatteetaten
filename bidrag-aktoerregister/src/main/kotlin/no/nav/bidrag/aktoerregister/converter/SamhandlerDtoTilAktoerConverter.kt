@@ -11,7 +11,7 @@ class SamhandlerDtoTilAktoerConverter : Converter<SamhandlerDto, Aktør> {
 
     override fun convert(samhandler: SamhandlerDto): Aktør {
         return Aktør(
-            aktørIdent = samhandler.tssId.verdi,
+            aktørIdent = samhandler.samhandlerId!!.verdi,
             aktørType = Identtype.AKTOERNUMMER.name,
             etternavn = samhandler.navn,
             offentligId = samhandler.offentligId,
