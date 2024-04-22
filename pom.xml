@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.5</version>
         <relativePath/>
     </parent>
 
@@ -20,19 +20,19 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
-        <bidrag-felles.version>2024.03.21.094914</bidrag-felles.version>
+        <bidrag-felles.version>2024.04.22.114352</bidrag-felles.version>
         <jackson.version>2.17.0</jackson.version>
         <kotest.version>5.8.1</kotest.version>
         <ktlint.version>1.2.1</ktlint.version>
         <mockk.version>1.13.10</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>3.2.0</nav-token-support.version>
-        <kotlin-logging-jvm.version>6.0.3</kotlin-logging-jvm.version>
-        <slack-api.version>1.38.3</slack-api.version>
+        <kotlin-logging-jvm.version>6.0.9</kotlin-logging-jvm.version>
+        <slack-api.version>1.39.0</slack-api.version>
         <shedlock.version>5.12.0</shedlock.version>
         <jsch.version>0.2.17</jsch.version>
-        <google-cloud-storage.version>2.36.0</google-cloud-storage.version>
-        <spring-cloud-contract-wiremock.version>4.1.1</spring-cloud-contract-wiremock.version>
+        <google-cloud-storage.version>2.37.0</google-cloud-storage.version>
+        <spring-cloud-contract-wiremock.version>4.1.2</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>2.4.0</springdoc-openapi-ui.version>
         <logback-encoder.version>7.4</logback-encoder.version>
 
