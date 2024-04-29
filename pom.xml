@@ -38,7 +38,7 @@
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
         <maven-avro-plugin.version>1.11.3</maven-avro-plugin.version>
-        <avro-serializer.version>7.6.0</avro-serializer.version>
+        <avro-serializer.version>7.6.1</avro-serializer.version>
     </properties>
 
     <modules>
