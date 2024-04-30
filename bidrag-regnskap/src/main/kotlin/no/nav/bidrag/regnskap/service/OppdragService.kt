@@ -13,6 +13,7 @@ import no.nav.bidrag.regnskap.util.IdentUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 private val LOGGER = LoggerFactory.getLogger(OppdragService::class.java)
@@ -34,7 +35,7 @@ class OppdragService(
 
     fun lagreEllerOppdaterOppdrag(hentetOppdrag: Oppdrag?, hendelse: Hendelse, erEngangsbeløp: Boolean): Int? {
         // Dette er en edge case hvor vedtak som inneholder gebyrfritak, eller andre stønadstyper som kun blir sendt inn med avslag, kommer med beløp null og ikke eksisterer fra før av. Disse skal ikke opprettes.
-        if (hentetOppdrag == null && hendelse.periodeListe.all { it.beløp == null }) {
+        if (hentetOppdrag == null && hendelse.periodeListe.all { it.beløp == null || it.beløp.compareTo(BigDecimal.ZERO) == 0 }) { //
             LOGGER.info("Hendelse for vedtak: ${hendelse.vedtakId} har fått fritak for ${hendelse.type}")
             return null
         }
