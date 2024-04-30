@@ -17,6 +17,7 @@ import no.nav.bidrag.regnskap.utils.TestData
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -49,6 +50,33 @@ class OppdragServiceTest {
             val oppdragId = oppdragService.lagreEllerOppdaterOppdrag(null, hendelse, false)
 
             oppdragId shouldBe 0
+        }
+
+        @Test
+        fun `skal ikke opprette oppdrag om beløp er null`() {
+            val hendelse = TestData.opprettHendelse(periodeListe = listOf(TestData.opprettPeriodeDomene(beløp = null)))
+
+            val oppdragId = oppdragService.lagreEllerOppdaterOppdrag(null, hendelse, false)
+
+            oppdragId shouldBe null
+        }
+
+        @Test
+        fun `skal ikke opprette oppdag om beløp er 0`() {
+            val hendelse = TestData.opprettHendelse(periodeListe = listOf(TestData.opprettPeriodeDomene(beløp = BigDecimal.ZERO)))
+
+            val oppdragId = oppdragService.lagreEllerOppdaterOppdrag(null, hendelse, false)
+
+            oppdragId shouldBe null
+        }
+
+        @Test
+        fun `skal ikke opprette oppdag om beløp er 0,0`() {
+            val hendelse = TestData.opprettHendelse(periodeListe = listOf(TestData.opprettPeriodeDomene(beløp = BigDecimal.valueOf(0.0))))
+
+            val oppdragId = oppdragService.lagreEllerOppdaterOppdrag(null, hendelse, false)
+
+            oppdragId shouldBe null
         }
     }
 
