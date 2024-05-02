@@ -7,6 +7,8 @@ import no.nav.bidrag.aktoerregister.util.ConsumerUtils.leggTilPathPåUri
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.transport.samhandler.SamhandlerDto
+import no.nav.bidrag.transport.samhandler.SamhandlerSøk
+import no.nav.bidrag.transport.samhandler.SamhandlersøkeresultatDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -25,6 +27,7 @@ class SamhandlerConsumer(
 
     companion object {
         private const val SAMHANDLER_PATH = "/samhandler"
+        private const val SAMHANDLER_SØK_PATH = "/samhandlersok"
     }
 
     fun hentSamhandler(aktørIdent: Ident): SamhandlerDto? {
@@ -41,6 +44,22 @@ class SamhandlerConsumer(
         } catch (e: Exception) {
             SECURE_LOGGER.error(
                 "Noe gikk galt i kallet mot bidrag-samhandler for ident: ${aktørIdent.verdi}. Svaret fra bidrag-samhandler var: ${e.message}",
+            )
+            throw e
+        }
+    }
+
+    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto? {
+        try {
+            return postForEntity(leggTilPathPåUri(url, SAMHANDLER_SØK_PATH), samhandlerSøk)
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                throw AktørNotFoundException("Samhandler ikke funnet i bidrag-samhandler")
+            }
+            throw e
+        } catch (e: Exception) {
+            SECURE_LOGGER.error(
+                "Noe gikk galt i søket på samhandler mot bidrag-samhandler for ident: $samhandlerSøk. Svaret fra bidrag-samhandler var: ${e.message}",
             )
             throw e
         }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.dto.AktoerDTO
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
@@ -13,6 +14,8 @@ import no.nav.bidrag.aktoerregister.dto.HendelseDTO
 import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
 import no.nav.bidrag.aktoerregister.service.AktørService
 import no.nav.bidrag.aktoerregister.service.HendelseService
+import no.nav.bidrag.transport.samhandler.SamhandlerSøk
+import no.nav.bidrag.transport.samhandler.SamhandlersøkeresultatDto
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -101,5 +104,14 @@ class AktoerregisterController(
         } catch (e: AktørNotFoundException) {
             ResponseEntity.notFound().build()
         }
+    }
+
+    @PostMapping("/samhandlersok")
+    @Operation(
+        description = "Søker etter samhandlere.",
+        security = [SecurityRequirement(name = "bearer-key")],
+    )
+    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto {
+        return aktørService.samhandlerSøk(samhandlerSøk)
     }
 }
