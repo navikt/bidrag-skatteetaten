@@ -14,6 +14,8 @@ import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.TidligereIdenterRepository
 import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.transport.samhandler.SamhandlerSøk
+import no.nav.bidrag.transport.samhandler.SamhandlersøkeresultatDto
 import org.springframework.core.convert.ConversionService
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
@@ -171,6 +173,10 @@ class AktørService(
     @Transactional
     fun slettAktoer(aktoerIdDTO: AktoerIdDTO) {
         aktørRepository.deleteAktørByAktørIdent(aktoerIdDTO.aktoerId)
+    }
+
+    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto {
+        return samhandlerConsumer.samhandlerSøk(samhandlerSøk) ?: throw AktørNotFoundException("Aktør ikke funnet i bidrag-samhandler under søk.")
     }
 
     private fun finnFelterPåNyAktør(aktør: Aktør): List<String> {
