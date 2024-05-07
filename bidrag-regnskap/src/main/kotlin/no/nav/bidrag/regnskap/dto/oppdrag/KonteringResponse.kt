@@ -75,7 +75,7 @@ data class KonteringResponse(
         description = "Angirtypen behandling som har ført til konteringen.\n" +
             "| Kode | Beskrivelse                                                                |\n" +
             "|------|----------------------------------------------------------------------------|\n" +
-            "| IN   | Sendes første måned i et indeksreguleringsvedtak. Etter dette benyttes EN. |\n" +
+            "| IR   | Sendes første måned i et indeksreguleringsvedtak. Etter dette benyttes EN. |\n" +
             "| FABM | Benyttes for gebyr som gjelder BM.                                         |\n" +
             "| FABP | Benyttes for gebyr som gjelder BP.                                         |\n" +
             "| EN   | Alle andre typer endringer. Også førstegangsvedtak.                        |\n",
