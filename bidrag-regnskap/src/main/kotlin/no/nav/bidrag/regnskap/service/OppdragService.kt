@@ -131,6 +131,7 @@ class OppdragService(
             Stønadstype.OPPFOSTRINGSBIDRAG.name,
             Stønadstype.MOTREGNING.name,
             Engangsbeløptype.SÆRTILSKUDD.name,
+            Engangsbeløptype.SÆRBIDRAG.name,
             "SAERTILSKUDD",
             Engangsbeløptype.ETTERGIVELSE.name,
             Engangsbeløptype.DIREKTE_OPPGJØR.name,
