@@ -76,22 +76,17 @@ class PersistenceService(
         return lagredeOppdrag.map { it.oppdragId }
     }
 
-    fun hentOppdragPåSaksnummerOgKravhaver(saksnummer: Saksnummer, kravhaver: Personident): List<Oppdrag> {
-        return oppdragRepository.findAllBySakIdAndKravhaverIdent(saksnummer.verdi, kravhaver.verdi)
-    }
+    fun hentOppdragPåSaksnummerOgKravhaver(saksnummer: Saksnummer, kravhaver: Personident): List<Oppdrag> =
+        oppdragRepository.findAllBySakIdAndKravhaverIdent(saksnummer.verdi, kravhaver.verdi)
 
-    fun hentAlleMottakereMedIdent(ident: String): List<Oppdrag> {
-        return oppdragRepository.findAllByMottakerIdent(ident)
-    }
+    fun hentAlleMottakereMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByMottakerIdent(ident)
 
     fun hentAlleUtsatteOppdrag(): List<Oppdrag> {
         val now = LocalDate.now()
         return oppdragRepository.findAllByUtsattTilDatoIsNotNullAndUtsattTilDatoIsAfter(now)
     }
 
-    fun hentPåløp(): List<Påløp> {
-        return påløpRepository.findAll()
-    }
+    fun hentPåløp(): List<Påløp> = påløpRepository.findAll()
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun registrerPåløpStartet(påløpId: Int, startetTidspunkt: LocalDateTime = LocalDateTime.now()) {
@@ -123,31 +118,23 @@ class PersistenceService(
         }
     }
 
-    fun hentAlleIkkeOverførteKonteringer(): List<Kontering> {
-        return konteringRepository.findAllByOverføringstidspunktIsNull()
-    }
+    fun hentAlleIkkeOverførteKonteringer(): List<Kontering> = konteringRepository.findAllByOverføringstidspunktIsNull()
 
-    fun hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(periode: String): List<Kontering> {
-        return konteringRepository.findAllByOverføringsperiodeOrOverføringstidspunktIsNull(periode)
-    }
+    fun hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(periode: String): List<Kontering> =
+        konteringRepository.findAllByOverføringsperiodeOrOverføringstidspunktIsNull(periode)
 
-    fun hentAlleKonteringerUtenBehandlingsstatusOk(): List<Kontering> {
-        return konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsNotNull()
-    }
+    fun hentAlleKonteringerUtenBehandlingsstatusOk(): List<Kontering> =
+        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsNotNull()
 
-    fun hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferansekoder: List<String>): List<Kontering> {
-        return konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
+    fun hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferansekoder: List<String>): List<Kontering> =
+        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
             sisteReferansekoder,
         )
-    }
 
-    fun hentAlleKonteringerForDato(dato: LocalDate): List<Kontering> {
-        return konteringRepository.hentAlleKonteringerForDato(dato)
-    }
+    fun hentAlleKonteringerForDato(dato: LocalDate): List<Kontering> = konteringRepository.hentAlleKonteringerForDato(dato)
 
-    fun hentAlleKonteringerForDato(dato: LocalDate, fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime): List<Kontering> {
-        return konteringRepository.hentAlleKonteringerForDato(dato, fomTidspunkt, tomTidspunkt)
-    }
+    fun hentAlleKonteringerForDato(dato: LocalDate, fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime): List<Kontering> =
+        konteringRepository.hentAlleKonteringerForDato(dato, fomTidspunkt, tomTidspunkt)
 
     fun lagreKontering(kontering: Kontering): Int {
         val lagretKontering = konteringRepository.save(kontering)
@@ -173,40 +160,22 @@ class PersistenceService(
     }
 
     @CacheEvict(value = ["driftsaavik_cache"], allEntries = true)
-    fun lagreDriftsavvik(driftsavvik: Driftsavvik): Int {
-        return driftsavvikRepository.save(driftsavvik).driftsavvikId
-    }
+    fun lagreDriftsavvik(driftsavvik: Driftsavvik): Int = driftsavvikRepository.save(driftsavvik).driftsavvikId
 
     @Cacheable(value = ["driftsaavik_cache"], key = "#root.methodName")
-    fun harAktivtDriftsavvik(): Boolean {
-        return driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now()).isNotEmpty()
-    }
+    fun harAktivtDriftsavvik(): Boolean = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now()).isNotEmpty()
 
-    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> {
-        return driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
-    }
+    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
 
-    fun hentFlereDriftsavvik(pageable: Pageable): List<Driftsavvik> {
-        return driftsavvikRepository.findAll(pageable).toList()
-    }
+    fun hentFlereDriftsavvik(pageable: Pageable): List<Driftsavvik> = driftsavvikRepository.findAll(pageable).toList()
 
-    fun hentDriftsavvik(driftsavvikId: Int): Driftsavvik? {
-        return driftsavvikRepository.findByIdOrNull(driftsavvikId)
-    }
+    fun hentDriftsavvik(driftsavvikId: Int): Driftsavvik? = driftsavvikRepository.findByIdOrNull(driftsavvikId)
 
-    fun hentDriftsavvikForPåløp(påløpId: Int): Driftsavvik? {
-        return driftsavvikRepository.findByPåløpId(påløpId)
-    }
+    fun hentDriftsavvikForPåløp(påløpId: Int): Driftsavvik? = driftsavvikRepository.findByPåløpId(påløpId)
 
-    fun hentAlleKravhavereMedIdent(ident: String): List<Oppdrag> {
-        return oppdragRepository.findAllByKravhaverIdent(ident)
-    }
+    fun hentAlleKravhavereMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByKravhaverIdent(ident)
 
-    fun hentAlleSkyldnereMedIdent(ident: String): List<Oppdrag> {
-        return oppdragRepository.findAllBySkyldnerIdent(ident)
-    }
+    fun hentAlleSkyldnereMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllBySkyldnerIdent(ident)
 
-    fun hentAlleGjelderMedIdent(ident: String): List<Oppdrag> {
-        return oppdragRepository.findAllByGjelderIdent(ident)
-    }
+    fun hentAlleGjelderMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByGjelderIdent(ident)
 }

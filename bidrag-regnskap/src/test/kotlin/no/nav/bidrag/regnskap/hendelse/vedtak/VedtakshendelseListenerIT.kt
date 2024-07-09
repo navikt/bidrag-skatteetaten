@@ -51,6 +51,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.shaded.org.awaitility.Awaitility.await
 import org.testcontainers.shaded.org.awaitility.Durations.TEN_SECONDS
 import java.io.FileOutputStream
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -218,7 +219,7 @@ internal class VedtakshendelseListenerIT {
         val kontering = assertVedOpprettelseAvEngangsbeløp(
             100000003,
             vedtakHendelse,
-            Engangsbeløptype.SÆRTILSKUDD,
+            Engangsbeløptype.SÆRBIDRAG,
             Transaksjonskode.E1,
             100000002,
             Søknadstype.EN,
@@ -778,6 +779,23 @@ internal class VedtakshendelseListenerIT {
         oppdrag?.mottakerIdent shouldBe endreRmBmNyBidrag
     }
 
+    @Test
+    @Order(25)
+    fun `skal opprette særbidrag med betalt beløp`() {
+        val vedtakHendelse = hentFilOgSendPåKafka("særbidrag_betaltbeløp.json", 179)
+
+        val kontering = assertVedOpprettelseAvEngangsbeløp(
+            100000020,
+            vedtakHendelse,
+            Engangsbeløptype.SÆRBIDRAG,
+            Transaksjonskode.E1,
+            100000002,
+            Søknadstype.EN,
+        )
+
+        skrivTilTestdatafil(listOf(kontering), "Særbidrag")
+    }
+
     fun assertStønader(
         oppdragId: Int,
         vedtakHendelse: VedtakHendelse,
@@ -804,8 +822,10 @@ internal class VedtakshendelseListenerIT {
                 oppdragsperiode.eksternReferanse shouldBe vedtakHendelse.stønadsendringListe!![stonadsendringIndex].eksternReferanse
                 oppdragsperiode.opprettetAv shouldBe vedtakHendelse.opprettetAv
                 oppdragsperiode.delytelseId shouldNotBe null
-                oppdragsperiode.periodeFra shouldBe vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].periode.toDatoperiode().fom
-                oppdragsperiode.periodeTil shouldBe vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].periode.toDatoperiode().til
+                oppdragsperiode.periodeFra shouldBe
+                    vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].periode.toDatoperiode().fom
+                oppdragsperiode.periodeTil shouldBe
+                    vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].periode.toDatoperiode().til
                 oppdragsperiode.beløp shouldBe vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].beløp
                 oppdragsperiode.valuta shouldBe vedtakHendelse.stønadsendringListe!![stonadsendringIndex].periodeListe[i].valutakode
 
@@ -905,12 +925,14 @@ internal class VedtakshendelseListenerIT {
             oppdrag.sakId shouldBe vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].sak.verdi
         }
 
+        val betaltBeløp = vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].betaltBeløp ?: BigDecimal.ZERO
         val oppdragsperiode = oppdrag.oppdragsperioder.first()
         assertSoftly {
             oppdragsperiode.referanse shouldBe vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].referanse
             oppdragsperiode.oppdrag shouldBeSameInstanceAs oppdrag
             oppdragsperiode.vedtakId shouldBe vedtakHendelse.id
-            oppdragsperiode.beløp shouldBe vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].beløp
+            oppdragsperiode.beløp shouldBe
+                vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].beløp?.let { it - betaltBeløp }
             oppdragsperiode.valuta shouldBe vedtakHendelse.engangsbeløpListe!![engangsbeløpIndex].valutakode
             oppdragsperiode.vedtaksdato shouldBe vedtakHendelse.vedtakstidspunkt.toLocalDate()
             oppdragsperiode.periodeFra shouldBe vedtakHendelse.vedtakstidspunkt.toLocalDate().withDayOfMonth(1)
@@ -945,19 +967,17 @@ internal class VedtakshendelseListenerIT {
         bp: String,
         barn1: String,
         barn2: String,
-    ): String {
-        return vedtakFil.replace(
-            "\"skyldner\": \"\"",
-            "\"skyldner\" : \"${PersonidentGenerator.genererFødselsnummer()}\"",
-        )
-            .replace("\"kravhaver\": \"\"", "\"kravhaver\" : \"$kravhaverIdent\"")
-            .replace("\"mottaker\": \"\"", "\"mottaker\" : \"$mottaker\"")
-            .replace("\"skyldner\": \"BP\"", "\"skyldner\" : \"$bp\"")
-            .replace("\"skyldner\": \"BM\"", "\"skyldner\" : \"$bm\"")
-            .replace("\"kravhaver\": \"BARN1\"", "\"kravhaver\" : \"$barn1\"")
-            .replace("\"kravhaver\": \"BARN2\"", "\"kravhaver\" : \"$barn2\"")
-            .replace("\"mottaker\": \"BM\"", "\"mottaker\" : \"$bm\"")
-    }
+    ): String = vedtakFil.replace(
+        "\"skyldner\": \"\"",
+        "\"skyldner\" : \"${PersonidentGenerator.genererFødselsnummer()}\"",
+    )
+        .replace("\"kravhaver\": \"\"", "\"kravhaver\" : \"$kravhaverIdent\"")
+        .replace("\"mottaker\": \"\"", "\"mottaker\" : \"$mottaker\"")
+        .replace("\"skyldner\": \"BP\"", "\"skyldner\" : \"$bp\"")
+        .replace("\"skyldner\": \"BM\"", "\"skyldner\" : \"$bm\"")
+        .replace("\"kravhaver\": \"BARN1\"", "\"kravhaver\" : \"$barn1\"")
+        .replace("\"kravhaver\": \"BARN2\"", "\"kravhaver\" : \"$barn2\"")
+        .replace("\"mottaker\": \"BM\"", "\"mottaker\" : \"$bm\"")
 
     private fun hentAlleKonteringerForOppdrag(oppdrag: Oppdrag): List<Kontering> {
         val konteringer = mutableListOf<Kontering>()
@@ -983,7 +1003,6 @@ internal class VedtakshendelseListenerIT {
         return konteringer
     }
 
-    private fun hentTestfil(filnavn: String): String {
-        return String(javaClass.classLoader.getResourceAsStream("${HENDELSE_FILMAPPE}$filnavn")!!.readAllBytes())
-    }
+    private fun hentTestfil(filnavn: String): String =
+        String(javaClass.classLoader.getResourceAsStream("${HENDELSE_FILMAPPE}$filnavn")!!.readAllBytes())
 }

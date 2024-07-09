@@ -130,12 +130,12 @@ class OppdragService(
             Stønadstype.BIDRAG.name,
             Stønadstype.OPPFOSTRINGSBIDRAG.name,
             Stønadstype.MOTREGNING.name,
-            Engangsbeløptype.SÆRTILSKUDD.name,
             Engangsbeløptype.SÆRBIDRAG.name,
-            "SAERTILSKUDD",
+            Engangsbeløptype.SÆRTILSKUDD.name,
+            Engangsbeløptype.SAERTILSKUDD.name,
             Engangsbeløptype.ETTERGIVELSE.name,
             Engangsbeløptype.DIREKTE_OPPGJØR.name,
-            "DIREKTE_OPPGJOR",
+            Engangsbeløptype.DIREKTE_OPPGJOR.name,
         )
 
         val stønaderSomSkalOppdatereTilNavIdent = arrayOf(

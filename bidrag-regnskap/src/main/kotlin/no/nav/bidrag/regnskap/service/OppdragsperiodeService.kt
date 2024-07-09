@@ -11,24 +11,22 @@ import java.time.LocalDate
 @Service
 class OppdragsperiodeService {
 
-    fun opprettNyOppdragsperiode(hendelse: Hendelse, periode: Periode, oppdrag: Oppdrag): Oppdragsperiode {
-        return Oppdragsperiode(
-            vedtakId = hendelse.vedtakId,
-            referanse = hendelse.referanse,
-            vedtakType = hendelse.vedtakType.toString(),
-            beløp = periode.beløp ?: BigDecimal.ZERO,
-            valuta = periode.valutakode ?: "NOK",
-            periodeFra = periode.periodeFomDato,
-            periodeTil = periode.periodeTilDato,
-            vedtaksdato = hendelse.vedtakDato,
-            opprettetAv = hendelse.opprettetAv,
-            enhetsnummer = hendelse.enhetsnummer?.verdi,
-            delytelseId = periode.delytelsesId,
-            eksternReferanse = hendelse.eksternReferanse,
-            oppdrag = oppdrag,
-            opphørendeOppdragsperiode = periode.beløp == null,
-        )
-    }
+    fun opprettNyOppdragsperiode(hendelse: Hendelse, periode: Periode, oppdrag: Oppdrag): Oppdragsperiode = Oppdragsperiode(
+        vedtakId = hendelse.vedtakId,
+        referanse = hendelse.referanse,
+        vedtakType = hendelse.vedtakType.toString(),
+        beløp = periode.beløp ?: BigDecimal.ZERO,
+        valuta = periode.valutakode ?: "NOK",
+        periodeFra = periode.periodeFomDato,
+        periodeTil = periode.periodeTilDato,
+        vedtaksdato = hendelse.vedtakDato,
+        opprettetAv = hendelse.opprettetAv,
+        enhetsnummer = hendelse.enhetsnummer?.verdi,
+        delytelseId = periode.delytelsesId,
+        eksternReferanse = hendelse.eksternReferanse,
+        oppdrag = oppdrag,
+        opphørendeOppdragsperiode = periode.beløp == null,
+    )
 
     fun settAktivTilDatoPåEksisterendeOppdragsperioder(oppdrag: Oppdrag, nyOppdragsperiodePeriodeFra: LocalDate) {
         oppdrag.oppdragsperioder.forEach {

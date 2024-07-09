@@ -15,6 +15,7 @@ import no.nav.bidrag.transport.behandling.vedtak.Stønadsendring
 import no.nav.bidrag.transport.behandling.vedtak.VedtakHendelse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 private val LOGGER = LoggerFactory.getLogger(VedtakshendelseService::class.java)
 private val objectMapper =
@@ -52,12 +53,10 @@ class VedtakshendelseService(
         return opprettedeOppdrag
     }
 
-    fun mapVedtakHendelse(hendelse: String): VedtakHendelse {
-        return try {
-            objectMapper.readValue(hendelse, VedtakHendelse::class.java)
-        } finally {
-            SECURE_LOGGER.debug("Leser hendelse: {}", hendelse)
-        }
+    fun mapVedtakHendelse(hendelse: String): VedtakHendelse = try {
+        objectMapper.readValue(hendelse, VedtakHendelse::class.java)
+    } finally {
+        SECURE_LOGGER.debug("Leser hendelse: {}", hendelse)
     }
 
     private fun opprettOppdragForStønadsending(vedtakHendelse: VedtakHendelse, stønadsendring: Stønadsendring): Int? {
@@ -85,12 +84,11 @@ class VedtakshendelseService(
         return null
     }
 
-    private fun erInnkrevingOgEndring(innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean {
-        return innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
-    }
+    private fun erInnkrevingOgEndring(innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean =
+        innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
 
-    private fun mapPeriodelisteTilDomene(periodeListe: List<no.nav.bidrag.transport.behandling.vedtak.Periode>): List<Periode> {
-        return periodeListe.map { periode ->
+    private fun mapPeriodelisteTilDomene(periodeListe: List<no.nav.bidrag.transport.behandling.vedtak.Periode>): List<Periode> =
+        periodeListe.map { periode ->
             Periode(
                 beløp = periode.beløp,
                 valutakode = periode.valutakode,
@@ -99,12 +97,12 @@ class VedtakshendelseService(
                 delytelsesId = periode.delytelseId?.let { Integer.valueOf(it) },
             )
         }
-    }
 
     private fun opprettOppdragForEngangsbeløp(vedtakHendelse: VedtakHendelse, engangsbeløp: Engangsbeløp): Int? {
         LOGGER.debug("Oppretter oppdrag for engangsbeløp.")
 
         if (erInnkrevingOgEndring(engangsbeløp.innkreving, engangsbeløp.beslutning)) {
+            val betaltBeløp = engangsbeløp.betaltBeløp ?: BigDecimal.ZERO
             val hendelse = Hendelse(
                 type = engangsbeløp.type.name,
                 vedtakType = vedtakHendelse.type,
@@ -124,7 +122,9 @@ class VedtakshendelseService(
                     Periode(
                         periodeFomDato = vedtakHendelse.vedtakstidspunkt.toLocalDate().withDayOfMonth(1),
                         periodeTilDato = vedtakHendelse.vedtakstidspunkt.toLocalDate().withDayOfMonth(1).plusMonths(1),
-                        beløp = engangsbeløp.beløp,
+                        beløp = engangsbeløp.beløp?.let { beløp ->
+                            maxOf(beløp - betaltBeløp, BigDecimal.ZERO)
+                        },
                         valutakode = engangsbeløp.valutakode,
                         delytelsesId = engangsbeløp.delytelseId?.let { Integer.valueOf(it) },
                     ),
@@ -146,11 +146,7 @@ class VedtakshendelseService(
         kravService.sendKrav(oppdragIdListe)
     }
 
-    private fun erVedlikeholdsmodusPåslått(): Boolean {
-        return kravService.erVedlikeholdsmodusPåslått()
-    }
+    private fun erVedlikeholdsmodusPåslått(): Boolean = kravService.erVedlikeholdsmodusPåslått()
 
-    private fun harAktiveDriftAvvik(): Boolean {
-        return persistenceService.harAktivtDriftsavvik()
-    }
+    private fun harAktiveDriftAvvik(): Boolean = persistenceService.harAktivtDriftsavvik()
 }
