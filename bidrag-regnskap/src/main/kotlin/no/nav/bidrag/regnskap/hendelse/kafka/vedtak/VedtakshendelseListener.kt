@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component
 private val LOGGER = LoggerFactory.getLogger(VedtakshendelseListener::class.java)
 
 @Component
-class VedtakshendelseListener(
-    private val vedtakshendelseService: VedtakshendelseService,
-) : AbstractConsumerSeekAware() {
+class VedtakshendelseListener(private val vedtakshendelseService: VedtakshendelseService) : AbstractConsumerSeekAware() {
 
     companion object {
         var hoppOverNesteMelding = false
@@ -76,7 +74,5 @@ class VedtakshendelseListener(
         this.seekToEnd()
     }
 
-    fun hentSisteLesteHendelse(): Long {
-        return sisteOffset
-    }
+    fun hentSisteLesteHendelse(): Long = sisteOffset
 }
