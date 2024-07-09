@@ -789,7 +789,7 @@ internal class VedtakshendelseListenerIT {
             vedtakHendelse,
             Engangsbeløptype.SÆRBIDRAG,
             Transaksjonskode.E1,
-            100000002,
+            100000014,
             Søknadstype.EN,
         )
 
