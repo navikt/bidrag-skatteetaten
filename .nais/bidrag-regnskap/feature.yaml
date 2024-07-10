@@ -5,6 +5,8 @@ kafka:
   pool: nav-dev
 database:
   navn: bidrag-regnskap-feature
+  tier: db-f1-micro
+  size: 10
 bucket:
   navn: bidrag-regnskap-feature
 maskinporten:

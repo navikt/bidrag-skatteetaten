@@ -5,6 +5,8 @@ kafka:
   pool: nav-dev
 database:
   navn: bidrag-regnskap-main
+  tier: db-custom-1-3840
+  size: 25
 bucket:
   navn: bidrag-regnskap
 maskinporten:
