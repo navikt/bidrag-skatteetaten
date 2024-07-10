@@ -67,6 +67,8 @@ spec:
     sqlInstances:
       - name: {{ database.navn }}
         type: POSTGRES_15
+        diskSize: {{ database.size }}
+        tier: {{ database.tier }}
         databases:
           - name: bidrag-regnskap-db
             envVarPrefix: DB
