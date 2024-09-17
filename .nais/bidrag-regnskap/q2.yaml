@@ -1,0 +1,44 @@
+name: bidrag-regnskap-q2
+ingresses:
+  - https://bidrag-regnskap-q2.intern.dev.nav.no
+kafka:
+  pool: nav-dev
+database:
+  navn: bidrag-regnskap-q2
+  tier: db-f1-micro
+  size: 10
+bucket:
+  navn: bidrag-regnskap-q2
+maskinporten:
+  url: https://test.maskinporten.no
+elin_subscription_key: bidrag-regnskap-elin-subscription-key-dev
+env:
+  SKATT_URL: https://api-preprod.nav.no/bidrag/v1/bidragskravq2
+  SKATT_HOST: api-preprod.nav.no
+  TOPIC_VEDTAK: bidrag.vedtak-syntetisk
+  TOPIC_PDL_AKTOR_V2: pdl.aktor-v2
+  AKTOR_V2_GROUP_ID: aktor-v2.bidrag-regnskap-q2
+  BUCKET_NAME: bidrag-regnskap-q2
+  SFTP_HOST: sftp-q.nav.no
+  SFTP_SKAL_OVERFORE_FIL: true
+  SAK_URL: https://bidrag-sak.dev.intern.nav.no
+  SAK_SCOPE: dev-fss.bidrag.bidrag-sak
+  SAK_HOST: bidrag-sak.dev.intern.nav.no
+  PERSON_URL: https://bidrag-person.dev.intern.nav.no/bidrag-person
+  PERSON_SCOPE: dev-fss.bidrag.bidrag-person
+  PERSON_HOST: bidrag-person.dev.intern.nav.no
+  JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
+  MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskravq2"
+  KONTERINGER_FORELDET_DATO: 2006-04
+  SEND_KRAV_CRON: "0 */10 * * * *" #Hvert 10. minutt
+  RESEND_KRAV_CRON: "0 2 6 * * *" #Hver dag kl 06:02
+  BEHANDLINGSSTATUS_CRON: "0 25 * * * *" #Hver time 25 minutter over hel
+  AVSTEMNING_CRON: "0 15 0 * * *" #Hver dag kl 00:15
+  PALOSKJORING_CRON: "0 5 * * * *" #Hver time 5 minutter over hel
+  SLACK_CHANNEL_ID: C05HQPLTFAA
+azure:
+  inbound:
+    rules:
+      - application: bisys
+        namespace: bidrag
+        cluster: dev-fss
