@@ -1,6 +1,6 @@
 name: bidrag-aktoerregister-q2
 database:
-  navn: bidrag-regnskap-q2
+  navn: bidrag-aktoerregister-q2
   tier: db-f1-micro
   size: 10
 ingresses:
