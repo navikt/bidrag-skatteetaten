@@ -1,6 +1,8 @@
 name: bidrag-aktoerregister
-dbinstancename: bidrag-aktoerregister
-dbname: bidrag-aktoerregister-db
+database:
+  navn: bidrag-aktoerregister
+  tier: db-custom-1-3840
+  size: 25
 ingresses:
   - https://bidrag-aktoerregister.nav.no/
 kafka:
