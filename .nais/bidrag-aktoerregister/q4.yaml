@@ -1,6 +1,8 @@
 name: bidrag-aktoerregister-q4
-dbinstancename: bidrag-aktoerregister-q4
-dbname: bidrag-aktoerregister-q4
+database:
+  navn: bidrag-regnskap-q4
+  tier: db-f1-micro
+  size: 10
 ingresses:
   - https://bidrag-aktoerregister-q4.intern.dev.nav.no
 kafka:
