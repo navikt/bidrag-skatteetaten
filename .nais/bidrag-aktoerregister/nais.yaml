@@ -14,10 +14,12 @@ spec:
   image: {{ image }}
   gcp:
     sqlInstances:
-      - name: {{ dbinstancename }}
+      - name: {{ database.navn }}
         type: POSTGRES_15
+        diskSize: {{ database.size }}
+        tier: {{ database.tier }}
         databases:
-        - name: {{ dbname }}
+        - name: bidrag-aktoerregister-db
           envVarPrefix: DB
   liveness:
     path: /actuator/health/liveness

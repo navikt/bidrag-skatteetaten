@@ -1,6 +1,8 @@
 name: bidrag-aktoerregister-q2
-dbinstancename: bidrag-aktoerregister-q2
-dbname: bidrag-aktoerregister-q2
+database:
+  navn: bidrag-regnskap-q2
+  tier: db-f1-micro
+  size: 10
 ingresses:
   - https://bidrag-aktoerregister-q2.intern.dev.nav.no/
   - https://bidrag-aktoerregister-q2.ekstern.dev.nav.no/
