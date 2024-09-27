@@ -3,16 +3,22 @@ spring:
     schemas: migrations
     locations: classpath:db/migration
   jpa:
-    hibernate:
-      ddl-auto: none
-    database: POSTGRESQL
+    database: postgresql
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${DB_JDBC_URL}
     hikari:
-      maximum-pool-size: '4'
-      schema: aktoerregister
-    password: ${DB_PASSWORD}
-    username: ${DB_USERNAME}
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+      idle-timeout: 10001
+      max-lifetime: 30001
+      connectionTimeout: 1000
+      maximum-pool-size: 10
+      minimum-idle: 1
+      data-source-properties:
+        ssl: true
+        sslmode: ${DB_SSLMODE}
+        sslcert: ${DB_SSLCERT}
+        sslkey: ${DB_SSLKEY_PK8}
+        sslrootcert: ${DB_SSLROOTCERT}
   batch:
     job:
       enabled: 'false'
