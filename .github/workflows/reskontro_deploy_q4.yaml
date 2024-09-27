@@ -1,4 +1,4 @@
-name: Deploy main reskontro
+name: Deploy Q4 reskontro
 on:
   push:
     branches:
@@ -6,13 +6,13 @@ on:
       - '!main'
     paths:
       - '.nais/bidrag-reskontro/**.yaml'
-      - '.github/workflows/reskontro_deploy_main.yaml'
+      - '.github/workflows/reskontro_deploy_q4.yaml'
       - 'pom.xml'
       - '**/bidrag-reskontro/**'
 
 jobs:
   build_and_deploy:
-    name: "Build and deploy to main"
+    name: "Build and deploy to Q4"
     permissions:
       contents: "read"
       id-token: "write"
@@ -23,7 +23,7 @@ jobs:
       ktlint_options: -f bidrag-reskontro
       dockerfile_with_path: ./bidrag-reskontro/Dockerfile
       docker_context: ./bidrag-reskontro
-      nais_variabler_filnavn: bidrag-reskontro/main.yaml
+      nais_variabler_filnavn: bidrag-reskontro/q4.yaml
       nais_hovedfil_navn: bidrag-reskontro/nais.yaml
       image_suffix: bidrag-reskontro
       tag: bidrag-reskontro

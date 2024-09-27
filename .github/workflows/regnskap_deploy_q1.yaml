@@ -1,4 +1,4 @@
-name: Deploy feature regnskap
+name: Deploy Q1 regnskap
 on:
   push:
     branches:
