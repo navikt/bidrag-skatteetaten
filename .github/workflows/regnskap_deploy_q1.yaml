@@ -1,0 +1,30 @@
+name: Deploy feature regnskap
+on:
+  push:
+    branches:
+      - 'q1/**'
+      - 'Q1/**'
+    paths:
+      - '.nais/bidrag-regnskap/**.yaml'
+      - '.github/workflows/regnskap_deploy_q1.yaml'
+      - 'pom.xml'
+      - '**/bidrag-regnskap/**'
+
+jobs:
+  build_and_deploy:
+    name: "Build and deploy to Q1"
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -Pit -f bidrag-regnskap
+      maven_test_lifecycle: verify
+      ktlint_options: -f bidrag-regnskap
+      dockerfile_with_path: ./bidrag-regnskap/Dockerfile
+      docker_context: ./bidrag-regnskap
+      nais_variabler_filnavn: bidrag-regnskap/q1.yaml
+      nais_hovedfil_navn: bidrag-regnskap/nais.yaml
+      image_suffix: bidrag-regnskap
+      tag: bidrag-regnskap
