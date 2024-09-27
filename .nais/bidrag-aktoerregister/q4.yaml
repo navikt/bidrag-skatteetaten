@@ -1,8 +1,8 @@
-name: bidrag-aktoerregister-feature
-dbinstancename: bidrag-aktoerregister-feature
-dbname: bidrag-aktoerregister-feature
+name: bidrag-aktoerregister-q4
+dbinstancename: bidrag-aktoerregister-q4
+dbname: bidrag-aktoerregister-q4
 ingresses:
-  - https://bidrag-aktoerregister-feature.intern.dev.nav.no
+  - https://bidrag-aktoerregister-q4.intern.dev.nav.no
 kafka:
   pool: nav-dev
 env:
@@ -15,4 +15,4 @@ env:
   BIDRAG_SAMHANDLER_HOST: bidrag-samhandler-feature.intern.dev.nav.no
   BIDRAG_SAMHANDLER_SCOPE: dev-gcp.bidrag.bidrag-samhandler-feature
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
-  KAFKA_GROUP_ID: bidrag-aktoerregister-feature
+  KAFKA_GROUP_ID: bidrag-aktoerregister-q4

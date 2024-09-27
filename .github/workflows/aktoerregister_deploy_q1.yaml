@@ -1,18 +1,18 @@
-name: Deploy main aktoerregister
+name: Deploy Q1 aktoerregister
 on:
   push:
     branches:
-      - '**'
-      - '!main'
+      - 'q1/**'
+      - 'Q1/**'
     paths:
       - '.nais/bidrag-aktoerregister/**.yaml'
-      - '.github/workflows/aktoerregister_deploy_main.yaml'
+      - '.github/workflows/aktoerregister_deploy_q1.yaml'
       - 'pom.xml'
       - '**/bidrag-aktoerregister/**'
 
 jobs:
   build_and_deploy:
-    name: "Build and deploy to main"
+    name: "Build and deploy to Q1"
     permissions:
       contents: "read"
       id-token: "write"
@@ -23,7 +23,7 @@ jobs:
       ktlint_options: -f bidrag-aktoerregister
       dockerfile_with_path: ./bidrag-aktoerregister/Dockerfile
       docker_context: ./bidrag-aktoerregister
-      nais_variabler_filnavn: bidrag-aktoerregister/main.yaml
+      nais_variabler_filnavn: bidrag-aktoerregister/q1.yaml
       nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
       image_suffix: bidrag-aktoerregister
       tag: bidrag-aktoerregister

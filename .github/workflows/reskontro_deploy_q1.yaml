@@ -1,0 +1,29 @@
+name: Deploy Q1 reskontro
+on:
+  push:
+    branches:
+      - 'q1/**'
+      - 'Q1/**'
+    paths:
+      - '.nais/bidrag-reskontro/**.yaml'
+      - '.github/workflows/reskontro_deploy_q1.yaml'
+      - 'pom.xml'
+      - '**/bidrag-reskontro/**'
+
+jobs:
+  build_and_deploy:
+    name: "Build and deploy to Q1"
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f bidrag-reskontro
+      ktlint_options: -f bidrag-reskontro
+      dockerfile_with_path: ./bidrag-reskontro/Dockerfile
+      docker_context: ./bidrag-reskontro
+      nais_variabler_filnavn: bidrag-reskontro/q1.yaml
+      nais_hovedfil_navn: bidrag-reskontro/nais.yaml
+      image_suffix: bidrag-reskontro
+      tag: bidrag-reskontro

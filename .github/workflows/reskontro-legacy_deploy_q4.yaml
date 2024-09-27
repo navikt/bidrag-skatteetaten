@@ -1,19 +1,18 @@
-name: Deploy feature reskontro-legacy
+name: Deploy Q4 reskontro-legacy
 on:
   push:
     branches:
       - '**'
       - '!main'
-      - '!dependabot/**'
     paths:
       - '.nais/bidrag-reskontro-legacy/**.yaml'
-      - '.github/workflows/reskontro-legacy_deploy_feature.yaml'
+      - '.github/workflows/reskontro-legacy_deploy_q4.yaml'
       - 'pom.xml'
       - '**/bidrag-reskontro-legacy/**'
 
 jobs:
   build_and_deploy:
-    name: "Build and deploy to feature"
+    name: "Build and deploy to Q4"
     permissions:
       contents: "read"
       id-token: "write"
@@ -24,7 +23,7 @@ jobs:
       ktlint_options: -f bidrag-reskontro-legacy
       dockerfile_with_path: ./bidrag-reskontro-legacy/Dockerfile
       docker_context: ./bidrag-reskontro-legacy
-      nais_variabler_filnavn: bidrag-reskontro-legacy/feature.yaml
+      nais_variabler_filnavn: bidrag-reskontro-legacy/q4.yaml
       nais_hovedfil_navn: bidrag-reskontro-legacy/nais.yaml
       image_suffix: bidrag-reskontro-legacy
       tag: bidrag-reskontro-legacy

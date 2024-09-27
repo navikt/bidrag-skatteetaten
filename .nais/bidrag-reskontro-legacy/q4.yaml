@@ -1,13 +1,13 @@
-name: bidrag-reskontro-legacy
+name: bidrag-reskontro-legacy-q4
 ingresses:
-  - https://bidrag-reskontro-legacy.intern.dev.nav.no
-  - https://bidrag-reskontro-legacy.dev-fss-pub.nais.io
+  - https://bidrag-reskontro-legacy-q4.intern.dev.nav.no
+  - https://bidrag-reskontro-legacy-q4.dev-fss-pub.nais.io
 env:
   ELIN_URL: http://elinweb.preprod.local/BisysReskWS/BisysReskWS.asmx
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
   inbound:
     rules:
-      - application: bidrag-reskontro
+      - application: bidrag-reskontro-q4
         namespace: bidrag
         cluster: dev-gcp
