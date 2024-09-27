@@ -2,18 +2,17 @@ name: Deploy feature regnskap
 on:
   push:
     branches:
-      - '**'
-      - '!main'
-      - '!dependabot/**'
+      - 'q2/**'
+      - 'Q2/**'
     paths:
       - '.nais/bidrag-regnskap/**.yaml'
-      - '.github/workflows/regnskap_deploy_feature.yaml'
+      - '.github/workflows/regnskap_deploy_q2.yaml'
       - 'pom.xml'
       - '**/bidrag-regnskap/**'
 
 jobs:
   build_and_deploy:
-    name: "Build and deploy to feature"
+    name: "Build and deploy to Q2"
     permissions:
       contents: "read"
       id-token: "write"
@@ -25,7 +24,7 @@ jobs:
       ktlint_options: -f bidrag-regnskap
       dockerfile_with_path: ./bidrag-regnskap/Dockerfile
       docker_context: ./bidrag-regnskap
-      nais_variabler_filnavn: bidrag-regnskap/feature.yaml
+      nais_variabler_filnavn: bidrag-regnskap/q2.yaml
       nais_hovedfil_navn: bidrag-regnskap/nais.yaml
       image_suffix: bidrag-regnskap
       tag: bidrag-regnskap
