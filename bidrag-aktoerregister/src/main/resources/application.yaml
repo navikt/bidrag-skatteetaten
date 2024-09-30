@@ -13,12 +13,6 @@ spring:
       connectionTimeout: 1000
       maximum-pool-size: 10
       minimum-idle: 1
-      data-source-properties:
-        ssl: true
-        sslmode: ${DB_SSLMODE}
-        sslcert: ${DB_SSLCERT}
-        sslkey: ${DB_SSLKEY_PK8}
-        sslrootcert: ${DB_SSLROOTCERT}
   batch:
     job:
       enabled: 'false'
