@@ -1,0 +1,20 @@
+name: bidrag-reskontro-q2
+ingresses:
+  - https://bidrag-reskontro-q2.intern.dev.nav.no
+maskinporten:
+  url: https://test.maskinporten.no
+env:
+  SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no #TODO()
+  SKATT_HOST: bidrag-elin-stub.intern.dev.nav.no #TODO()
+  MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav" #TODO()
+  RESKONTRO_LEGACY_URL: https://bidrag-reskontro-legacy-q1.dev-fss-pub.nais.io
+  RESKONTRO_LEGACY_SCOPE: dev-fss.bidrag.bidrag-reskontro-legacy-q2
+  RESKONTRO_LEGACY_HOST: bidrag-reskontro-legacy-q2.dev-fss-pub.nais.io
+  RESKONTRO_LEGACY_ENABLED: true
+  JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
+azure:
+  inbound:
+    rules:
+      - application: bisys
+        namespace: bidrag
+        cluster: dev-fss
