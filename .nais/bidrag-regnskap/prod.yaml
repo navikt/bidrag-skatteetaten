@@ -13,6 +13,7 @@ maskinporten:
   url: https://maskinporten.no
 elin_subscription_key: bidrag-regnskap-elin-subscription-key-prod
 env:
+  SPRING_PROFILES_ACTIVE: database-legacy
   SKATT_URL: https://api.nav.no/bidrag/v1/bidragskrav
   SKATT_HOST: api.nav.no
   TOPIC_VEDTAK: bidrag.vedtak

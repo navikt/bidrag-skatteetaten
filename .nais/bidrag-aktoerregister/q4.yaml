@@ -8,7 +8,7 @@ ingresses:
 kafka:
   pool: nav-dev
 env:
-  SPRING_PROFILES_ACTIVE: dev
+  SPRING_PROFILES_ACTIVE: dev,database-new
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
   BIDRAG_PERSON_URL: https://bidrag-person-feature.dev-fss-pub.nais.io/bidrag-person
   BIDRAG_PERSON_SCOPE: dev-fss.bidrag.bidrag-person-feature
