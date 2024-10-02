@@ -30,7 +30,7 @@ class ResendingAvKravScheduler(
         LockAssert.assertLocked()
         LOGGER.info { "Starter schedulert resending av alle krav som ikke har fått behandlingsstatus ok." }
 
-        val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = persistenceService.hentAlleKonteringerUtenBehandlingsstatusOk()
+        val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = persistenceService.hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke()
 
         if (konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.isEmpty()) {
             LOGGER.info { "Det finnes ingen konteringer som ikke har sjekket behandlingsstatus." }

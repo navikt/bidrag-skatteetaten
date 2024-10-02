@@ -33,4 +33,6 @@ interface KonteringRepository : JpaRepository<Kontering, Int> {
     fun findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
         sisteReferansekoder: List<String>,
     ): List<Kontering>
+
+    fun findAllByBehandlingsstatusOkTidspunktIsNull(): List<Kontering>
 }

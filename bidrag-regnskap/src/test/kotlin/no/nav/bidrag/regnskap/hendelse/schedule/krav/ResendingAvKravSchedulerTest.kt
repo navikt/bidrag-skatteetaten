@@ -54,7 +54,7 @@ class ResendingAvKravSchedulerTest {
         oppdragsperiode.konteringer = listOf(kontering1, kontering2)
         oppdrag.oppdragsperioder = listOf(oppdragsperiode)
 
-        every { persistenceService.hentAlleKonteringerUtenBehandlingsstatusOk() } returns listOf(kontering2)
+        every { persistenceService.hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke() } returns listOf(kontering2)
 
         resendingAvKravScheduler.skedulertResendingAvKrav()
 

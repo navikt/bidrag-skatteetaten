@@ -126,6 +126,9 @@ class PersistenceService(
     fun hentAlleKonteringerUtenBehandlingsstatusOk(): List<Kontering> =
         konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsNotNull()
 
+    fun hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke(): List<Kontering> =
+        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNull()
+
     fun hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferansekoder: List<String>): List<Kontering> =
         konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
             sisteReferansekoder,
