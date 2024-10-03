@@ -39,9 +39,7 @@ class BehandlingsstatusController(
             ),
         ],
     )
-    fun hentBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> {
-        return skattConsumer.sjekkBehandlingsstatus(batchUid)
-    }
+    fun hentBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> = skattConsumer.sjekkBehandlingsstatus(batchUid)
 
     @GetMapping("/behandlingsstatusScheduled")
     @Operation(
@@ -76,9 +74,7 @@ class BehandlingsstatusController(
             ),
         ],
     )
-    fun resendKravForSak(
-        @RequestParam(required = true) saksnummer: String
-    ): ResponseEntity<Any> {
+    fun resendKravForSak(@RequestParam(required = true) saksnummer: String): ResponseEntity<Any> {
         resendingAvKravScheduler.resendingAvKravForSak(saksnummer)
         return ResponseEntity.ok().build()
     }
