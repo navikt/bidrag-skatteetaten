@@ -49,4 +49,29 @@ class ResendingAvKravScheduler(
 
         persistenceService.konteringRepository.saveAll(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
     }
+
+    @Transactional
+    fun resendingAvKravForSak(sakId: String) {
+        LOGGER.info { "Starter schedulert resending av alle krav for sak $sakId." }
+
+        //Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
+        // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.
+        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+
+        val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = persistenceService.hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke()
+
+        val konteringerForSak = konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.filter { it.oppdragsperiode?.oppdrag?.sakId == sakId }
+
+        if (konteringerForSak.isEmpty()) {
+            LOGGER.info { "Det finnes ingen konteringer for sak $sakId som ikke har sjekket behandlingsstatus." }
+            return
+        }
+
+        konteringerForSak.forEach {
+            it.overføringstidspunkt = null
+            it.oppdragsperiode?.oppdrag?.harFeiledeKonteringer = false
+        }
+
+        persistenceService.konteringRepository.saveAll(konteringerForSak)
+    }
 }
