@@ -13,6 +13,7 @@ import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusRespo
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -61,22 +62,24 @@ class BehandlingsstatusController(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping("/resendKravScheduled")
+    @GetMapping("/resendKravForSak")
     @Operation(
-        summary = "Manuelt starter skedulert kjøring av resending av ikke godkjente krav. Denne kjører hver morgen kl 06.",
+        summary = "Starter resending av ikke godkjente krav for en enkelt sak. Tilsvarende jobb for alle feilede krav kjører hver morgen kl 04:02.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Startet skedulert kjøring av sjekk på behandlingsstatus.",
+                description = "Startet resending av ikke godkjente krav for sak.",
                 content = [Content()],
             ),
         ],
     )
-    fun startSkedulertResendingAvKrav(): ResponseEntity<Any> {
-        resendingAvKravScheduler.skedulertResendingAvKrav()
+    fun resendKravForSak(
+        @RequestParam(required = true) saksnummer: String
+    ): ResponseEntity<Any> {
+        resendingAvKravScheduler.resendingAvKravForSak(saksnummer)
         return ResponseEntity.ok().build()
     }
 }
