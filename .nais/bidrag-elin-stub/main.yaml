@@ -4,10 +4,16 @@ azureAccessInbound:
   - application: bidrag-regnskap-q4
     namespace: bidrag
     cluster: dev-gcp
+  - application: bidrag-regnskap-q2
+    namespace: bidrag
+    cluster: dev-gcp
   - application: bidrag-regnskap-q1
     namespace: bidrag
     cluster: dev-gcp
   - application: bidrag-reskontro-q4
+    namespace: bidrag
+    cluster: dev-gcp
+  - application: bidrag-reskontro-q2
     namespace: bidrag
     cluster: dev-gcp
   - application: bidrag-reskontro-q1
