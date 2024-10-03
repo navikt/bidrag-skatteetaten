@@ -21,7 +21,7 @@ private val LOGGER = KotlinLogging.logger { }
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
 class ResendingAvKravScheduler(
     private val persistenceService: PersistenceService,
-    private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler
+    private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
 ) {
 
     @Scheduled(cron = "\${scheduler.resendkrav.cron}")
@@ -31,7 +31,7 @@ class ResendingAvKravScheduler(
         LockAssert.assertLocked()
         LOGGER.info { "Starter schedulert resending av alle krav som ikke har fått behandlingsstatus ok." }
 
-        //Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
+        // Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
         // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.
         sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
 
@@ -54,7 +54,7 @@ class ResendingAvKravScheduler(
     fun resendingAvKravForSak(sakId: String) {
         LOGGER.info { "Starter schedulert resending av alle krav for sak $sakId." }
 
-        //Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
+        // Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
         // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.
         sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
 
