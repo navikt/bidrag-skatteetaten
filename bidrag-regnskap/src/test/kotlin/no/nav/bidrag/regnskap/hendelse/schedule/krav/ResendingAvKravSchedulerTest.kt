@@ -23,6 +23,9 @@ class ResendingAvKravSchedulerTest {
     @MockK(relaxed = true)
     private lateinit var persistenceService: PersistenceService
 
+    @MockK(relaxed = true)
+    private lateinit var scheduler: SjekkAvBehandlingsstatusScheduler
+
     @InjectMockKs
     private lateinit var resendingAvKravScheduler: ResendingAvKravScheduler
 
