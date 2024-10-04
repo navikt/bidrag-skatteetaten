@@ -48,6 +48,11 @@ class ResendingAvKravScheduler(
         }
 
         persistenceService.konteringRepository.saveAll(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
+
+        LOGGER.info {
+            "Resatt overføringstidspunkt og harFeiledeKonteringer for totalt " +
+                "${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.size} konteringer."
+        }
     }
 
     @Transactional
