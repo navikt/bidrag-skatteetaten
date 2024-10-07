@@ -37,7 +37,7 @@
         <logback-encoder.version>7.4</logback-encoder.version>
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
-        <maven-avro-plugin.version>1.11.3</maven-avro-plugin.version>
+        <maven-avro-plugin.version>1.12.0</maven-avro-plugin.version>
         <avro-serializer.version>7.6.1</avro-serializer.version>
     </properties>
 
