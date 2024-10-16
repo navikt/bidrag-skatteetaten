@@ -1,5 +1,6 @@
 name: Deploy Q1 reskontro
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'q1/**'

@@ -1,5 +1,6 @@
 name: Deploy elin-stub
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'
