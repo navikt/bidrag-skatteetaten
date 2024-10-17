@@ -22,12 +22,12 @@ env:
   BUCKET_NAME: bidrag-regnskap-q2
   SFTP_HOST: sftp-q.nav.no
   SFTP_SKAL_OVERFORE_FIL: true
-  SAK_URL: https://bidrag-sak-q2.dev.intern.nav.no
+  SAK_URL: https://bidrag-sak-q2.dev-fss-pub.nais.io
   SAK_SCOPE: dev-fss.bidrag.bidrag-sak-q2
-  SAK_HOST: bidrag-sak-q2.dev.intern.nav.no
-  PERSON_URL: https://bidrag-person-q2.dev.intern.nav.no/bidrag-person
+  SAK_HOST: bidrag-sak-q2.dev-fss-pub.nais.io
+  PERSON_URL: https://bidrag-person-q2.dev-fss-pub.nais.io/bidrag-person
   PERSON_SCOPE: dev-fss.bidrag.bidrag-person-q2
-  PERSON_HOST: bidrag-person-q2.dev.intern.nav.no
+  PERSON_HOST: bidrag-person-q2.dev-fss-pub.nais.io
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskravq2"
   KONTERINGER_FORELDET_DATO: 2006-04
