@@ -3,10 +3,10 @@ ingresses:
   - https://bidrag-regnskap-q4.intern.dev.nav.no
 limits:
   cpu: 1000m
-  memory: 1024Mi
+  memory: 2048Mi
 requests:
   cpu: 500m
-  memory: 512Mi
+  memory: 1025Mi
 kafka:
   pool: nav-dev
 database:
