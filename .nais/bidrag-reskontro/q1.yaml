@@ -1,6 +1,12 @@
 name: bidrag-reskontro-q1
 ingresses:
   - https://bidrag-reskontro-q1.intern.dev.nav.no
+limits:
+  cpu: 500m
+  memory: 1028Mi
+requests:
+  cpu: 250m
+  memory: 512Mi
 maskinporten:
   url: https://test.maskinporten.no
 env:

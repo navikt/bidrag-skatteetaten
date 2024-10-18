@@ -1,5 +1,6 @@
 name: Deploy Q4 aktoerregister
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'

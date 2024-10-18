@@ -1,6 +1,12 @@
 name: bidrag-reskontro
 ingresses:
   - https://bidrag-reskontro.intern.nav.no
+limits:
+  cpu: 1000m
+  memory: 2048Mi
+requests:
+  cpu: 250m
+  memory: 1024Mi
 maskinporten:
   url: https://maskinporten.no
 env:
