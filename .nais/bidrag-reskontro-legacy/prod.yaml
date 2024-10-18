@@ -2,6 +2,12 @@ name: bidrag-reskontro-legacy
 ingresses:
   - https://bidrag-reskontro-legacy.intern.nav.no
   - https://bidrag-reskontro-legacy.prod-fss-pub.nais.io
+limits:
+  cpu: 1000m
+  memory: 2048Mi
+requests:
+  cpu: 250m
+  memory: 1024Mi
 env:
   ELIN_URL: http://elinweb.adeo.no/BisysReskWS/BisysReskWS.asmx
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
