@@ -3,10 +3,11 @@ ingresses:
   - https://bidrag-regnskap.intern.nav.no
 limits:
   cpu: 3000m
-  memory: 8192Mi
+  memory: 4096Mi
 requests:
   cpu: 500m
-  memory: 4096Mi
+  memory: 2048Mi
+
 kafka:
   pool: nav-prod
 database:

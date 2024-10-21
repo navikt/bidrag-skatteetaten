@@ -82,6 +82,7 @@ spring:
       auto-offset-reset: earliest
       max-poll-records: 10
       enable-auto-commit: false
+      heartbeat-interval: 10000
     listener:
       ackMode: MANUAL_IMMEDIATE
 
