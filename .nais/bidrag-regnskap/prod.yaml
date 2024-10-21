@@ -7,6 +7,7 @@ limits:
 requests:
   cpu: 500m
   memory: 2048Mi
+
 kafka:
   pool: nav-prod
 database:
