@@ -3,6 +3,15 @@ database:
   navn: bidrag-aktoerregister-q1
   tier: db-custom-1-3840
   size: 25
+limits:
+  cpu: 1000m
+  memory: 2048Mi
+requests:
+  cpu: 250m
+  memory: 1024Mi
+replicas:
+  max: 1
+  min: 1
 ingresses:
   - https://bidrag-aktoerregister-q1.intern.dev.nav.no/
   - https://bidrag-aktoerregister.ekstern.dev.nav.no/

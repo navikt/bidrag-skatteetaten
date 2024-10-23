@@ -7,6 +7,10 @@ limits:
 requests:
   cpu: 250m
   memory: 1024Mi
+replicas:
+  max: 2
+  min: 2
+
 maskinporten:
   url: https://maskinporten.no
 env:

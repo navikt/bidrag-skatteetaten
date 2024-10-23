@@ -7,6 +7,9 @@ limits:
 requests:
   cpu: 500m
   memory: 2048Mi
+replicas:
+  max: 2
+  min: 2
 
 kafka:
   pool: nav-prod
