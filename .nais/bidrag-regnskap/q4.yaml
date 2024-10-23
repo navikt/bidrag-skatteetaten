@@ -7,6 +7,10 @@ limits:
 requests:
   cpu: 500m
   memory: 512Mi
+replicas:
+  max: 1
+  min: 1
+
 kafka:
   pool: nav-dev
 database:

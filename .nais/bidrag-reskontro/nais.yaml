@@ -41,8 +41,8 @@ spec:
       memory: {{requests.memory}}
   replicas:
     disableAutoScaling: true
-    max: 2
-    min: 2
+    max: {{replicas.max}}
+    min: {{replicas.min}}
   maskinporten:
     enabled: true
     scopes:

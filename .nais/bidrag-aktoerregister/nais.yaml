@@ -35,14 +35,15 @@ spec:
     failureThreshold: 10
   resources:
     limits:
-      cpu: 1000m
-      memory: 2048Mi
+      cpu: {{limits.cpu}}
+      memory: {{limits.memory}}
     requests:
-      cpu: 250m
-      memory: 1024Mi
+      cpu: {{requests.cpu}}
+      memory: {{requests.memory}}
   replicas:
+    max: {{replicas.max}}
+    min: {{replicas.min}}
     cpuThresholdPercentage: 50
-    min: 2
   kafka:
     pool: {{ kafka.pool }}
   maskinporten:
