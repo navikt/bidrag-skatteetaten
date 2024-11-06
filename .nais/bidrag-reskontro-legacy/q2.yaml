@@ -3,10 +3,10 @@ ingresses:
   - https://bidrag-reskontro-legacy-q2.intern.dev.nav.no
   - https://bidrag-reskontro-legacy-q2.dev-fss-pub.nais.io
 limits:
-  cpu: 500m
+  cpu: 1000m
   memory: 1028Mi
 requests:
-  cpu: 250m
+  cpu: 500m
   memory: 512Mi
 replicas:
   max: 1
