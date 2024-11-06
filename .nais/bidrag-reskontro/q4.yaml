@@ -2,10 +2,10 @@ name: bidrag-reskontro-q4
 ingresses:
   - https://bidrag-reskontro-q4.intern.dev.nav.no
 limits:
-  cpu: 500m
+  cpu: 1000m
   memory: 1028Mi
 requests:
-  cpu: 250m
+  cpu: 500m
   memory: 512Mi
 replicas:
   max: 1
