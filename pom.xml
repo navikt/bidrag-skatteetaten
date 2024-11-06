@@ -28,18 +28,26 @@
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>3.2.0</nav-token-support.version>
         <kotlin-logging-jvm.version>6.0.9</kotlin-logging-jvm.version>
-        <slack-api.version>1.40.3</slack-api.version>
+        <slack-api.version>1.44.1</slack-api.version>
         <shedlock.version>5.13.0</shedlock.version>
         <jsch.version>0.2.17</jsch.version>
         <google-cloud-storage.version>2.41.0</google-cloud-storage.version>
-        <spring-cloud-contract-wiremock.version>4.1.2</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>2.5.0</springdoc-openapi-ui.version>
-        <logback-encoder.version>7.4</logback-encoder.version>
+        <logback-encoder.version>8.0</logback-encoder.version>
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
-        <maven-avro-plugin.version>1.11.3</maven-avro-plugin.version>
+        <maven-avro-plugin.version>1.12.0</maven-avro-plugin.version>
         <avro-serializer.version>7.6.1</avro-serializer.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+    </dependencies>
 
     <modules>
         <module>bidrag-regnskap</module>
@@ -67,6 +75,7 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <executions>
                             <execution>
