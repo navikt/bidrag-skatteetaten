@@ -3,7 +3,6 @@ package no.nav.bidrag.aktoerregister.consumer
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
-import no.nav.bidrag.aktoerregister.util.ConsumerUtils.leggTilPathPåUri
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.transport.samhandler.SamhandlerDto
@@ -15,15 +14,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 private val LOGGER = KotlinLogging.logger {}
 
 @Service
-class SamhandlerConsumer(
-    @Value("\${BIDRAG_SAMHANDLER_URL}") val url: URI,
-    @Qualifier("azure") private val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "bidrag-aktoerregister-samhandler") {
+class SamhandlerConsumer(@Value("\${BIDRAG_SAMHANDLER_URL}") val url: URI, @Qualifier("azure") private val restTemplate: RestOperations) :
+    AbstractRestClient(restTemplate, "bidrag-aktoerregister-samhandler") {
 
     companion object {
         private const val SAMHANDLER_PATH = "/samhandler"
@@ -64,4 +62,7 @@ class SamhandlerConsumer(
             throw e
         }
     }
+
+    private fun leggTilPathPåUri(url: URI, path: String) = UriComponentsBuilder.fromUri(url)
+        .path(path).build().toUri()
 }

@@ -1,0 +1,48 @@
+package no.nav.bidrag.aktoerregister.service
+
+import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
+import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.transport.samhandler.SamhandlerKafkaHendelsestype
+import no.nav.bidrag.transport.samhandler.Samhandlerhendelse
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+
+@Service
+class SamhandlerhendelseService(private val aktørRepository: AktørRepository, private val aktørService: AktørService) {
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(SamhandlerhendelseService::class.java)
+    }
+
+    fun behandleHendelse(hendelse: Samhandlerhendelse) {
+        when (hendelse.hendelsestype) {
+            SamhandlerKafkaHendelsestype.OPPRETTET -> {
+                opprettNySamhandler(hendelse.samhandlerId)
+            }
+            SamhandlerKafkaHendelsestype.OPPDATERT -> {
+                oppdaterSamhandler(hendelse.samhandlerId)
+            }
+            SamhandlerKafkaHendelsestype.OPPHØRT -> {
+                opphørSamhandler(hendelse.samhandlerId)
+            }
+        }
+    }
+
+    private fun opprettNySamhandler(samhandlerId: String) {
+        LOGGER.info("Skatt melder på ønskede samhandler selv. Ingen handling nødvendig for opprettet samhandler $samhandlerId.")
+    }
+
+    private fun oppdaterSamhandler(samhandlerId: String) {
+        val lagretAktør = aktørRepository.findByAktørIdent(samhandlerId)
+
+        if (lagretAktør != null) {
+            val oppdatertAktør = aktørService.hentAktørFraSamhandler(Ident(samhandlerId))
+            aktørService.oppdaterAktør(lagretAktør, oppdatertAktør, lagretAktør.aktørIdent)
+            LOGGER.info("Oppdatert samhandler $samhandlerId.")
+        }
+    }
+
+    private fun opphørSamhandler(samhandlerId: String) {
+        LOGGER.info("Sletting er ikke i bruk i aktørregisteret. Ingen handling nødvendig for sletting av samhandler $samhandlerId.")
+    }
+}

@@ -20,7 +20,7 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
-        <bidrag-felles.version>2024.07.09.113952</bidrag-felles.version>
+        <bidrag-felles.version>2024.11.14.110545</bidrag-felles.version>
         <jackson.version>2.17.1</jackson.version>
         <kotest.version>5.9.1</kotest.version>
         <ktlint.version>1.2.1</ktlint.version>
