@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class PersonHendelseService(
-    private val objectMapper: ObjectMapper,
-    private val aktørService: AktørService,
-) {
+class PersonHendelseService(private val objectMapper: ObjectMapper, private val aktørService: AktørService) {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(PersonHendelseService::class.java)
@@ -45,7 +42,5 @@ class PersonHendelseService(
         }
     }
 
-    private fun mapEndringsmelding(hendelse: String): Endringsmelding {
-        return objectMapper.readValue(hendelse, Endringsmelding::class.java)
-    }
+    private fun mapEndringsmelding(hendelse: String): Endringsmelding = objectMapper.readValue(hendelse, Endringsmelding::class.java)
 }
