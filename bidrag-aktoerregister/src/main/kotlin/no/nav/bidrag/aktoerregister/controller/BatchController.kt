@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import no.nav.bidrag.aktoerregister.batch.person.PersonBatch
-import no.nav.bidrag.aktoerregister.batch.samhandler.SamhandlerBatchScheduler
+import no.nav.bidrag.aktoerregister.batch.samhandler.SamhandlerBatch
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,10 +15,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 @RestController
 @Protected
-class BatchController(
-    private val samhandlerBatchScheduler: SamhandlerBatchScheduler,
-    private val personBatch: PersonBatch,
-) {
+class BatchController(private val samhandlerBatch: SamhandlerBatch, private val personBatch: PersonBatch) {
 
     @Operation(
         summary = "Start kjøring av Samhandler batch.",
@@ -29,7 +26,7 @@ class BatchController(
     fun startSamhandlerBatch(): ResponseEntity<*> {
         CompletableFuture.runAsync {
             try {
-                samhandlerBatchScheduler.scheduleSamhandlerBatch()
+                samhandlerBatch.startSamhandlerBatch()
             } catch (e: Exception) {
                 LOGGER.error(e) { "Manuell start av batchen feilet med følgende feilkode: ${e.message}" }
             }
