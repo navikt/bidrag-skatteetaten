@@ -178,31 +178,27 @@ data class Aktør(
         }
     }
 
-    private fun erDødsboUlikt(other: Aktør): Boolean {
-        return when {
-            dødsbo?.kontaktperson != other.dødsbo?.kontaktperson -> true
-            dødsbo?.adresselinje1 != other.dødsbo?.adresselinje1 -> true
-            dødsbo?.adresselinje2 != other.dødsbo?.adresselinje2 -> true
-            dødsbo?.adresselinje3 != other.dødsbo?.adresselinje3 -> true
-            dødsbo?.leilighetsnummer != other.dødsbo?.leilighetsnummer -> true
-            dødsbo?.postnr != other.dødsbo?.postnr -> true
-            dødsbo?.poststed != other.dødsbo?.poststed -> true
-            dødsbo?.land != other.dødsbo?.land -> true
-            else -> false
-        }
+    private fun erDødsboUlikt(other: Aktør): Boolean = when {
+        dødsbo?.kontaktperson != other.dødsbo?.kontaktperson -> true
+        dødsbo?.adresselinje1 != other.dødsbo?.adresselinje1 -> true
+        dødsbo?.adresselinje2 != other.dødsbo?.adresselinje2 -> true
+        dødsbo?.adresselinje3 != other.dødsbo?.adresselinje3 -> true
+        dødsbo?.leilighetsnummer != other.dødsbo?.leilighetsnummer -> true
+        dødsbo?.postnr != other.dødsbo?.postnr -> true
+        dødsbo?.poststed != other.dødsbo?.poststed -> true
+        dødsbo?.land != other.dødsbo?.land -> true
+        else -> false
     }
 
-    fun erTidligereIdenterUlike(other: Aktør): Boolean {
-        return !(
-            tidligereIdenter.size == other.tidligereIdenter.size &&
-                tidligereIdenter.all { a1 ->
-                    other.tidligereIdenter.any { a2 -> a1.tidligereAktoerIdent == a2.tidligereAktoerIdent } &&
-                        other.tidligereIdenter.all { a2 ->
-                            tidligereIdenter.any { a1 -> a2.tidligereAktoerIdent == a1.tidligereAktoerIdent }
-                        }
-                }
-            )
-    }
+    fun erTidligereIdenterUlike(other: Aktør): Boolean = !(
+        tidligereIdenter.size == other.tidligereIdenter.size &&
+            tidligereIdenter.all { a1 ->
+                other.tidligereIdenter.any { a2 -> a1.tidligereAktoerIdent == a2.tidligereAktoerIdent } &&
+                    other.tidligereIdenter.all { a2 ->
+                        tidligereIdenter.any { a1 -> a2.tidligereAktoerIdent == a1.tidligereAktoerIdent }
+                    }
+            }
+        )
 
     override fun hashCode(): Int {
         var result = aktørIdent.hashCode()
@@ -233,33 +229,31 @@ data class Aktør(
         return result
     }
 
-    override fun toString(): String {
-        return "Aktoer(id=$id, " +
-            "aktoerIdent='$aktørIdent', " +
-            "aktoerType='$aktørType', " +
-            "offentligId=$offentligId, " +
-            "offentligIdType=$offentligIdType, " +
-            "norskKontonr=$norskKontonr, " +
-            "iban=$iban, " +
-            "swift=$swift, " +
-            "bankNavn=$bankNavn, " +
-            "bankLandkode=$bankLandkode, " +
-            "bankCode=$bankCode, " +
-            "valutaKode=$valutaKode, " +
-            "fornavn=$fornavn, " +
-            "etternavn=$etternavn, " +
-            "fodtDato=$fødtDato, " +
-            "dodDato=$dødDato, " +
-            "gradering=$gradering, " +
-            "sprakkode=$språkkode, " +
-            "adresselinje1=$adresselinje1, " +
-            "adresselinje2=$adresselinje2, " +
-            "adresselinje3=$adresselinje3, " +
-            "leilighetsnummer=$leilighetsnummer, " +
-            "postnr=$postnr, " +
-            "poststed=$poststed, land=$land, " +
-            "tidligereIdenter=$tidligereIdenter, " +
-            "dodsbo=${dødsbo?.id}, " +
-            "sistEndret=$sistEndret)"
-    }
+    override fun toString(): String = "Aktoer(id=$id, " +
+        "aktoerIdent='$aktørIdent', " +
+        "aktoerType='$aktørType', " +
+        "offentligId=$offentligId, " +
+        "offentligIdType=$offentligIdType, " +
+        "norskKontonr=$norskKontonr, " +
+        "iban=$iban, " +
+        "swift=$swift, " +
+        "bankNavn=$bankNavn, " +
+        "bankLandkode=$bankLandkode, " +
+        "bankCode=$bankCode, " +
+        "valutaKode=$valutaKode, " +
+        "fornavn=$fornavn, " +
+        "etternavn=$etternavn, " +
+        "fodtDato=$fødtDato, " +
+        "dodDato=$dødDato, " +
+        "gradering=$gradering, " +
+        "sprakkode=$språkkode, " +
+        "adresselinje1=$adresselinje1, " +
+        "adresselinje2=$adresselinje2, " +
+        "adresselinje3=$adresselinje3, " +
+        "leilighetsnummer=$leilighetsnummer, " +
+        "postnr=$postnr, " +
+        "poststed=$poststed, land=$land, " +
+        "tidligereIdenter=$tidligereIdenter, " +
+        "dodsbo=${dødsbo?.id}, " +
+        "sistEndret=$sistEndret)"
 }

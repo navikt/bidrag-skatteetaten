@@ -26,4 +26,5 @@ env:
   BIDRAG_SAMHANDLER_HOST: bidrag-samhandler-q4.intern.dev.nav.no
   BIDRAG_SAMHANDLER_SCOPE: dev-gcp.bidrag.bidrag-samhandler-q4
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
+  TOPIC_SAMHANDLER: bidrag.samhandler-q4
   KAFKA_GROUP_ID: bidrag-aktoerregister-q4

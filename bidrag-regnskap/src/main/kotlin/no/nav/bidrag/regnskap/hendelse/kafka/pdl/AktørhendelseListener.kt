@@ -12,9 +12,7 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
 
 @Component
-class AktørhendelseListener(
-    private val aktørhendelseService: AktørhendelseService,
-) {
+class AktørhendelseListener(private val aktørhendelseService: AktørhendelseService) {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(AktørhendelseListener::class.java)

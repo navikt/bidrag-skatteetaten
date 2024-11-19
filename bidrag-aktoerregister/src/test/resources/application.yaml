@@ -1,5 +1,6 @@
 NAIS_APP_NAME: bidrag-aktoerregister
 TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
+TOPIC_SAMHANDLER: bidrag.samhandler-test
 KAFKA_GROUP_ID: bidrag-aktoerregister-local
 
 AZURE_APP_CLIENT_ID: <CLIENT_ID>
