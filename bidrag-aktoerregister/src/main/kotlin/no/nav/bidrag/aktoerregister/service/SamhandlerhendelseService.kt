@@ -6,6 +6,7 @@ import no.nav.bidrag.transport.samhandler.SamhandlerKafkaHendelsestype
 import no.nav.bidrag.transport.samhandler.Samhandlerhendelse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SamhandlerhendelseService(private val aktørRepository: AktørRepository, private val aktørService: AktørService) {
@@ -14,6 +15,7 @@ class SamhandlerhendelseService(private val aktørRepository: AktørRepository, 
         private val LOGGER = LoggerFactory.getLogger(SamhandlerhendelseService::class.java)
     }
 
+    @Transactional
     fun behandleHendelse(hendelse: Samhandlerhendelse) {
         when (hendelse.hendelsestype) {
             SamhandlerKafkaHendelsestype.OPPRETTET -> {
