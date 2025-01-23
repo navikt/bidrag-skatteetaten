@@ -59,7 +59,5 @@ class FiloverføringTilElinKlient(
         }
     }
 
-    fun gcpMelding(filnavn: String): String {
-        return gcpFilBucket.hentInfoOmFil(filnavn)
-    }
+    fun gcpMelding(filnavn: String): String = gcpFilBucket.hentInfoOmFil(filnavn)
 }

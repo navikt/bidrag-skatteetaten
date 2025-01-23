@@ -41,9 +41,7 @@ class DriftsavvikController(
             ),
         ],
     )
-    fun hentAlleAktiveDriftsavvik(): ResponseEntity<List<Driftsavvik>> {
-        return ResponseEntity.ok(driftsavvikService.hentAlleAktiveDriftsavvik())
-    }
+    fun hentAlleAktiveDriftsavvik(): ResponseEntity<List<Driftsavvik>> = ResponseEntity.ok(driftsavvikService.hentAlleAktiveDriftsavvik())
 
     @GetMapping("/driftsavvik")
     @Operation(
@@ -59,9 +57,7 @@ class DriftsavvikController(
             ),
         ],
     )
-    fun hentDriftsavvik(antallDriftsavvik: Int): ResponseEntity<List<Driftsavvik>> {
-        return ResponseEntity.ok(driftsavvikService.hentFlereDriftsavvik(antallDriftsavvik))
-    }
+    fun hentDriftsavvik(antallDriftsavvik: Int): ResponseEntity<List<Driftsavvik>> = ResponseEntity.ok(driftsavvikService.hentFlereDriftsavvik(antallDriftsavvik))
 
     @PostMapping("/driftsavvik")
     @Operation(
@@ -79,7 +75,8 @@ class DriftsavvikController(
     )
     @Parameters(
         value = [
-            Parameter(name = "tidspunktFra", example = "2022-01-01T10:00:00"), Parameter(
+            Parameter(name = "tidspunktFra", example = "2022-01-01T10:00:00"),
+            Parameter(
                 name = "tidspunktTil",
                 example = "2022-01-02T10:00:00",
             ),
@@ -94,9 +91,7 @@ class DriftsavvikController(
         tidspunktTil: LocalDateTime?,
         @RequestParam(required = false) opprettetAv: String?,
         @RequestParam(required = false) årsak: String?,
-    ): ResponseEntity<Int> {
-        return ResponseEntity.ok(driftsavvikService.lagreDriftsavvik(tidspunktFra, tidspunktTil, opprettetAv, årsak))
-    }
+    ): ResponseEntity<Int> = ResponseEntity.ok(driftsavvikService.lagreDriftsavvik(tidspunktFra, tidspunktTil, opprettetAv, årsak))
 
     @PutMapping("/driftsavvik")
     @Operation(

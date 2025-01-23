@@ -34,7 +34,7 @@ class PåløpskjøringControllerTest {
 
         every { påløpskjøringService.hentPåløp() } returns påløp
 
-        val response = påløpskjøringController.startPåløpskjøring(false)
+        val response = påløpskjøringController.startPåløpskjøring(false, false)
 
         response.statusCode shouldBe HttpStatus.CREATED
     }
@@ -43,7 +43,7 @@ class PåløpskjøringControllerTest {
     fun `skal om det ikke finnes ikke kjørte påløpsperioder returnere 204`() {
         every { påløpskjøringService.hentPåløp() } returns null
 
-        val response = påløpskjøringController.startPåløpskjøring(false)
+        val response = påløpskjøringController.startPåløpskjøring(false, false)
 
         response.statusCode shouldBe HttpStatus.NO_CONTENT
     }

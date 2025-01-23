@@ -41,7 +41,5 @@ object PeriodeUtils {
             .collect(Collectors.toList())
     }
 
-    fun erFørsteDatoSammeSomEllerTidligereEnnAndreDato(førsteDato: LocalDate?, andreDato: LocalDate): Boolean {
-        return førsteDato != null && (førsteDato.isBefore(andreDato) || førsteDato.isEqual(andreDato))
-    }
+    fun erFørsteDatoSammeSomEllerTidligereEnnAndreDato(førsteDato: LocalDate?, andreDato: LocalDate): Boolean = førsteDato != null && (førsteDato.isBefore(andreDato) || førsteDato.isEqual(andreDato))
 }

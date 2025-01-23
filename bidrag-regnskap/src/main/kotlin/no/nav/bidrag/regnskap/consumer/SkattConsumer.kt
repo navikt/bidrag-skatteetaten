@@ -100,9 +100,7 @@ class SkattConsumer(
         )
     }
 
-    private fun opprettSkattUrl(path: String): URI {
-        return URI.create(skattUrl + path)
-    }
+    private fun opprettSkattUrl(path: String): URI = URI.create(skattUrl + path)
 
     private fun opprettHttpHeaders(): HttpHeaders {
         val httpHeaders = HttpHeaders()
@@ -113,7 +111,5 @@ class SkattConsumer(
         return httpHeaders
     }
 
-    private fun hentJwtToken(): String {
-        return maskinportenClient.hentMaskinportenToken(scope).parsedString
-    }
+    private fun hentJwtToken(): String = maskinportenClient.hentMaskinportenToken(scope).parsedString
 }

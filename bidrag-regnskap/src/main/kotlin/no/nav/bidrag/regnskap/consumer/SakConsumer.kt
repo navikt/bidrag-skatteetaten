@@ -25,20 +25,16 @@ class SakConsumer(
     }
 
     @Cacheable(value = ["bidrag-sak_cache"], key = "#sakId")
-    fun hentBmFraSak(sakId: String): String {
-        return try {
-            val responseEntity = restTemplate.getForEntity("$sakUrl$SAK_PATH/$sakId", BidragssakDto::class.java)
+    fun hentBmFraSak(sakId: String): String = try {
+        val responseEntity = restTemplate.getForEntity("$sakUrl$SAK_PATH/$sakId", BidragssakDto::class.java)
 
-            hentFødselsnummerTilBmFraSak(responseEntity) ?: DUMMY_NUMMER
-        } catch (e: Exception) {
-            LOGGER.error {
-                "Noe gikk galt i kommunikasjon med bidrag-sak for sakId: $sakId! \nGjeldende URL mot sak er: ${sakUrl + SAK_PATH} \nFeilmelding: ${e.message}"
-            }
-            throw e
+        hentFødselsnummerTilBmFraSak(responseEntity) ?: DUMMY_NUMMER
+    } catch (e: Exception) {
+        LOGGER.error {
+            "Noe gikk galt i kommunikasjon med bidrag-sak for sakId: $sakId! \nGjeldende URL mot sak er: ${sakUrl + SAK_PATH} \nFeilmelding: ${e.message}"
         }
+        throw e
     }
 
-    private fun hentFødselsnummerTilBmFraSak(responseEntity: ResponseEntity<BidragssakDto>): String? {
-        return responseEntity.body?.roller?.find { it.type == Rolletype.BIDRAGSMOTTAKER }?.fødselsnummer?.verdi
-    }
+    private fun hentFødselsnummerTilBmFraSak(responseEntity: ResponseEntity<BidragssakDto>): String? = responseEntity.body?.roller?.find { it.type == Rolletype.BIDRAGSMOTTAKER }?.fødselsnummer?.verdi
 }

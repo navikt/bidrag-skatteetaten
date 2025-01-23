@@ -43,13 +43,9 @@ class GcpFilBucket(
         }
     }
 
-    private fun hentWriteChannel(filnavn: String): WriteChannel {
-        return storage.writer(lagBlobinfo(filnavn))
-    }
+    private fun hentWriteChannel(filnavn: String): WriteChannel = storage.writer(lagBlobinfo(filnavn))
 
-    private fun lagBlobinfo(filnavn: String): BlobInfo {
-        return BlobInfo.newBuilder(bucketNavn, filnavn)
-            .setContentType("text/xml")
-            .build()
-    }
+    private fun lagBlobinfo(filnavn: String): BlobInfo = BlobInfo.newBuilder(bucketNavn, filnavn)
+        .setContentType("text/xml")
+        .build()
 }

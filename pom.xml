@@ -23,7 +23,7 @@
         <bidrag-felles.version>2024.11.19.140537</bidrag-felles.version>
         <jackson.version>2.17.1</jackson.version>
         <kotest.version>5.9.1</kotest.version>
-        <ktlint.version>1.2.1</ktlint.version>
+        <ktlint.version>1.4.1</ktlint.version>
         <mockk.version>1.13.12</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>3.2.0</nav-token-support.version>

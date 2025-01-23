@@ -38,16 +38,20 @@ class PåløpskjøringController(
             ApiResponse(
                 responseCode = "201",
                 description = "Påløpskjøringen har startet. Returnerer ID'en til påløpet.",
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "204",
                 description = "Det finnes ingen ikke gjennomførte påløp.",
                 content = [Content()],
             ),
         ],
     )
-    fun startPåløpskjøring(@RequestParam(required = true) genererFil: Boolean): ResponseEntity<Int> {
+    fun startPåløpskjøring(
+        @RequestParam(required = true) genererFil: Boolean,
+        @RequestParam(required = true) overførFil: Boolean,
+    ): ResponseEntity<Int> {
         val påløp = påløpskjøringService.hentPåløp()?.copy(startetTidspunkt = null) ?: return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
-        påløpskjøringService.startPåløpskjøring(påløp, false, genererFil)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil)
         return ResponseEntity.status(HttpStatus.CREATED).body(påløp.påløpId)
     }
 

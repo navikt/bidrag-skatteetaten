@@ -65,22 +65,18 @@ class SendKravScheduler(
         LOGGER.info { "Alle oppdrag(antall: ${oppdragMedIkkeOverførteKonteringer.size}) med unsendte konteringer er nå forsøkt overført til skatt." }
     }
 
-    private fun oppdragHarNyligOpprettedeKonteringer(oppdrag: Oppdrag): Boolean {
-        return oppdrag.oppdragsperioder.any { oppdragsperiode ->
-            oppdragsperiode.konteringer.any { kontering ->
-                kontering.opprettetTidspunkt.isAfter(LocalDateTime.now().minusSeconds(KONTERING_MINIMUM_LEVETID))
-            }
+    private fun oppdragHarNyligOpprettedeKonteringer(oppdrag: Oppdrag): Boolean = oppdrag.oppdragsperioder.any { oppdragsperiode ->
+        oppdragsperiode.konteringer.any { kontering ->
+            kontering.opprettetTidspunkt.isAfter(LocalDateTime.now().minusSeconds(KONTERING_MINIMUM_LEVETID))
         }
     }
 
-    private fun hentOppdragMedIkkeOverførteKonteringerHvorKonteringIkkeErUtsatt(): List<Oppdrag> {
-        return persistenceService.hentAlleIkkeOverførteKonteringer()
-            .asSequence()
-            .flatMap { listOf(it.oppdragsperiode?.oppdrag) }
-            .filterNot { it?.utsattTilDato?.isAfter(LocalDate.now()) == true }
-            .filterNot { it?.harFeiledeKonteringer == true }
-            .filterNotNull()
-            .distinct()
-            .toList()
-    }
+    private fun hentOppdragMedIkkeOverførteKonteringerHvorKonteringIkkeErUtsatt(): List<Oppdrag> = persistenceService.hentAlleIkkeOverførteKonteringer()
+        .asSequence()
+        .flatMap { listOf(it.oppdragsperiode?.oppdrag) }
+        .filterNot { it?.utsattTilDato?.isAfter(LocalDate.now()) == true }
+        .filterNot { it?.harFeiledeKonteringer == true }
+        .filterNotNull()
+        .distinct()
+        .toList()
 }

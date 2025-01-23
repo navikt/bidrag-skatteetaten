@@ -25,7 +25,7 @@ class PåløpsfilGenerator(
 
     private var lyttere: List<PåløpskjøringLytter> = emptyList()
 
-    fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp, lyttere: List<PåløpskjøringLytter>) {
+    fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp, lyttere: List<PåløpskjøringLytter>, overførFil: Boolean) {
         this.lyttere = lyttere
         val now = LocalDate.now()
         val konteringer = persistenceService.hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(påløp.forPeriode)
@@ -74,9 +74,13 @@ class PåløpsfilGenerator(
         gcpFilBucket.lagreFil(påløpsMappe + påløpsfilnavn, byteArrayOutputStream)
         medLyttere { it.lastOppFilTilGcpBucket(påløp, "Fil lastet opp til GCP bucket!") }
 
-        medLyttere { it.lastOppFilTilFilsluse(påløp, "Starter opplasting til filsluse..") }
-        filoverføringTilElinKlient.lastOppFilTilFilsluse(påløpsMappe, påløpsfilnavn)
-        medLyttere { it.lastOppFilTilFilsluse(påløp, "Fil lastet opp til filsluse!") }
+        if (!overførFil) {
+            medLyttere { it.lastOppFilTilFilsluse(påløp, "Starter opplasting til filsluse..") }
+            filoverføringTilElinKlient.lastOppFilTilFilsluse(påløpsMappe, påløpsfilnavn)
+            medLyttere { it.lastOppFilTilFilsluse(påløp, "Fil lastet opp til filsluse!") }
+        } else {
+            medLyttere { it.skalIkkeLasteOppPåløpsfil(påløp, "Filen generert for dette påløpet skal ikke overføres til Elin.") }
+        }
 
 // For lokal testing av filgenerering
 //        val xmlString = byteArrayOutputStream.toString()

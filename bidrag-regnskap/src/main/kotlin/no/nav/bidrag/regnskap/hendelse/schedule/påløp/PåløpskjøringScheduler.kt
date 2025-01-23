@@ -43,7 +43,7 @@ class PåløpskjøringScheduler(
         persistenceService.hentIkkeKjørtePåløp().minByOrNull { it.forPeriode }.let {
             if (it != null) {
                 if (it.kjøredato.isBefore(LocalDateTime.now())) {
-                    påløpskjøringService.startPåløpskjøring(it, true, true)
+                    påløpskjøringService.startPåløpskjøringMaskinelt(it)
                 } else {
                     LOGGER.info(
                         "Fant ingen påløp som skulle kjøres på dette tidspunkt. Neste påløpskjøring er for periode: ${it.forPeriode} som kjøres: ${it.kjøredato}",
@@ -52,8 +52,8 @@ class PåløpskjøringScheduler(
             } else {
                 if (clusterName == "prod-gcp") {
                     slackService.sendMelding("Det finnes ingen fremtidige planlagte påløp! Påløpsfil kommer ikke til å generes før dette legges inn!")
+                    LOGGER.error("Det finnes ingen fremtidige planlagte påløp! Påløpsfil kommer ikke til å generes før dette legges inn!")
                 }
-                LOGGER.error("Det finnes ingen fremtidige planlagte påløp! Påløpsfil kommer ikke til å generes før dette legges inn!")
             }
         }
 

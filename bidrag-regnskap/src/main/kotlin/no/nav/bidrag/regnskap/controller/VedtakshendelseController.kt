@@ -36,7 +36,8 @@ class VedtakshendelseController(
                 responseCode = "200",
                 description = "Meldingen er lest vellykket.",
                 content = [Content()],
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "400",
                 description = "Noe er galt med meldingen.",
                 content = [Content()],
@@ -60,7 +61,8 @@ class VedtakshendelseController(
                 responseCode = "200",
                 description = "Offset er hoppet over.",
                 content = [Content()],
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "400",
                 description = "Noe er galt med meldingen.",
                 content = [Content()],
@@ -84,7 +86,8 @@ class VedtakshendelseController(
                 responseCode = "200",
                 description = "Alle offsets er hoppet over.",
                 content = [Content()],
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "400",
                 description = "Noe er galt med meldingen.",
                 content = [Content()],
@@ -109,7 +112,5 @@ class VedtakshendelseController(
             ),
         ],
     )
-    fun hentSisteLesteHendelse(): ResponseEntity<String> {
-        return ResponseEntity.ok("Siste leste offset er: ${vedtakshendelseListener.hentSisteLesteHendelse()}.")
-    }
+    fun hentSisteLesteHendelse(): ResponseEntity<String> = ResponseEntity.ok("Siste leste offset er: ${vedtakshendelseListener.hentSisteLesteHendelse()}.")
 }

@@ -34,7 +34,5 @@ class MaskinportenController(
         ),
     )
     @GetMapping(value = ["/token"])
-    fun hentToken(scopes: String): ResponseEntity<String> {
-        return ResponseEntity.ok(maskinportenClient.hentMaskinportenToken(scopes).parsedString)
-    }
+    fun hentToken(scopes: String): ResponseEntity<String> = ResponseEntity.ok(maskinportenClient.hentMaskinportenToken(scopes).parsedString)
 }

@@ -75,7 +75,7 @@ class PåløpskjøringServiceIT {
     @Test
     fun `skal ta tiden på opprettelse av manglende konteringer`() {
         val tidsbruk = measureTime {
-            påløpskjøringService.startPåløpskjøring(påløp!!, schedulertKjøring = false, genererFil = false)
+            påløpskjøringService.startPåløpskjøringManuelt(påløp!!, genererFil = false, overførFil = false)
         }
 
         val tidsbrukISekunder = tidsbruk.inWholeMilliseconds.toDouble() / 1000
@@ -114,7 +114,7 @@ class PåløpskjøringServiceIT {
 
     @Suppress("SameParameterValue")
     private fun opprettOppdragOgOppdragsperioder(antallOppdrag: Int) {
-        for (i in 0..<antallOppdrag) {
+        (0..<antallOppdrag).forEach { i ->
             val oppdrag = Oppdrag(
                 stønadType = "BIDRAG",
                 sakId = Random.nextInt().toString(),

@@ -40,9 +40,7 @@ class VedlikeholdsmodusController(
         ],
     )
     @Parameter(name = "kommentar", example = "Påløp for 2022-12 genereres hos NAV.")
-    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): ResponseEntity<Any> {
-        return skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar))
-    }
+    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): ResponseEntity<Any> = skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar))
 
     @GetMapping("/vedlikeholdsmodus")
     @Operation(
@@ -55,7 +53,8 @@ class VedlikeholdsmodusController(
                 responseCode = "200",
                 description = "Vedlikeholdsmodus er avslått.",
                 content = [Content()],
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "503",
                 description = "Vedlikeholdsmodus er påslått.",
                 content = [
@@ -64,7 +63,5 @@ class VedlikeholdsmodusController(
             ),
         ],
     )
-    fun sjekkStatusPåVedlikeholdsmodus(): ResponseEntity<Any> {
-        return skattConsumer.hentStatusPåVedlikeholdsmodus()
-    }
+    fun sjekkStatusPåVedlikeholdsmodus(): ResponseEntity<Any> = skattConsumer.hentStatusPåVedlikeholdsmodus()
 }

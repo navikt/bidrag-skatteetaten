@@ -41,9 +41,7 @@ class PåløpsController(
             ),
         ],
     )
-    fun hentPåløp(): ResponseEntity<List<PåløpResponse>> {
-        return ResponseEntity.ok(påløpsService.hentPåløp())
-    }
+    fun hentPåløp(): ResponseEntity<List<PåløpResponse>> = ResponseEntity.ok(påløpsService.hentPåløp())
 
     @PostMapping("/palop")
     @Operation(
@@ -70,7 +68,5 @@ class PåløpsController(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         kjøredato: LocalDateTime,
         @RequestParam(required = true) forPeriode: String,
-    ): ResponseEntity<Int> {
-        return ResponseEntity.ok(påløpsService.lagrePåløp(PåløpRequest(kjøredato, YearMonth.parse(forPeriode))))
-    }
+    ): ResponseEntity<Int> = ResponseEntity.ok(påløpsService.lagrePåløp(PåløpRequest(kjøredato, YearMonth.parse(forPeriode))))
 }

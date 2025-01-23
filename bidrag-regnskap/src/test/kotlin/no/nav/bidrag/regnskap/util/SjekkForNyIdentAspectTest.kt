@@ -114,43 +114,25 @@ class SjekkForNyIdentAspectTest {
 @Component
 private class DummyClassForAnnotasjon {
     @SjekkForNyIdent("ident1", "ident2")
-    fun skalTesteBytteAvBeggeIdenter(ident1: String, ident2: String): List<String> {
-        return listOf(ident1, ident2)
-    }
+    fun skalTesteBytteAvBeggeIdenter(ident1: String, ident2: String): List<String> = listOf(ident1, ident2)
 
     @SjekkForNyIdent("ident2")
-    fun skalTesteBytteAvSisteIdent(ident1: String, ident2: String): List<String> {
-        return listOf(ident1, ident2)
-    }
+    fun skalTesteBytteAvSisteIdent(ident1: String, ident2: String): List<String> = listOf(ident1, ident2)
 
     @SjekkForNyIdent("ident2")
-    fun skalTesteBytteAvMidtersteIdent(ident1: String, ident2: String, noeAnnet: Int): List<String> {
-        return listOf(ident1, ident2, "$noeAnnet")
-    }
+    fun skalTesteBytteAvMidtersteIdent(ident1: String, ident2: String, noeAnnet: Int): List<String> = listOf(ident1, ident2, "$noeAnnet")
 
-    fun skalTesteBytteAvIdentPåParameter(@SjekkForNyIdent ident1: String, ident2: String): List<String> {
-        return listOf(ident1, ident2)
-    }
+    fun skalTesteBytteAvIdentPåParameter(@SjekkForNyIdent ident1: String, ident2: String): List<String> = listOf(ident1, ident2)
 
-    fun skalTesteBytteAvIdentPåBeggeParameter(@SjekkForNyIdent ident1: String, @SjekkForNyIdent ident2: String): List<String> {
-        return listOf(ident1, ident2)
-    }
+    fun skalTesteBytteAvIdentPåBeggeParameter(@SjekkForNyIdent ident1: String, @SjekkForNyIdent ident2: String): List<String> = listOf(ident1, ident2)
 
     @SjekkForNyIdent("ident1")
-    fun skalTesteBytteAvIdentMedIdentObjekt(ident1: Ident, ident2: String): List<String> {
-        return listOf(ident1.verdi, ident2)
-    }
+    fun skalTesteBytteAvIdentMedIdentObjekt(ident1: Ident, ident2: String): List<String> = listOf(ident1.verdi, ident2)
 
-    fun skalTesteBytteAvIdentPåParameterMedIdentObjekt(@SjekkForNyIdent ident1: Ident, ident2: String): List<String> {
-        return listOf(ident1.verdi, ident2)
-    }
+    fun skalTesteBytteAvIdentPåParameterMedIdentObjekt(@SjekkForNyIdent ident1: Ident, ident2: String): List<String> = listOf(ident1.verdi, ident2)
 
-    fun skalTesteFeilInputPåParameter(@SjekkForNyIdent ident1: Long, ident2: String): List<String> {
-        return listOf(ident1.toString(), ident2)
-    }
+    fun skalTesteFeilInputPåParameter(@SjekkForNyIdent ident1: Long, ident2: String): List<String> = listOf(ident1.toString(), ident2)
 
     @SjekkForNyIdent("ident1")
-    fun skalTesteFeilInput(ident1: Long, ident2: String): List<String> {
-        return listOf(ident1.toString(), ident2)
-    }
+    fun skalTesteFeilInput(ident1: Long, ident2: String): List<String> = listOf(ident1.toString(), ident2)
 }

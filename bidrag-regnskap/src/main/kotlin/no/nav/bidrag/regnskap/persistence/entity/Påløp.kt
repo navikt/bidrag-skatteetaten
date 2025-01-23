@@ -26,10 +26,20 @@ data class Påløp(
 
     @Column(name = "for_periode")
     val forPeriode: String,
+
+    @Column(name = "generer_fil")
+    val genererFil: Boolean = true,
+
+    @Column(name = "overfor_fil")
+    val overførFil: Boolean = true,
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(påløpId = $påløpId , kjøredato = $kjøredato , fullførtTidspunkt = $fullførtTidspunkt , forPeriode = $forPeriode )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(påløpId = $påløpId, " +
+        "kjøredato = $kjøredato, " +
+        "fullførtTidspunkt = $fullførtTidspunkt, " +
+        "forPeriode = $forPeriode" +
+        "genererFil = $genererFil" +
+        "overførFil = $overførFil" +
+        ")"
 }
