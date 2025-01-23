@@ -28,7 +28,7 @@ class ManglendeKonteringerService(
 ) {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun opprettKonteringerForOppdragsperiode(påløp: Påløp, oppdragsperiodeIder: List<Int>): List<Int> {
+    fun opprettKonteringerForOppdragsperiode(påløp: Påløp, oppdragsperiodeIder: List<Int>, overførFil: Boolean): List<Int> {
         val timestamp = LocalDateTime.now()
         val påløpsPeriode = LocalDate.parse(påløp.forPeriode + "-01")
         val påløpKjøredato = påløp.kjøredato.toLocalDate()
@@ -47,7 +47,13 @@ class ManglendeKonteringerService(
                 oppdragsperiode.aktivTil = oppdragsperiode.periodeTil
             }
 
-            opprettManglendeKonteringerForOppdragsperiode(oppdragsperiode, YearMonth.from(påløpsPeriode), timestamp)
+            opprettManglendeKonteringerForOppdragsperiode(
+                oppdragsperiode,
+                YearMonth.from(påløpsPeriode),
+                timestamp,
+                settOverføringstidspunkt = overførFil,
+                settBehandlingsstatusOkTidspunkt = overførFil,
+            )
 
             if (erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, påløpsPeriode)) {
                 oppdragsperiode.konteringerFullførtOpprettet = true
@@ -126,10 +132,6 @@ class ManglendeKonteringerService(
     }
 
     private fun harOppdragetFeiledeKonteringer(oppdragsperiode: Oppdragsperiode) = oppdragsperiode.oppdrag?.harFeiledeKonteringer == true
-
-    private fun erKonteringeneOverførtMenIkkeFåttBehandlingsstatusOk(oppdragsperiode: Oppdragsperiode) = oppdragsperiode.konteringer.any {
-        it.overføringstidspunkt != null && it.behandlingsstatusOkTidspunkt == null
-    }
 
     private fun erOppdragetUtsatt(oppdragsperiode: Oppdragsperiode, påløpKjøredato: LocalDate?) = oppdragsperiode.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true
 

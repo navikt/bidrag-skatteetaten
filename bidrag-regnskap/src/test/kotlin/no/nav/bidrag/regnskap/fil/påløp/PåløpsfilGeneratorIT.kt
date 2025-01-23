@@ -80,7 +80,7 @@ class PåløpsfilGeneratorIT {
     @Test
     fun `skal ta tiden på opprettelse av filgenerering`() {
         val tidsbruk = measureTime {
-            påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(Påløp(kjøredato = LocalDateTime.now(), forPeriode = "2023-01"), emptyList())
+            påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(Påløp(kjøredato = LocalDateTime.now(), forPeriode = "2023-01"), emptyList(), true)
         }
 
         val tidsbrukISekunder = tidsbruk.inWholeMilliseconds.toDouble() / 1000
@@ -89,7 +89,7 @@ class PåløpsfilGeneratorIT {
 
     @Suppress("SameParameterValue")
     private fun opprettOppdragOgOppdragsperioderOgKonteringer(antallOppdrag: Int) {
-        for (i in 0..<antallOppdrag) {
+        (0..<antallOppdrag).forEach { i ->
             val oppdrag = Oppdrag(
                 stønadType = "BIDRAG",
                 sakId = Random.nextInt().toString(),

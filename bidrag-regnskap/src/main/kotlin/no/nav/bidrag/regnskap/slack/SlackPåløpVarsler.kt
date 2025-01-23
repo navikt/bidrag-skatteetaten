@@ -22,13 +22,18 @@ class SlackPåløpVarsler(
 
     val antallKlumper = 20
     var pågåendePåløp: PågåendePåløp? = null
-    override fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean) {
+    override fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean) {
         pågåendePåløp?.melding?.svarITråd("Nytt påløp startet...")
 
         val melding = slackService.sendMelding(
-            ":open_file_folder: Påløpskjøring er startet for ${påløp.forPeriode}!\nSkedulert: $schedulertKjøring\nGenerer fil: $genererFil\nMiljø: $clientId",
+            ":open_file_folder: Påløpskjøring er startet for ${påløp.forPeriode}!" +
+                "\nSkedulert: $schedulertKjøring" +
+                "\nGenerere fil: $genererFil" +
+                "\nOverføre fil: $overførFil" +
+                "\nMiljø: $clientId",
         )
-        pågåendePåløp = PågåendePåløp(påløp = påløp, schedulertKjøring = schedulertKjøring, genererFil = genererFil, melding = melding)
+        pågåendePåløp =
+            PågåendePåløp(påløp = påløp, schedulertKjøring = schedulertKjøring, genererFil = genererFil, overførFil = overførFil, melding = melding)
     }
 
     override fun rapporterOppdragsperioderBehandlet(påløp: Påløp, antallBehandlet: Int, antallOppdragsperioder: Int) {
@@ -106,7 +111,11 @@ class SlackPåløpVarsler(
 
         varsel?.melding?.svarITråd("Påløp er fullført!")
         varsel?.melding?.oppdaterMelding(
-            ":file_folder: Påløpskjøring er fullført for ${påløp.forPeriode}!\nSkedulert: ${varsel.schedulertKjøring}\nGenerer fil: ${varsel.genererFil}\nMiljø: $clientId",
+            ":file_folder: Påløpskjøring er fullført for ${påløp.forPeriode}!" +
+                "\nSkedulert: ${varsel.schedulertKjøring}" +
+                "\nGenerer fil: ${varsel.genererFil}" +
+                "\nOverføre fil: ${varsel.overførFil}" +
+                "\nMiljø: $clientId",
         )
     }
 
@@ -138,6 +147,18 @@ class SlackPåløpVarsler(
         }
     }
 
+    override fun skalIkkeLasteOppPåløpsfil(påløp: Påløp, melding: String) {
+        val varsel = pågåendePåløp(påløp)
+        if (varsel != null) {
+            if (varsel.skalIkkeLasteOppPåløpsfilMelding == null) {
+                varsel.skalIkkeLasteOppPåløpsfilMelding =
+                    pågåendePåløp?.melding?.svarITråd(melding)
+            } else {
+                varsel.skalIkkeLasteOppPåløpsfilMelding?.oppdaterMelding(melding)
+            }
+        }
+    }
+
     private fun pågåendePåløp(påløp: Påløp) = if (påløp.equals(pågåendePåløp?.påløp)) pågåendePåløp else null
 
     private fun fremdriftsindikator(antall: Int, totalt: Int): String {
@@ -151,6 +172,7 @@ class SlackPåløpVarsler(
         val påløp: Påløp,
         val schedulertKjøring: Boolean,
         val genererFil: Boolean,
+        val overførFil: Boolean,
         val melding: SlackService.SlackMelding,
     ) {
         val oppdateringInterval = Duration.ofSeconds(30)
@@ -158,6 +180,7 @@ class SlackPåløpVarsler(
         var påløpsfilMelding: SlackService.SlackMelding? = null
         var lastOppFilTilGcpMelding: SlackService.SlackMelding? = null
         var lastOppFilTilFilsluseMelding: SlackService.SlackMelding? = null
+        var skalIkkeLasteOppPåløpsfilMelding: SlackService.SlackMelding? = null
         var nesteOppdateringKonteringerMelding: Instant? = Instant.now()
         var nestSisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)
         var sisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)

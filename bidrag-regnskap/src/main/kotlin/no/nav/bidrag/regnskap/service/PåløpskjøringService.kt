@@ -43,13 +43,21 @@ class PåløpskjøringService(
     @Transactional
     fun hentPåløp() = persistenceService.hentIkkeKjørtePåløp().minByOrNull { it.forPeriode }
 
-    fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean) {
+    fun startPåløpskjøringManuelt(påløp: Påløp, genererFil: Boolean, overførFil: Boolean) {
+        startPåløpskjøring(påløp, false, genererFil, overførFil)
+    }
+
+    fun startPåløpskjøringMaskinelt(påløp: Påløp) {
+        startPåløpskjøring(påløp, true, påløp.genererFil, påløp.overførFil)
+    }
+
+    private fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean) {
         if (påløp.startetTidspunkt != null) {
             LOGGER.warn("Påløpskjøring har satt startet tidspunkt! Dette kan være grunnet allerede kjørende påløp. Starter derfor ikke nytt påløp.")
             return
         }
 
-        medLyttere { it.påløpStartet(påløp, schedulertKjøring, genererFil) }
+        medLyttere { it.påløpStartet(påløp, schedulertKjøring, genererFil, overførFil) }
         try {
             // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
             sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
@@ -58,21 +66,21 @@ class PåløpskjøringService(
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
             persistenceService.registrerPåløpStartet(påløp.påløpId, LocalDateTime.now())
 
-            if (genererFil) {
+            if (genererFil && overførFil) {
                 endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_GENERERES, "Påløp for ${påløp.forPeriode} genereres hos NAV.")
             }
 
-            val utsatteEllerFeiledeOppdragsperioder = opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp)
+            val utsatteEllerFeiledeOppdragsperioder = opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp, overførFil)
 
             if (genererFil) {
-                genererPåløpsfil(påløp)
+                genererPåløpsfil(påløp, overførFil)
             }
 
             opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
             avsluttDriftsavvik(påløp)
             fullførPåløp(påløp)
 
-            if (genererFil) {
+            if (genererFil && overførFil) {
                 endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_LEVERT, "Påløp for ${påløp.forPeriode} er ferdig generert fra NAV.")
             }
 
@@ -109,7 +117,7 @@ class PåløpskjøringService(
         skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(true, årsakskode, kommentar))
     }
 
-    fun opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp: Påløp): List<Int> {
+    fun opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp: Påløp, overførFil: Boolean): List<Int> {
         val oppdragsperioder = ArrayList(oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer())
         var antallBehandlet = 0
         val utsatteEllerFeiledeOppdragsperioder = mutableListOf<Int>()
@@ -121,6 +129,7 @@ class PåløpskjøringService(
                 manglendeKonteringerService.opprettKonteringerForOppdragsperiode(
                     påløp,
                     oppdragsperiodeIds,
+                    overførFil,
                 ),
             )
             antallBehandlet += oppdragsperiodeIds.size
@@ -146,16 +155,16 @@ class PåløpskjøringService(
         medLyttere { it.rapporterAntallUtsatteEllerFeiledeKonteringerFerdig(påløp) }
     }
 
-    fun genererPåløpsfil(påløp: Påløp) {
+    fun genererPåløpsfil(påløp: Påløp, overførFil: Boolean) {
         LOGGER.info("Starter generering av påløpsfil...")
         medLyttere { it.generererFil(påløp) }
-        skrivPåløpsfilOgLastOppPåFilsluse(påløp)
+        skrivPåløpsfilOgLastOppPåFilsluse(påløp, overførFil)
         LOGGER.info("Påløpsfil er ferdig skrevet for periode ${påløp.forPeriode} og lastet opp til filsluse.")
     }
 
-    private fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp) {
+    private fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp, overførFil: Boolean) {
         val påløpsfilGenerator = PåløpsfilGenerator(gcpFilBucket, filoverføringTilElinKlient, persistenceService)
-        påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, lyttere)
+        påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, lyttere, overførFil)
     }
 
     private fun medLyttere(lytterConsumer: Consumer<PåløpskjøringLytter>) = lyttere.forEach(lytterConsumer)
@@ -179,7 +188,7 @@ class PåløpskjøringService(
 }
 
 interface PåløpskjøringLytter {
-    fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean)
+    fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overføreFil: Boolean)
     fun rapporterOppdragsperioderBehandlet(påløp: Påløp, antallBehandlet: Int, antallOppdragsperioder: Int)
 
     fun rapporterAntallUtsatteEllerFeiledeKonteringer(påløp: Påløp, antallOppdragsperioder: Int)
@@ -201,4 +210,6 @@ interface PåløpskjøringLytter {
     fun lastOppFilTilGcpBucket(påløp: Påløp, melding: String)
 
     fun lastOppFilTilFilsluse(påløp: Påløp, melding: String)
+
+    fun skalIkkeLasteOppPåløpsfil(påløp: Påløp, melding: String)
 }

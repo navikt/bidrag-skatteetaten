@@ -71,6 +71,6 @@ class PåløpsfilGeneratorTest {
 
         every { persistenceService.hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(påløp.forPeriode) } returns konteringer + konteringer2
 
-        påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, emptyList())
+        påløpsfilGenerator.skrivPåløpsfilOgLastOppPåFilsluse(påløp, emptyList(), true)
     }
 }

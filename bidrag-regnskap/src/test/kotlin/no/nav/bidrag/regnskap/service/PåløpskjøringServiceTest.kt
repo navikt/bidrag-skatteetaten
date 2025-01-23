@@ -81,7 +81,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøring(påløp, false, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,
@@ -136,7 +136,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns oppdragsperioder
 
-        påløpskjøringService.startPåløpskjøring(påløp, false, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer1.periodeFra,
@@ -184,7 +184,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøring(påløp, false, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,

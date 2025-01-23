@@ -46,9 +46,12 @@ class PåløpskjøringController(
             ),
         ],
     )
-    fun startPåløpskjøring(@RequestParam(required = true) genererFil: Boolean): ResponseEntity<Int> {
+    fun startPåløpskjøring(
+        @RequestParam(required = true) genererFil: Boolean,
+        @RequestParam(required = true) overførFil: Boolean,
+    ): ResponseEntity<Int> {
         val påløp = påløpskjøringService.hentPåløp()?.copy(startetTidspunkt = null) ?: return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
-        påløpskjøringService.startPåløpskjøring(påløp, false, genererFil)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil)
         return ResponseEntity.status(HttpStatus.CREATED).body(påløp.påløpId)
     }
 
