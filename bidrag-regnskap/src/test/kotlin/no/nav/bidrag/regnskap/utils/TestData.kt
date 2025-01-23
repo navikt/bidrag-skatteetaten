@@ -36,21 +36,19 @@ object TestData {
         utsattTilDato: LocalDate? = null,
         endretTidspunkt: LocalDateTime? = null,
         harFeiledeKonteringer: Boolean = false,
-    ): Oppdrag {
-        return Oppdrag(
-            oppdragId = oppdragId,
-            stønadType = stonadType?.toString() ?: engangsbelopType.toString(),
-            sakId = sakId,
-            skyldnerIdent = skyldnerIdent,
-            oppdragsperioder = oppdragsperioder,
-            kravhaverIdent = kravhaverIdent,
-            gjelderIdent = gjelderIdent,
-            mottakerIdent = mottakerIdent,
-            utsattTilDato = utsattTilDato,
-            endretTidspunkt = endretTidspunkt,
-            harFeiledeKonteringer = harFeiledeKonteringer,
-        )
-    }
+    ): Oppdrag = Oppdrag(
+        oppdragId = oppdragId,
+        stønadType = stonadType?.toString() ?: engangsbelopType.toString(),
+        sakId = sakId,
+        skyldnerIdent = skyldnerIdent,
+        oppdragsperioder = oppdragsperioder,
+        kravhaverIdent = kravhaverIdent,
+        gjelderIdent = gjelderIdent,
+        mottakerIdent = mottakerIdent,
+        utsattTilDato = utsattTilDato,
+        endretTidspunkt = endretTidspunkt,
+        harFeiledeKonteringer = harFeiledeKonteringer,
+    )
 
     fun opprettHendelse(
         type: String = Stønadstype.BIDRAG.name,
@@ -66,23 +64,21 @@ object TestData {
         eksternReferanse: String? = "UTENLANDSREFERANSE",
         utsattTilDato: LocalDate? = LocalDate.now().plusDays(7),
         periodeListe: List<Periode> = listOf(opprettPeriodeDomene()),
-    ): Hendelse {
-        return Hendelse(
-            type = type,
-            vedtakType = vedtakType,
-            kravhaverIdent = kravhaverIdent,
-            skyldnerIdent = skyldnerIdent,
-            mottakerIdent = mottakerIdent,
-            sakId = sakId,
-            vedtakId = vedtakId,
-            vedtakDato = vedtakDato,
-            opprettetAv = opprettetAv,
-            enhetsnummer = enhetsnummer,
-            eksternReferanse = eksternReferanse,
-            utsattTilDato = utsattTilDato,
-            periodeListe = periodeListe,
-        )
-    }
+    ): Hendelse = Hendelse(
+        type = type,
+        vedtakType = vedtakType,
+        kravhaverIdent = kravhaverIdent,
+        skyldnerIdent = skyldnerIdent,
+        mottakerIdent = mottakerIdent,
+        sakId = sakId,
+        vedtakId = vedtakId,
+        vedtakDato = vedtakDato,
+        opprettetAv = opprettetAv,
+        enhetsnummer = enhetsnummer,
+        eksternReferanse = eksternReferanse,
+        utsattTilDato = utsattTilDato,
+        periodeListe = periodeListe,
+    )
 
     fun opprettPeriodeDomene(
         beløp: BigDecimal? = BigDecimal.valueOf(7500.0),
@@ -90,15 +86,13 @@ object TestData {
         periodeFomDato: LocalDate = LocalDate.now().minusMonths(2).withDayOfMonth(1),
         periodeTilDato: LocalDate? = LocalDate.now(),
         referanse: Int? = Random.nextInt(),
-    ): Periode {
-        return Periode(
-            beløp = beløp,
-            valutakode = valutakode,
-            periodeFomDato = periodeFomDato,
-            periodeTilDato = periodeTilDato,
-            delytelsesId = referanse,
-        )
-    }
+    ): Periode = Periode(
+        beløp = beløp,
+        valutakode = valutakode,
+        periodeFomDato = periodeFomDato,
+        periodeTilDato = periodeTilDato,
+        delytelsesId = referanse,
+    )
 
     fun opprettOppdragsperiode(
         oppdragsperiodeId: Int = 0,
@@ -116,25 +110,23 @@ object TestData {
         delytelseId: Int? = Random.nextInt(),
         aktivTil: LocalDate? = null,
         konteringer: List<Kontering> = listOf(opprettKontering()),
-    ): Oppdragsperiode {
-        return Oppdragsperiode(
-            oppdragsperiodeId = oppdragsperiodeId,
-            oppdrag = oppdrag,
-            vedtakId = vedtakId,
-            referanse = referanse,
-            vedtakType = vedtakType.toString(),
-            beløp = belop,
-            valuta = valuta,
-            periodeFra = periodeFra,
-            periodeTil = periodeTil,
-            vedtaksdato = vedtaksdato,
-            opprettetAv = opprettetAv,
-            konteringerFullførtOpprettet = konteringerFullførtOpprettet,
-            delytelseId = delytelseId,
-            aktivTil = aktivTil,
-            konteringer = konteringer,
-        )
-    }
+    ): Oppdragsperiode = Oppdragsperiode(
+        oppdragsperiodeId = oppdragsperiodeId,
+        oppdrag = oppdrag,
+        vedtakId = vedtakId,
+        referanse = referanse,
+        vedtakType = vedtakType.toString(),
+        beløp = belop,
+        valuta = valuta,
+        periodeFra = periodeFra,
+        periodeTil = periodeTil,
+        vedtaksdato = vedtaksdato,
+        opprettetAv = opprettetAv,
+        konteringerFullførtOpprettet = konteringerFullførtOpprettet,
+        delytelseId = delytelseId,
+        aktivTil = aktivTil,
+        konteringer = konteringer,
+    )
 
     fun opprettKontering(
         konteringId: Int = 0,
@@ -149,36 +141,32 @@ object TestData {
         opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
         vedtakId: Int = 654321,
         sisteReferansekode: String? = null,
-    ): Kontering {
-        return Kontering(
-            konteringId = konteringId,
-            oppdragsperiode = oppdragsperiode,
-            transaksjonskode = transaksjonskode,
-            overføringsperiode = overforingsperiode,
-            overføringstidspunkt = overforingstidspunkt,
-            behandlingsstatusOkTidspunkt = behandlingsstatusOkTidspunkt,
-            type = type,
-            søknadType = søknadstype,
-            sendtIPåløpsperiode = sendtIPalopsperiode,
-            opprettetTidspunkt = opprettetTidspunkt,
-            vedtakId = vedtakId,
-            sisteReferansekode = sisteReferansekode,
-        )
-    }
+    ): Kontering = Kontering(
+        konteringId = konteringId,
+        oppdragsperiode = oppdragsperiode,
+        transaksjonskode = transaksjonskode,
+        overføringsperiode = overforingsperiode,
+        overføringstidspunkt = overforingstidspunkt,
+        behandlingsstatusOkTidspunkt = behandlingsstatusOkTidspunkt,
+        type = type,
+        søknadType = søknadstype,
+        sendtIPåløpsperiode = sendtIPalopsperiode,
+        opprettetTidspunkt = opprettetTidspunkt,
+        vedtakId = vedtakId,
+        sisteReferansekode = sisteReferansekode,
+    )
 
     fun opprettPåløp(
         påløpId: Int = 0,
         kjøredato: LocalDateTime = LocalDateTime.now(),
         fullførtTidspunkt: LocalDateTime? = null,
         forPeriode: String = "2022-01",
-    ): Påløp {
-        return Påløp(
-            påløpId = påløpId,
-            kjøredato = kjøredato,
-            fullførtTidspunkt = fullførtTidspunkt,
-            forPeriode = forPeriode,
-        )
-    }
+    ): Påløp = Påløp(
+        påløpId = påløpId,
+        kjøredato = kjøredato,
+        fullførtTidspunkt = fullførtTidspunkt,
+        forPeriode = forPeriode,
+    )
 
     fun opprettDriftsavvik(
         driftsavvikId: Int = 0,
@@ -187,14 +175,12 @@ object TestData {
         tidspunktTil: LocalDateTime? = LocalDateTime.now().plusHours(1),
         opprettetAv: String? = "Manuelt REST",
         årsak: String? = "Feil ved overføringer",
-    ): Driftsavvik {
-        return Driftsavvik(
-            driftsavvikId = driftsavvikId,
-            påløpId = påløpId,
-            tidspunktFra = tidspunktFra,
-            tidspunktTil = tidspunktTil,
-            opprettetAv = opprettetAv,
-            årsak = årsak,
-        )
-    }
+    ): Driftsavvik = Driftsavvik(
+        driftsavvikId = driftsavvikId,
+        påløpId = påløpId,
+        tidspunktFra = tidspunktFra,
+        tidspunktTil = tidspunktTil,
+        opprettetAv = opprettetAv,
+        årsak = årsak,
+    )
 }

@@ -1003,6 +1003,5 @@ internal class VedtakshendelseListenerIT {
         return konteringer
     }
 
-    private fun hentTestfil(filnavn: String): String =
-        String(javaClass.classLoader.getResourceAsStream("${HENDELSE_FILMAPPE}$filnavn")!!.readAllBytes())
+    private fun hentTestfil(filnavn: String): String = String(javaClass.classLoader.getResourceAsStream("${HENDELSE_FILMAPPE}$filnavn")!!.readAllBytes())
 }

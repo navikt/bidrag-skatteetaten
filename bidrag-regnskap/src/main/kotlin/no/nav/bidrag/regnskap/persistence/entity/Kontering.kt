@@ -54,21 +54,19 @@ data class Kontering(
     val vedtakId: Int,
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(konteringId = $konteringId , " +
-            "oppdragsperiodeId = ${oppdragsperiode?.oppdragsperiodeId} , " +
-            "transaksjonskode = $transaksjonskode , " +
-            "overføringsperiode = $overføringsperiode , " +
-            "overføringstidspunkt = $overføringstidspunkt , " +
-            "behandlingsstatusOkTidspunkt = $behandlingsstatusOkTidspunkt , " +
-            "type = $type , " +
-            "søknadType = $søknadType , " +
-            "sisteReferansekode = $sisteReferansekode , " +
-            "opprettetTidspunkt = $opprettetTidspunkt , " +
-            "vetakId = $vedtakId , " +
-            "sendtIPåløpsperiode = $sendtIPåløpsperiode )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(konteringId = $konteringId , " +
+        "oppdragsperiodeId = ${oppdragsperiode?.oppdragsperiodeId} , " +
+        "transaksjonskode = $transaksjonskode , " +
+        "overføringsperiode = $overføringsperiode , " +
+        "overføringstidspunkt = $overføringstidspunkt , " +
+        "behandlingsstatusOkTidspunkt = $behandlingsstatusOkTidspunkt , " +
+        "type = $type , " +
+        "søknadType = $søknadType , " +
+        "sisteReferansekode = $sisteReferansekode , " +
+        "opprettetTidspunkt = $opprettetTidspunkt , " +
+        "vetakId = $vedtakId , " +
+        "sendtIPåløpsperiode = $sendtIPåløpsperiode )"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

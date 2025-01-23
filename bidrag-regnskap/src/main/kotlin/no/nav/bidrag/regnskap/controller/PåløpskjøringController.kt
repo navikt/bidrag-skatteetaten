@@ -38,7 +38,8 @@ class PåløpskjøringController(
             ApiResponse(
                 responseCode = "201",
                 description = "Påløpskjøringen har startet. Returnerer ID'en til påløpet.",
-            ), ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "204",
                 description = "Det finnes ingen ikke gjennomførte påløp.",
                 content = [Content()],

@@ -173,9 +173,7 @@ class KravService(
         }
     }
 
-    fun erVedlikeholdsmodusPåslått(): Boolean {
-        return skattConsumer.hentStatusPåVedlikeholdsmodus().statusCode == HttpStatus.SERVICE_UNAVAILABLE
-    }
+    fun erVedlikeholdsmodusPåslått(): Boolean = skattConsumer.hentStatusPåVedlikeholdsmodus().statusCode == HttpStatus.SERVICE_UNAVAILABLE
 
     private fun lagreVellykketOverføringAvKrav(alleIkkeOverforteKonteringer: List<Kontering>, kravResponse: KravResponse, oppdrag: List<Oppdrag>) {
         alleIkkeOverforteKonteringer.forEach { kontering ->
@@ -186,52 +184,44 @@ class KravService(
         persistenceService.lagreOppdrag(oppdrag)
     }
 
-    fun opprettKravKonteringListe(konteringerListe: List<Kontering>): Krav {
-        return Krav(
-            konteringerListe.map { kontering ->
-                Kravkontering(
-                    transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode),
-                    type = Type.valueOf(kontering.type),
-                    soknadType = Søknadstype.valueOf(kontering.søknadType),
-                    gjelderIdent = kontering.oppdragsperiode!!.oppdrag!!.gjelderIdent,
-                    kravhaverIdent = kontering.oppdragsperiode.oppdrag!!.kravhaverIdent,
-                    mottakerIdent = kontering.oppdragsperiode.oppdrag.mottakerIdent,
-                    skyldnerIdent = kontering.oppdragsperiode.oppdrag.skyldnerIdent,
-                    belop = if (Transaksjonskode.valueOf(
-                            kontering.transaksjonskode,
-                        ).negativtBeløp
-                    ) {
-                        kontering.oppdragsperiode.beløp.negate()
-                    } else {
-                        kontering.oppdragsperiode.beløp
-                    },
-                    valuta = kontering.oppdragsperiode.valuta,
-                    periode = kontering.overføringsperiode,
-                    vedtaksdato = kontering.oppdragsperiode.vedtaksdato.toString(),
-                    kjoredato = LocalDate.now().toString(),
-                    saksbehandlerId = kontering.oppdragsperiode.opprettetAv,
-                    attestantId = kontering.oppdragsperiode.opprettetAv,
-                    tekst = kontering.oppdragsperiode.eksternReferanse,
-                    fagsystemId = kontering.oppdragsperiode.oppdrag.sakId,
-                    delytelsesId = kontering.oppdragsperiode.delytelseId.toString(),
-                )
-            },
-        )
-    }
+    fun opprettKravKonteringListe(konteringerListe: List<Kontering>): Krav = Krav(
+        konteringerListe.map { kontering ->
+            Kravkontering(
+                transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode),
+                type = Type.valueOf(kontering.type),
+                soknadType = Søknadstype.valueOf(kontering.søknadType),
+                gjelderIdent = kontering.oppdragsperiode!!.oppdrag!!.gjelderIdent,
+                kravhaverIdent = kontering.oppdragsperiode.oppdrag!!.kravhaverIdent,
+                mottakerIdent = kontering.oppdragsperiode.oppdrag.mottakerIdent,
+                skyldnerIdent = kontering.oppdragsperiode.oppdrag.skyldnerIdent,
+                belop = if (Transaksjonskode.valueOf(
+                        kontering.transaksjonskode,
+                    ).negativtBeløp
+                ) {
+                    kontering.oppdragsperiode.beløp.negate()
+                } else {
+                    kontering.oppdragsperiode.beløp
+                },
+                valuta = kontering.oppdragsperiode.valuta,
+                periode = kontering.overføringsperiode,
+                vedtaksdato = kontering.oppdragsperiode.vedtaksdato.toString(),
+                kjoredato = LocalDate.now().toString(),
+                saksbehandlerId = kontering.oppdragsperiode.opprettetAv,
+                attestantId = kontering.oppdragsperiode.opprettetAv,
+                tekst = kontering.oppdragsperiode.eksternReferanse,
+                fagsystemId = kontering.oppdragsperiode.oppdrag.sakId,
+                delytelsesId = kontering.oppdragsperiode.delytelseId.toString(),
+            )
+        },
+    )
 
-    fun hentOppdragsperioderMedIkkeOverførteKonteringer(oppdrag: Oppdrag): List<Oppdragsperiode> {
-        return oppdrag.oppdragsperioder.filter { finnesDetIkkeOverførteKonteringer(it) }
-    }
+    fun hentOppdragsperioderMedIkkeOverførteKonteringer(oppdrag: Oppdrag): List<Oppdragsperiode> = oppdrag.oppdragsperioder.filter { finnesDetIkkeOverførteKonteringer(it) }
 
-    private fun finnesDetIkkeOverførteKonteringer(oppdragsperiode: Oppdragsperiode): Boolean {
-        return oppdragsperiode.konteringer.any { it.overføringstidspunkt == null }
-    }
+    private fun finnesDetIkkeOverførteKonteringer(oppdragsperiode: Oppdragsperiode): Boolean = oppdragsperiode.konteringer.any { it.overføringstidspunkt == null }
 
-    private fun finnAlleIkkeOverførteKonteringer(oppdragsperioder: List<Oppdragsperiode>): List<Kontering> {
-        return oppdragsperioder.flatMap { oppdragsperiode ->
-            oppdragsperiode.konteringer.filter { kontering ->
-                kontering.overføringstidspunkt == null
-            }
+    private fun finnAlleIkkeOverførteKonteringer(oppdragsperioder: List<Oppdragsperiode>): List<Kontering> = oppdragsperioder.flatMap { oppdragsperiode ->
+        oppdragsperiode.konteringer.filter { kontering ->
+            kontering.overføringstidspunkt == null
         }
     }
 }

@@ -6,8 +6,7 @@ import java.util.Base64
 
 @ConfigurationProperties("sftp")
 class FiloverføringTilElinConfig
-@ConstructorBinding
-constructor(
+@ConstructorBinding constructor(
     val username: String,
     val host: String,
     val port: Int,

@@ -55,18 +55,16 @@ data class Oppdrag(
     var oppdragsperioder: List<Oppdragsperiode> = emptyList(),
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(oppdragId = $oppdragId , " +
-            "stønadType = $stønadType , " +
-            "sakId = $sakId , " +
-            "kravhaverIdent = $kravhaverIdent , " +
-            "skyldnerIdent = $skyldnerIdent , " +
-            "mottakerIdent = $mottakerIdent , " +
-            "gjelderIdent = $gjelderIdent , " +
-            "utsattTilDato = $utsattTilDato , " +
-            "endretTidspunkt = $endretTidspunkt )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(oppdragId = $oppdragId , " +
+        "stønadType = $stønadType , " +
+        "sakId = $sakId , " +
+        "kravhaverIdent = $kravhaverIdent , " +
+        "skyldnerIdent = $skyldnerIdent , " +
+        "mottakerIdent = $mottakerIdent , " +
+        "gjelderIdent = $gjelderIdent , " +
+        "utsattTilDato = $utsattTilDato , " +
+        "endretTidspunkt = $endretTidspunkt )"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

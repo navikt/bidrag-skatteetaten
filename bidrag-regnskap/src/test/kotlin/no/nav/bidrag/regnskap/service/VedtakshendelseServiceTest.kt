@@ -118,8 +118,7 @@ class VedtakshendelseServiceTest {
         }
     }
 
-    private fun opprettVedtakshendelse(): String {
-        return """
+    private fun opprettVedtakshendelse(): String = """
       {
         "kilde":"MANUELT",
         "type":"INNKREVING",
@@ -180,5 +179,4 @@ class VedtakshendelseServiceTest {
             "correlationId": "12345"
           }
       }"""
-    }
 }

@@ -31,13 +31,11 @@ data class Driftsavvik(
     val årsak: String? = null,
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(driftsavvikId = $driftsavvikId , " +
-            "påløpId = $påløpId , " +
-            "tidspunktFra = $tidspunktFra , " +
-            "tidspunktTil = $tidspunktTil , " +
-            "opprettetAv = $opprettetAv , " +
-            "årsak = $årsak )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(driftsavvikId = $driftsavvikId , " +
+        "påløpId = $påløpId , " +
+        "tidspunktFra = $tidspunktFra , " +
+        "tidspunktTil = $tidspunktTil , " +
+        "opprettetAv = $opprettetAv , " +
+        "årsak = $årsak )"
 }

@@ -10,29 +10,26 @@ import java.time.YearMonth
 
 object KonteringUtils {
 
-    fun vurderSøknadType(hendelse: Hendelse, indexPeriode: Int): String {
-        return if (hendelse.vedtakType == Vedtakstype.INDEKSREGULERING && indexPeriode == 0) {
-            Søknadstype.IR.name
-        } else if (hendelse.type == Engangsbeløptype.GEBYR_MOTTAKER.name) {
-            Søknadstype.FABM.name
-        } else if (hendelse.type == Engangsbeløptype.GEBYR_SKYLDNER.name) {
-            Søknadstype.FABP.name
-        } else {
-            Søknadstype.EN.name
-        }
+    fun vurderSøknadType(hendelse: Hendelse, indexPeriode: Int): String = if (hendelse.vedtakType == Vedtakstype.INDEKSREGULERING && indexPeriode == 0) {
+        Søknadstype.IR.name
+    } else if (hendelse.type == Engangsbeløptype.GEBYR_MOTTAKER.name) {
+        Søknadstype.FABM.name
+    } else if (hendelse.type == Engangsbeløptype.GEBYR_SKYLDNER.name) {
+        Søknadstype.FABP.name
+    } else {
+        Søknadstype.EN.name
     }
 
-    fun vurderSøknadType(vedtakType: String, stønadType: String, indexPeriode: Int): String {
-        return if (vedtakType == Vedtakstype.INDEKSREGULERING.name && indexPeriode == 0) {
-            Søknadstype.IR.name
-        } else if (stønadType == Engangsbeløptype.GEBYR_MOTTAKER.name) {
-            Søknadstype.FABM.name
-        } else if (stønadType == Engangsbeløptype.GEBYR_SKYLDNER.name) {
-            Søknadstype.FABP.name
-        } else {
-            Søknadstype.EN.name
-        }
+    fun vurderSøknadType(vedtakType: String, stønadType: String, indexPeriode: Int): String = if (vedtakType == Vedtakstype.INDEKSREGULERING.name && indexPeriode == 0) {
+        Søknadstype.IR.name
+    } else if (stønadType == Engangsbeløptype.GEBYR_MOTTAKER.name) {
+        Søknadstype.FABM.name
+    } else if (stønadType == Engangsbeløptype.GEBYR_SKYLDNER.name) {
+        Søknadstype.FABP.name
+    } else {
+        Søknadstype.EN.name
     }
+
     fun vurderType(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth): String {
         if (finnesKonteringForPeriode(oppdragsperioder, periode)) {
             return Type.NY.name
@@ -40,6 +37,5 @@ object KonteringUtils {
         return Type.ENDRING.name
     }
 
-    private fun finnesKonteringForPeriode(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth) =
-        oppdragsperioder.none { it.konteringer.any { kontering -> kontering.overføringsperiode == periode.toString() } }
+    private fun finnesKonteringForPeriode(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth) = oppdragsperioder.none { it.konteringer.any { kontering -> kontering.overføringsperiode == periode.toString() } }
 }

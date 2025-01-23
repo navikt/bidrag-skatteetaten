@@ -11,19 +11,13 @@ class DriftsavvikService(
     private val persistenceService: PersistenceService,
 ) {
 
-    fun hentFlereDriftsavvik(antallDriftsavvik: Int): List<Driftsavvik> {
-        return persistenceService.hentFlereDriftsavvik(PageRequest.of(0, antallDriftsavvik))
-    }
+    fun hentFlereDriftsavvik(antallDriftsavvik: Int): List<Driftsavvik> = persistenceService.hentFlereDriftsavvik(PageRequest.of(0, antallDriftsavvik))
 
-    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> {
-        return persistenceService.hentAlleAktiveDriftsavvik()
-    }
+    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> = persistenceService.hentAlleAktiveDriftsavvik()
 
-    fun lagreDriftsavvik(tidspunktFra: LocalDateTime, tidspunktTil: LocalDateTime?, opprettetAv: String?, årsak: String?): Int {
-        return persistenceService.lagreDriftsavvik(
-            Driftsavvik(tidspunktFra = tidspunktFra, tidspunktTil = tidspunktTil, opprettetAv = opprettetAv, årsak = årsak),
-        )
-    }
+    fun lagreDriftsavvik(tidspunktFra: LocalDateTime, tidspunktTil: LocalDateTime?, opprettetAv: String?, årsak: String?): Int = persistenceService.lagreDriftsavvik(
+        Driftsavvik(tidspunktFra = tidspunktFra, tidspunktTil = tidspunktTil, opprettetAv = opprettetAv, årsak = årsak),
+    )
 
     @Transactional
     fun endreDriftsavvik(driftsavvikId: Int, tidspunktTil: LocalDateTime?): Int? {

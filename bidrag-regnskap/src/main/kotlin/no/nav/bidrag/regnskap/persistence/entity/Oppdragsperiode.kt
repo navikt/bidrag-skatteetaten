@@ -81,25 +81,23 @@ data class Oppdragsperiode(
     var konteringer: List<Kontering> = emptyList(),
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(oppdragsperiodeId = $oppdragsperiodeId , " +
-            "oppdragId = ${oppdrag?.oppdragId} , " +
-            "vedtakId = $vedtakId , " +
-            "referanse = $referanse , " +
-            "vedtakType = $vedtakType , " +
-            "beløp = $beløp , " +
-            "valuta = $valuta , " +
-            "periodeFra = $periodeFra , " +
-            "periodeTil = $periodeTil , " +
-            "vedtaksdato = $vedtaksdato , " +
-            "opprettetAv = $opprettetAv , " +
-            "konteringerFullførtOpprettet = $konteringerFullførtOpprettet , " +
-            "delytelseId = $delytelseId , " +
-            "eksternReferanse = $eksternReferanse , " +
-            "opphørendeOppdragsperiode = $opphørendeOppdragsperiode , " +
-            "aktivTil = $aktivTil )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(oppdragsperiodeId = $oppdragsperiodeId , " +
+        "oppdragId = ${oppdrag?.oppdragId} , " +
+        "vedtakId = $vedtakId , " +
+        "referanse = $referanse , " +
+        "vedtakType = $vedtakType , " +
+        "beløp = $beløp , " +
+        "valuta = $valuta , " +
+        "periodeFra = $periodeFra , " +
+        "periodeTil = $periodeTil , " +
+        "vedtaksdato = $vedtaksdato , " +
+        "opprettetAv = $opprettetAv , " +
+        "konteringerFullførtOpprettet = $konteringerFullførtOpprettet , " +
+        "delytelseId = $delytelseId , " +
+        "eksternReferanse = $eksternReferanse , " +
+        "opphørendeOppdragsperiode = $opphørendeOppdragsperiode , " +
+        "aktivTil = $aktivTil )"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

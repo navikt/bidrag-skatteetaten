@@ -131,10 +131,7 @@ class ManglendeKonteringerService(
         it.overføringstidspunkt != null && it.behandlingsstatusOkTidspunkt == null
     }
 
-    private fun erOppdragetUtsatt(oppdragsperiode: Oppdragsperiode, påløpKjøredato: LocalDate?) =
-        oppdragsperiode.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true
+    private fun erOppdragetUtsatt(oppdragsperiode: Oppdragsperiode, påløpKjøredato: LocalDate?) = oppdragsperiode.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true
 
-    private fun harIkkePassertAktivTilDato(oppdragsperiode: Oppdragsperiode, periode: YearMonth): Boolean {
-        return !erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, LocalDate.of(periode.year, periode.month, 1))
-    }
+    private fun harIkkePassertAktivTilDato(oppdragsperiode: Oppdragsperiode, periode: YearMonth): Boolean = !erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, LocalDate.of(periode.year, periode.month, 1))
 }

@@ -98,14 +98,12 @@ class PåløpskjøringService(
         }
     }
 
-    private fun opprettDriftsavvik(påløp: Påløp, schedulertKjøring: Boolean): Driftsavvik {
-        return Driftsavvik(
-            påløpId = påløp.påløpId,
-            tidspunktFra = LocalDateTime.now(),
-            opprettetAv = if (schedulertKjøring) "Automatisk påløpskjøringer" else "Manuel påløpskjøring (REST)",
-            årsak = "Påløpskjøring",
-        )
-    }
+    private fun opprettDriftsavvik(påløp: Påløp, schedulertKjøring: Boolean): Driftsavvik = Driftsavvik(
+        påløpId = påløp.påløpId,
+        tidspunktFra = LocalDateTime.now(),
+        opprettetAv = if (schedulertKjøring) "Automatisk påløpskjøringer" else "Manuel påløpskjøring (REST)",
+        årsak = "Påløpskjøring",
+    )
 
     private fun endreElinVedlikeholdsmodus(årsakskode: Årsakskode, kommentar: String) {
         skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(true, årsakskode, kommentar))

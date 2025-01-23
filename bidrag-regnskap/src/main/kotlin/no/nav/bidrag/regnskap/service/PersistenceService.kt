@@ -76,8 +76,7 @@ class PersistenceService(
         return lagredeOppdrag.map { it.oppdragId }
     }
 
-    fun hentOppdragPåSaksnummerOgKravhaver(saksnummer: Saksnummer, kravhaver: Personident): List<Oppdrag> =
-        oppdragRepository.findAllBySakIdAndKravhaverIdent(saksnummer.verdi, kravhaver.verdi)
+    fun hentOppdragPåSaksnummerOgKravhaver(saksnummer: Saksnummer, kravhaver: Personident): List<Oppdrag> = oppdragRepository.findAllBySakIdAndKravhaverIdent(saksnummer.verdi, kravhaver.verdi)
 
     fun hentAlleMottakereMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByMottakerIdent(ident)
 
@@ -120,24 +119,19 @@ class PersistenceService(
 
     fun hentAlleIkkeOverførteKonteringer(): List<Kontering> = konteringRepository.findAllByOverføringstidspunktIsNull()
 
-    fun hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(periode: String): List<Kontering> =
-        konteringRepository.findAllByOverføringsperiodeOrOverføringstidspunktIsNull(periode)
+    fun hentAlleKonteringerForPeriodeOgSomIkkeErOverførtEnda(periode: String): List<Kontering> = konteringRepository.findAllByOverføringsperiodeOrOverføringstidspunktIsNull(periode)
 
-    fun hentAlleKonteringerUtenBehandlingsstatusOk(): List<Kontering> =
-        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsNotNull()
+    fun hentAlleKonteringerUtenBehandlingsstatusOk(): List<Kontering> = konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsNotNull()
 
-    fun hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke(): List<Kontering> =
-        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNull()
+    fun hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke(): List<Kontering> = konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNull()
 
-    fun hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferansekoder: List<String>): List<Kontering> =
-        konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
-            sisteReferansekoder,
-        )
+    fun hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferansekoder: List<String>): List<Kontering> = konteringRepository.findAllByBehandlingsstatusOkTidspunktIsNullAndOverføringstidspunktIsNotNullAndSisteReferansekodeIsIn(
+        sisteReferansekoder,
+    )
 
     fun hentAlleKonteringerForDato(dato: LocalDate): List<Kontering> = konteringRepository.hentAlleKonteringerForDato(dato)
 
-    fun hentAlleKonteringerForDato(dato: LocalDate, fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime): List<Kontering> =
-        konteringRepository.hentAlleKonteringerForDato(dato, fomTidspunkt, tomTidspunkt)
+    fun hentAlleKonteringerForDato(dato: LocalDate, fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime): List<Kontering> = konteringRepository.hentAlleKonteringerForDato(dato, fomTidspunkt, tomTidspunkt)
 
     fun lagreKontering(kontering: Kontering): Int {
         val lagretKontering = konteringRepository.save(kontering)

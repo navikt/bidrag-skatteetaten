@@ -10,11 +10,7 @@ class KravSchedulerUtils(
     private val persistenceService: PersistenceService,
 ) {
 
-    fun erVedlikeholdsmodusPåslått(): Boolean {
-        return kravService.erVedlikeholdsmodusPåslått()
-    }
+    fun erVedlikeholdsmodusPåslått(): Boolean = kravService.erVedlikeholdsmodusPåslått()
 
-    fun harAktivtDriftsavvik(): Boolean {
-        return persistenceService.harAktivtDriftsavvik()
-    }
+    fun harAktivtDriftsavvik(): Boolean = persistenceService.harAktivtDriftsavvik()
 }

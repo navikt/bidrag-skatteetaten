@@ -28,8 +28,12 @@ data class Påløp(
     val forPeriode: String,
 ) {
 
-    override fun toString(): String {
-        return this::class.simpleName +
-            "(påløpId = $påløpId , kjøredato = $kjøredato , fullførtTidspunkt = $fullførtTidspunkt , forPeriode = $forPeriode )"
-    }
+    override fun toString(): String = this::class.simpleName +
+        "(påløpId = $påløpId, " +
+        "kjøredato = $kjøredato, " +
+        "fullførtTidspunkt = $fullførtTidspunkt, " +
+        "forPeriode = $forPeriode" +
+        "genererFil = $genererFil" +
+        "overførFil = $overførFil" +
+        ")"
 }

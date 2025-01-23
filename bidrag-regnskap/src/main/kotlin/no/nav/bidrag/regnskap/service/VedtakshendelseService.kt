@@ -84,19 +84,17 @@ class VedtakshendelseService(
         return null
     }
 
-    private fun erInnkrevingOgEndring(innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean =
-        innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
+    private fun erInnkrevingOgEndring(innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean = innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
 
-    private fun mapPeriodelisteTilDomene(periodeListe: List<no.nav.bidrag.transport.behandling.vedtak.Periode>): List<Periode> =
-        periodeListe.map { periode ->
-            Periode(
-                beløp = periode.beløp,
-                valutakode = periode.valutakode,
-                periodeFomDato = periode.periode.toDatoperiode().fom,
-                periodeTilDato = periode.periode.toDatoperiode().til,
-                delytelsesId = periode.delytelseId?.let { Integer.valueOf(it) },
-            )
-        }
+    private fun mapPeriodelisteTilDomene(periodeListe: List<no.nav.bidrag.transport.behandling.vedtak.Periode>): List<Periode> = periodeListe.map { periode ->
+        Periode(
+            beløp = periode.beløp,
+            valutakode = periode.valutakode,
+            periodeFomDato = periode.periode.toDatoperiode().fom,
+            periodeTilDato = periode.periode.toDatoperiode().til,
+            delytelsesId = periode.delytelseId?.let { Integer.valueOf(it) },
+        )
+    }
 
     private fun opprettOppdragForEngangsbeløp(vedtakHendelse: VedtakHendelse, engangsbeløp: Engangsbeløp): Int? {
         LOGGER.debug("Oppretter oppdrag for engangsbeløp.")

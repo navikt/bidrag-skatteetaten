@@ -66,23 +66,21 @@ internal class SakConsumerTest {
         fødelsnummer shouldBe DUMMY_NUMMER
     }
 
-    private fun opprettBidragSak(rolletype: Rolletype): BidragssakDto {
-        return BidragssakDto(
-            Enhetsnummer("eierfogd"),
-            Saksnummer("123"),
-            Bidragssakstatus.NY,
-            Sakskategori.N,
-            erParagraf19 = false,
-            begrensetTilgang = false,
-            opprettetDato = LocalDate.now(),
-            levdeAdskilt = false,
-            ukjentPart = false,
-            roller = listOf(
-                RolleDto(
-                    Personident(PersonidentGenerator.genererFødselsnummer()),
-                    rolletype,
-                ),
+    private fun opprettBidragSak(rolletype: Rolletype): BidragssakDto = BidragssakDto(
+        Enhetsnummer("eierfogd"),
+        Saksnummer("123"),
+        Bidragssakstatus.NY,
+        Sakskategori.N,
+        erParagraf19 = false,
+        begrensetTilgang = false,
+        opprettetDato = LocalDate.now(),
+        levdeAdskilt = false,
+        ukjentPart = false,
+        roller = listOf(
+            RolleDto(
+                Personident(PersonidentGenerator.genererFødselsnummer()),
+                rolletype,
             ),
-        )
-    }
+        ),
+    )
 }

@@ -116,9 +116,7 @@ class OppslagOgOppdateringController(
             ),
         ],
     )
-    fun hentUtsatteOgFeiledeVedtakForSak(saksnummer: Saksnummer): ResponseEntity<*> {
-        return ResponseEntity.ok(oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer))
-    }
+    fun hentUtsatteOgFeiledeVedtakForSak(saksnummer: Saksnummer): ResponseEntity<*> = ResponseEntity.ok(oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer))
 
     @GetMapping("/oppdrag/utsatte")
     @Operation(
@@ -134,9 +132,7 @@ class OppslagOgOppdateringController(
             ),
         ],
     )
-    fun hentAlleUtsatteOppdrag(): ResponseEntity<*> {
-        return ResponseEntity.ok(oppslagService.hentAlleUtsatteOppdrag())
-    }
+    fun hentAlleUtsatteOppdrag(): ResponseEntity<*> = ResponseEntity.ok(oppslagService.hentAlleUtsatteOppdrag())
 
     @PostMapping("oppdrag/utsatte")
     @Operation(

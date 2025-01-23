@@ -59,16 +59,12 @@ class BehandlingsstatusService(
         return feilmeldinger
     }
 
-    fun hentBehandlingsstatusForIkkeGodkjenteKonteringerForReferansekode(sisteReferanser: List<String>): HashMap<String, String> {
-        return hentBehandlingsstatusForIkkeGodkjenteKonteringer(hentKonteringerMedIkkeGodkjentBehandlingsstatus(sisteReferanser))
-    }
+    fun hentBehandlingsstatusForIkkeGodkjenteKonteringerForReferansekode(sisteReferanser: List<String>): HashMap<String, String> = hentBehandlingsstatusForIkkeGodkjenteKonteringer(hentKonteringerMedIkkeGodkjentBehandlingsstatus(sisteReferanser))
 
-    private fun hentKonteringer(sisteReferanser: List<String>): List<Kontering> {
-        return if (sisteReferanser.isEmpty()) {
-            persistenceService.hentAlleKonteringerUtenBehandlingsstatusOk()
-        } else {
-            persistenceService.hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferanser)
-        }
+    private fun hentKonteringer(sisteReferanser: List<String>): List<Kontering> = if (sisteReferanser.isEmpty()) {
+        persistenceService.hentAlleKonteringerUtenBehandlingsstatusOk()
+    } else {
+        persistenceService.hentKonteringerUtenBehandlingsstatusOkForReferansekode(sisteReferanser)
     }
 
     private fun hentBehandlingsstatus(batchUid: String): BehandlingsstatusResponse {

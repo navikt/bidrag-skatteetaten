@@ -91,60 +91,54 @@ class OppslagService(
         return UtsatteOgFeiledeVedtak(utsatteVedtak, ikkeOversendteVedtak, feiledeVedtak)
     }
 
-    fun hentOppdragResponse(oppdrag: Oppdrag): OppdragResponse {
-        return OppdragResponse(
-            oppdragId = oppdrag.oppdragId,
-            type = oppdrag.stønadType,
-            sakId = oppdrag.sakId,
-            kravhaverIdent = oppdrag.kravhaverIdent,
-            skyldnerIdent = oppdrag.skyldnerIdent,
-            gjelderIdent = oppdrag.gjelderIdent,
-            mottakerIdent = oppdrag.mottakerIdent,
-            utsattTilTidspunkt = oppdrag.utsattTilDato.toString(),
-            endretTidspunkt = oppdrag.endretTidspunkt.toString(),
-            oppdragsperioder = hentOppdragsperioderMedKonteringer(oppdrag),
+    fun hentOppdragResponse(oppdrag: Oppdrag): OppdragResponse = OppdragResponse(
+        oppdragId = oppdrag.oppdragId,
+        type = oppdrag.stønadType,
+        sakId = oppdrag.sakId,
+        kravhaverIdent = oppdrag.kravhaverIdent,
+        skyldnerIdent = oppdrag.skyldnerIdent,
+        gjelderIdent = oppdrag.gjelderIdent,
+        mottakerIdent = oppdrag.mottakerIdent,
+        utsattTilTidspunkt = oppdrag.utsattTilDato.toString(),
+        endretTidspunkt = oppdrag.endretTidspunkt.toString(),
+        oppdragsperioder = hentOppdragsperioderMedKonteringer(oppdrag),
+    )
+
+    fun hentOppdragsperioderMedKonteringer(oppdrag: Oppdrag): List<OppdragsperiodeResponse> = (oppdrag.oppdragsperioder).map {
+        OppdragsperiodeResponse(
+            oppdragsperiodeId = it.oppdragsperiodeId,
+            oppdragId = it.oppdrag?.oppdragId,
+            vedtakId = it.vedtakId,
+            referanse = it.referanse,
+            belop = it.beløp,
+            valuta = it.valuta,
+            periodeFra = it.periodeFra.toString(),
+            periodeTil = it.periodeTil.toString(),
+            vedtaksdato = it.vedtaksdato.toString(),
+            opprettetAv = it.opprettetAv,
+            delytelseId = it.delytelseId,
+            eksternReferanse = it.eksternReferanse,
+            aktivTil = it.aktivTil.toString(),
+            konteringer = hentKonteringer(it),
+            opphørendeOppdragsperiode = it.opphørendeOppdragsperiode,
         )
     }
 
-    fun hentOppdragsperioderMedKonteringer(oppdrag: Oppdrag): List<OppdragsperiodeResponse> {
-        return (oppdrag.oppdragsperioder).map {
-            OppdragsperiodeResponse(
-                oppdragsperiodeId = it.oppdragsperiodeId,
-                oppdragId = it.oppdrag?.oppdragId,
-                vedtakId = it.vedtakId,
-                referanse = it.referanse,
-                belop = it.beløp,
-                valuta = it.valuta,
-                periodeFra = it.periodeFra.toString(),
-                periodeTil = it.periodeTil.toString(),
-                vedtaksdato = it.vedtaksdato.toString(),
-                opprettetAv = it.opprettetAv,
-                delytelseId = it.delytelseId,
-                eksternReferanse = it.eksternReferanse,
-                aktivTil = it.aktivTil.toString(),
-                konteringer = hentKonteringer(it),
-                opphørendeOppdragsperiode = it.opphørendeOppdragsperiode,
-            )
-        }
-    }
-
-    fun hentKonteringer(oppdragsperiode: Oppdragsperiode): List<KonteringResponse> {
-        return oppdragsperiode.konteringer.map {
-            KonteringResponse(
-                konteringId = it.konteringId,
-                oppdragsperiodeId = it.oppdragsperiode?.oppdragsperiodeId,
-                transaksjonskode = Transaksjonskode.valueOf(it.transaksjonskode),
-                overforingsperiode = it.overføringsperiode,
-                overforingstidspunkt = it.overføringstidspunkt.toString(),
-                behandlingsstatusOkTidspunkt = it.behandlingsstatusOkTidspunkt.toString(),
-                type = Type.valueOf(it.type),
-                soknadType = Søknadstype.valueOf(it.søknadType),
-                sendtIPalopsperiode = it.sendtIPåløpsperiode,
-                sisteReferansekode = it.sisteReferansekode,
-                opprettetTidspunkt = it.opprettetTidspunkt.toString(),
-                vedtakId = it.vedtakId,
-            )
-        }
+    fun hentKonteringer(oppdragsperiode: Oppdragsperiode): List<KonteringResponse> = oppdragsperiode.konteringer.map {
+        KonteringResponse(
+            konteringId = it.konteringId,
+            oppdragsperiodeId = it.oppdragsperiode?.oppdragsperiodeId,
+            transaksjonskode = Transaksjonskode.valueOf(it.transaksjonskode),
+            overforingsperiode = it.overføringsperiode,
+            overforingstidspunkt = it.overføringstidspunkt.toString(),
+            behandlingsstatusOkTidspunkt = it.behandlingsstatusOkTidspunkt.toString(),
+            type = Type.valueOf(it.type),
+            soknadType = Søknadstype.valueOf(it.søknadType),
+            sendtIPalopsperiode = it.sendtIPåløpsperiode,
+            sisteReferansekode = it.sisteReferansekode,
+            opprettetTidspunkt = it.opprettetTidspunkt.toString(),
+            vedtakId = it.vedtakId,
+        )
     }
 
     @Transactional

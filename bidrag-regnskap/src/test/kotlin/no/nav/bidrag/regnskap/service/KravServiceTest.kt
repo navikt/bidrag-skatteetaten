@@ -412,21 +412,19 @@ class KravServiceTest {
         kravlister[2].krav[0].konteringer[0].soknadType shouldBe Søknadstype.EN
     }
 
-    private fun opprettOppdragForPeriode(periodeFra: LocalDate, periodeTil: LocalDate): Oppdrag {
-        return TestData.opprettOppdrag(
-            oppdragsperioder = listOf(
-                TestData.opprettOppdragsperiode(
-                    periodeTil = periodeTil,
-                    periodeFra = periodeFra,
-                    konteringer = listOf(
-                        TestData.opprettKontering(
-                            oppdragsperiode = TestData.opprettOppdragsperiode(
-                                oppdrag = TestData.opprettOppdrag(),
-                            ),
+    private fun opprettOppdragForPeriode(periodeFra: LocalDate, periodeTil: LocalDate): Oppdrag = TestData.opprettOppdrag(
+        oppdragsperioder = listOf(
+            TestData.opprettOppdragsperiode(
+                periodeTil = periodeTil,
+                periodeFra = periodeFra,
+                konteringer = listOf(
+                    TestData.opprettKontering(
+                        oppdragsperiode = TestData.opprettOppdragsperiode(
+                            oppdrag = TestData.opprettOppdrag(),
                         ),
                     ),
                 ),
             ),
-        )
-    }
+        ),
+    )
 }
