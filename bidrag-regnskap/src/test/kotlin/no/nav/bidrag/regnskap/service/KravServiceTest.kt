@@ -407,9 +407,9 @@ class KravServiceTest {
         val kravlister = kravService.opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
 
         kravlister shouldHaveSize 3
-        kravlister[0].krav[0].konteringer[0].soknadType shouldBe Søknadstype.FABM
-        kravlister[1].krav[0].konteringer[0].soknadType shouldBe Søknadstype.FABP
-        kravlister[2].krav[0].konteringer[0].soknadType shouldBe Søknadstype.EN
+        kravlister[0].first.krav[0].konteringer[0].soknadType shouldBe Søknadstype.FABM
+        kravlister[1].first.krav[0].konteringer[0].soknadType shouldBe Søknadstype.FABP
+        kravlister[2].first.krav[0].konteringer[0].soknadType shouldBe Søknadstype.EN
     }
 
     private fun opprettOppdragForPeriode(periodeFra: LocalDate, periodeTil: LocalDate): Oppdrag = TestData.opprettOppdrag(

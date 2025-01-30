@@ -94,10 +94,10 @@ class KravService(
         try {
             val kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
             kravlister.forEach { kravliste ->
-                val skattResponse = skattConsumer.sendKrav(kravliste)
+                val skattResponse = skattConsumer.sendKrav(kravliste.first)
                 lagreOverføringAvKrav(
                     skattResponse,
-                    finnAlleIkkeOverførteKonteringer(oppdragsperioderMedIkkeOverførteKonteringerListe),
+                    kravliste.second,
                     oppdragListe,
                 )
             }
@@ -120,7 +120,7 @@ class KravService(
         }
     }
 
-    fun opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>): List<Kravliste> {
+    fun opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>): List<Pair<Kravliste, List<Kontering>>> {
         // Gruperer alle oppdragene på vedtakId for å sende over oppdrag knyttet til en vedtakId om gangen,
         // sorterer på vedtakId slik at tidligste vedtak kommer først
         // mapper så til kontering for å opprette en KravKontering per kontering
@@ -131,17 +131,18 @@ class KravService(
             .mapValues { entry ->
                 entry.value.sortedBy { kontering -> kontering.vedtakId }
             }.toSortedMap()
-            .map { opprettKravKonteringListe(it.value) }
-            .map { Kravliste(listOf(it)) }
+            .map { (_, konteringer) ->
+                Pair(Kravliste(listOf(opprettKravKonteringListe(konteringer))), konteringer)
+            }
     }
 
-    private fun lagreOverføringAvKrav(skattResponse: ResponseEntity<String>, alleIkkeOverførteKonteringer: List<Kontering>, oppdrag: List<Oppdrag>) {
+    private fun lagreOverføringAvKrav(skattResponse: ResponseEntity<String>, konteringerFraOverførtKrav: List<Kontering>, oppdrag: List<Oppdrag>) {
         try {
             when (skattResponse.statusCode) {
                 HttpStatus.ACCEPTED -> {
                     SECURE_LOGGER.info("Mottok svar fra skatt: \n$skattResponse")
                     val kravResponse = objectMapper.readValue(skattResponse.body, KravResponse::class.java)
-                    lagreVellykketOverføringAvKrav(alleIkkeOverførteKonteringer, kravResponse, oppdrag)
+                    lagreVellykketOverføringAvKrav(konteringerFraOverførtKrav, kravResponse, oppdrag)
                 }
 
                 HttpStatus.BAD_REQUEST -> {
