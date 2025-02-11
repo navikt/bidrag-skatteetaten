@@ -74,13 +74,11 @@ data class Hendelse(
         return result
     }
 
-    override fun toString(): String {
-        return "Hendelse(" +
-            "sekvensnummer=$sekvensnummer," +
-            "aktør=${aktør.id}, " +
-            "aktoerIdent='$aktørIdent', " +
-            "sistEndret=$sistEndret)"
-    }
+    override fun toString(): String = "Hendelse(" +
+        "sekvensnummer=$sekvensnummer," +
+        "aktør=${aktør.id}, " +
+        "aktoerIdent='$aktørIdent', " +
+        "sistEndret=$sistEndret)"
 
     constructor(sekvensnummer: Int, aktør: Aktør) : this(sekvensnummer = sekvensnummer, aktør = aktør, aktørIdent = aktør.aktørIdent)
 }

@@ -47,19 +47,17 @@ class AktoerregisterController(
         ApiResponse(responseCode = "404", description = "Ingen aktør med gitt identtype og ident ble funnet.", content = [Content()]),
     )
     @PostMapping(path = ["/aktoer"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> {
-        return try {
-            SECURE_LOGGER.info("Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}")
-            val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
-            ResponseEntity.ok(aktoer)
-        } catch (e: AktørNotFoundException) {
-            LOGGER.info { "Aktør ${request.aktoerId} ikke funnet." }
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Finner ingen aktør med oppgitt ident", e)
-        } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}" }
-            SECURE_LOGGER.error("Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}")
-            throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Feil ved henting av aktør. Prøv igjen senere.", e)
-        }
+    fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> = try {
+        SECURE_LOGGER.info("Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}")
+        val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
+        ResponseEntity.ok(aktoer)
+    } catch (e: AktørNotFoundException) {
+        LOGGER.info { "Aktør ${request.aktoerId} ikke funnet." }
+        throw ResponseStatusException(HttpStatus.NOT_FOUND, "Finner ingen aktør med oppgitt ident", e)
+    } catch (e: Exception) {
+        LOGGER.error(e) { "Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}" }
+        SECURE_LOGGER.error("Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}")
+        throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Feil ved henting av aktør. Prøv igjen senere.", e)
     }
 
     @Operation(
@@ -79,13 +77,11 @@ class AktoerregisterController(
         @Parameter(description = "Maksimalt antall hendelser som ønskes hentet. Default-verdi er 1000.")
         @RequestParam(name = "antall", defaultValue = "1000")
         antall: Int = 1000,
-    ): ResponseEntity<List<HendelseDTO>> {
-        return try {
-            ResponseEntity.ok(hendelseService.hentHendelser(fraSekvensnummer, antall))
-        } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved henting av $antall hendelser fra sekvensnummer $fraSekvensnummer" }
-            throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Problem ved henting av hendelser. Prøv igjen senere", e)
-        }
+    ): ResponseEntity<List<HendelseDTO>> = try {
+        ResponseEntity.ok(hendelseService.hentHendelser(fraSekvensnummer, antall))
+    } catch (e: Exception) {
+        LOGGER.error(e) { "Feil ved henting av $antall hendelser fra sekvensnummer $fraSekvensnummer" }
+        throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Problem ved henting av hendelser. Prøv igjen senere", e)
     }
 
     @Operation(
@@ -97,13 +93,11 @@ class AktoerregisterController(
         ApiResponse(responseCode = "200", description = "Aktøren ble avmeldt."),
         ApiResponse(responseCode = "400", description = "Gitt identtype eller ident er ugyldig.", content = [Content()]),
     )
-    fun avmeldAktør(@RequestBody request: AktoerIdDTO): ResponseEntity<Any> {
-        return try {
-            aktørService.slettAktoer(request)
-            ResponseEntity.ok().build()
-        } catch (e: AktørNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
+    fun avmeldAktør(@RequestBody request: AktoerIdDTO): ResponseEntity<Any> = try {
+        aktørService.slettAktoer(request)
+        ResponseEntity.ok().build()
+    } catch (e: AktørNotFoundException) {
+        ResponseEntity.notFound().build()
     }
 
     @PostMapping("/samhandlersok")
@@ -111,7 +105,5 @@ class AktoerregisterController(
         description = "Søker etter samhandlere.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
-    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto {
-        return aktørService.samhandlerSøk(samhandlerSøk)
-    }
+    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto = aktørService.samhandlerSøk(samhandlerSøk)
 }

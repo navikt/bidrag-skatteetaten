@@ -19,16 +19,12 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 class RestConfig {
 
     @Bean
-    fun jackson2ObjectMapperBuilder(): Jackson2ObjectMapperBuilder {
-        return Jackson2ObjectMapperBuilder()
-            .dateFormat(StdDateFormat())
-            .failOnUnknownProperties(false)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-    }
+    fun jackson2ObjectMapperBuilder(): Jackson2ObjectMapperBuilder = Jackson2ObjectMapperBuilder()
+        .dateFormat(StdDateFormat())
+        .failOnUnknownProperties(false)
+        .serializationInclusion(JsonInclude.Include.NON_NULL)
 
     @Bean
-    fun objectMapper(): ObjectMapper {
-        return ObjectMapper().registerModule(KotlinModule.Builder().build()).registerModule(JavaTimeModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    }
+    fun objectMapper(): ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build()).registerModule(JavaTimeModule())
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 }

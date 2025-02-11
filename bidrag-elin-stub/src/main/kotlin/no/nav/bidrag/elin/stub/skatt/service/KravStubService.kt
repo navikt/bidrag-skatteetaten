@@ -49,34 +49,32 @@ class KravStubService(private val objectMapper: ObjectMapper) {
         return ResponseEntity.accepted().body(KravResponse(opprettBatchUid()))
     }
 
-    fun hentBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> {
-        return if (feilePåBehandlingsstatusState) {
-            ResponseEntity.ok(
-                BehandlingsstatusResponse(
-                    listOf(
-                        Feilmelding(
-                            feilkode = "[XX]",
-                            fagsystemId = "[1234567]",
-                            transaksjonskode = Transaksjonskode.B1,
-                            delytelseId = null,
-                            periode = null,
-                            feilmelding =
-                            "FagsystemId: [1234567]; [XX] step [XX123]. Batch: [$batchUid - ]. " +
-                                "Autentisering mot Maskinporten feilet: Url: https://test.maskinporten.no/token. " +
-                                "invalid_grant Invalid assertion. Client authentication failed. Invalid JWT signature. " +
-                                "(trace_id: Bidrag-elin-stub_TestData)",
-                        ),
+    fun hentBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> = if (feilePåBehandlingsstatusState) {
+        ResponseEntity.ok(
+            BehandlingsstatusResponse(
+                listOf(
+                    Feilmelding(
+                        feilkode = "[XX]",
+                        fagsystemId = "[1234567]",
+                        transaksjonskode = Transaksjonskode.B1,
+                        delytelseId = null,
+                        periode = null,
+                        feilmelding =
+                        "FagsystemId: [1234567]; [XX] step [XX123]. Batch: [$batchUid - ]. " +
+                            "Autentisering mot Maskinporten feilet: Url: https://test.maskinporten.no/token. " +
+                            "invalid_grant Invalid assertion. Client authentication failed. Invalid JWT signature. " +
+                            "(trace_id: Bidrag-elin-stub_TestData)",
                     ),
-                    Batchstatus.Failed,
-                    batchUid = batchUid,
-                    1,
-                    0,
-                    1,
                 ),
-            )
-        } else {
-            ResponseEntity.ok(BehandlingsstatusResponse(emptyList(), Batchstatus.Done, batchUid, 1, 0, 1))
-        }
+                Batchstatus.Failed,
+                batchUid = batchUid,
+                1,
+                0,
+                1,
+            ),
+        )
+    } else {
+        ResponseEntity.ok(BehandlingsstatusResponse(emptyList(), Batchstatus.Done, batchUid, 1, 0, 1))
     }
 
     fun oppdaterVedlikeholdsmodus(vedlikeholdsmodus: Vedlikeholdsmodus): ResponseEntity<Any> {
@@ -84,15 +82,13 @@ class KravStubService(private val objectMapper: ObjectMapper) {
         return ResponseEntity.ok().build()
     }
 
-    fun liveness(): ResponseEntity<Any> {
-        return when (vedlikeholdsmodusState.aktiv) {
-            true ->
-                ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
-                    "Årsakode: ${vedlikeholdsmodusState.aarsakKode.name}, kommentar: ${vedlikeholdsmodusState.kommentar}",
-                )
+    fun liveness(): ResponseEntity<Any> = when (vedlikeholdsmodusState.aktiv) {
+        true ->
+            ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
+                "Årsakode: ${vedlikeholdsmodusState.aarsakKode.name}, kommentar: ${vedlikeholdsmodusState.kommentar}",
+            )
 
-            false -> ResponseEntity.ok().build()
-        }
+        false -> ResponseEntity.ok().build()
     }
 
     fun oppdaterFeilPåKrav(skalFeilePåInnsendingAvKrav: Boolean): Boolean {
@@ -105,7 +101,5 @@ class KravStubService(private val objectMapper: ObjectMapper) {
         return feilePåBehandlingsstatusState
     }
 
-    private fun opprettBatchUid(): String {
-        return UUID.randomUUID().toString()
-    }
+    private fun opprettBatchUid(): String = UUID.randomUUID().toString()
 }

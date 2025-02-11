@@ -3,6 +3,7 @@ database:
   navn: bidrag-aktoerregister-q4
   tier: db-f1-micro
   size: 10
+  auditlog: "off"
 limits:
   cpu: 1000m
   memory: 2048Mi

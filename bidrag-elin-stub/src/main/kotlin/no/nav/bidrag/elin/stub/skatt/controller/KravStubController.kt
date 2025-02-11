@@ -74,44 +74,38 @@ class KravStubController(
         ],
     )
     @ResponseBody
-    fun lagreKrav(@RequestBody kravliste: Kravliste): ResponseEntity<Any> {
-        return kravStubService.lagreKrav(kravliste)
-    }
+    fun lagreKrav(@RequestBody kravliste: Kravliste): ResponseEntity<Any> = kravStubService.lagreKrav(kravliste)
 
     @PutMapping("/api/feilPaKrav")
     @Operation(
         description = "Endre om innsending av krav mot stub skal feile eller ikke.",
     )
-    fun endreFeilPåKrav(@RequestParam(required = true) skalFeilePåInnsendingAvKrav: Boolean): ResponseEntity<OppdatertStatus> {
-        return ResponseEntity.ok(
-            OppdatertStatus(
-                "Feil ved oversending av krav slått ${
-                    if (kravStubService.oppdaterFeilPåKrav(
-                            skalFeilePåInnsendingAvKrav,
-                        )
-                    ) {
-                        "PÅ"
-                    } else {
-                        "AV"
-                    }
-                }",
-            ),
-        )
-    }
+    fun endreFeilPåKrav(@RequestParam(required = true) skalFeilePåInnsendingAvKrav: Boolean): ResponseEntity<OppdatertStatus> = ResponseEntity.ok(
+        OppdatertStatus(
+            "Feil ved oversending av krav slått ${
+                if (kravStubService.oppdaterFeilPåKrav(
+                        skalFeilePåInnsendingAvKrav,
+                    )
+                ) {
+                    "PÅ"
+                } else {
+                    "AV"
+                }
+            }",
+        ),
+    )
 
     @PutMapping("/api/behandlingsstatus")
     @Operation(
         description = "Endre om kall på behandlingsstatus med batch-uid skal feile eller ikke.",
     )
-    fun endreBehandlingsstatus(@RequestParam(required = true) skalFeilePåKallMotBehandlingsstatus: Boolean): ResponseEntity<OppdatertStatus> {
-        return ResponseEntity.ok(
-            OppdatertStatus(
-                "Feil ved kall mot behandlingsstatus slått ${
-                    if (kravStubService.oppdatertFeilPåBehandlingsstatus(skalFeilePåKallMotBehandlingsstatus)) "PÅ" else "AV"
-                }",
-            ),
-        )
-    }
+    fun endreBehandlingsstatus(@RequestParam(required = true) skalFeilePåKallMotBehandlingsstatus: Boolean): ResponseEntity<OppdatertStatus> = ResponseEntity.ok(
+        OppdatertStatus(
+            "Feil ved kall mot behandlingsstatus slått ${
+                if (kravStubService.oppdatertFeilPåBehandlingsstatus(skalFeilePåKallMotBehandlingsstatus)) "PÅ" else "AV"
+            }",
+        ),
+    )
 
     @PostMapping("api/vedlikeholdsmodus")
     @Operation(
@@ -142,9 +136,7 @@ class KravStubController(
         ],
     )
     @ResponseBody
-    fun oppdaterVedlikeholdsmodus(@RequestBody vedlikeholdsmodus: Vedlikeholdsmodus): ResponseEntity<Any> {
-        return kravStubService.oppdaterVedlikeholdsmodus(vedlikeholdsmodus)
-    }
+    fun oppdaterVedlikeholdsmodus(@RequestBody vedlikeholdsmodus: Vedlikeholdsmodus): ResponseEntity<Any> = kravStubService.oppdaterVedlikeholdsmodus(vedlikeholdsmodus)
 
     @GetMapping("api/liveness")
     @Operation(
@@ -192,9 +184,7 @@ class KravStubController(
         ],
     )
     @ResponseBody
-    fun liveness(): ResponseEntity<Any> {
-        return kravStubService.liveness()
-    }
+    fun liveness(): ResponseEntity<Any> = kravStubService.liveness()
 
     @GetMapping("api/krav/{batchUid}")
     @Operation(
@@ -220,7 +210,5 @@ class KravStubController(
         ],
     )
     @ResponseBody
-    fun hentBehandlingsstatus(@PathVariable batchUid: String): ResponseEntity<BehandlingsstatusResponse> {
-        return kravStubService.hentBehandlingsstatus(batchUid)
-    }
+    fun hentBehandlingsstatus(@PathVariable batchUid: String): ResponseEntity<BehandlingsstatusResponse> = kravStubService.hentBehandlingsstatus(batchUid)
 }

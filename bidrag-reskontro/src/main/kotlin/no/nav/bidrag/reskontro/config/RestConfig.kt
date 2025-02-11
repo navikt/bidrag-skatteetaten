@@ -21,20 +21,18 @@ import java.time.format.DateTimeFormatter
 @Import(RestOperationsMaskinporten::class, RestOperationsAzure::class)
 class RestConfig {
     @Bean
-    fun jackson2ObjectMapperBuilder(): Jackson2ObjectMapperBuilder {
-        return Jackson2ObjectMapperBuilder()
-            .modules(
-                KotlinModule.Builder().build(),
-                JavaTimeModule()
-                    .addDeserializer(
-                        YearMonth::class.java,
-                        // Denne trengs for å parse år over 9999 riktig.
-                        YearMonthDeserializer(DateTimeFormatter.ofPattern("u-MM")),
-                    ),
-            )
-            .failOnUnknownProperties(false)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-    }
+    fun jackson2ObjectMapperBuilder(): Jackson2ObjectMapperBuilder = Jackson2ObjectMapperBuilder()
+        .modules(
+            KotlinModule.Builder().build(),
+            JavaTimeModule()
+                .addDeserializer(
+                    YearMonth::class.java,
+                    // Denne trengs for å parse år over 9999 riktig.
+                    YearMonthDeserializer(DateTimeFormatter.ofPattern("u-MM")),
+                ),
+        )
+        .failOnUnknownProperties(false)
+        .serializationInclusion(JsonInclude.Include.NON_NULL)
 
     @Bean
     fun clientRequestObservationConvention(): ClientRequestObservationConvention = DefaultClientRequestObservationConvention()

@@ -281,16 +281,12 @@ class ReskontroLegacyService(
         }
     }
 
-    fun harReturkodeFeil(returkode: Cretur): Boolean {
-        return when (parseReturkode(returkode.skode)) {
-            -1, -2 -> true
-            else -> false
-        }
+    fun harReturkodeFeil(returkode: Cretur): Boolean = when (parseReturkode(returkode.skode)) {
+        -1, -2 -> true
+        else -> false
     }
 
-    fun harEndreRmFeil(retCode: Cretur): Boolean {
-        return parseReturkode(retCode.skode) != 0
-    }
+    fun harEndreRmFeil(retCode: Cretur): Boolean = parseReturkode(retCode.skode) != 0
 
     private fun parseReturkode(kode: String): Int {
         if (kode.isBlank()) {

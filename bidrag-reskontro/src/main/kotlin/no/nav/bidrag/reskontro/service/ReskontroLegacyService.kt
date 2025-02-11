@@ -20,29 +20,17 @@ class ReskontroLegacyService(
     private val reskontroLegacyConsumer: ReskontroLegacyConsumer,
 ) {
 
-    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> {
-        return reskontroLegacyConsumer.hentInnkrevningssakerPåSak(saksnummerRequest)
-    }
+    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> = reskontroLegacyConsumer.hentInnkrevningssakerPåSak(saksnummerRequest)
 
-    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
-        return reskontroLegacyConsumer.hentInnkrevningssakerPåPerson(personRequest)
-    }
+    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> = reskontroLegacyConsumer.hentInnkrevningssakerPåPerson(personRequest)
 
-    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> {
-        return reskontroLegacyConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest)
-    }
+    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest)
 
-    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> {
-        return reskontroLegacyConsumer.hentTransaksjonerPåPerson(personRequest)
-    }
+    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåPerson(personRequest)
 
-    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
-        return reskontroLegacyConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
-    }
+    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
 
-    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> {
-        return reskontroLegacyConsumer.hentInformasjonOmInnkrevingssaken(personRequest)
-    }
+    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> = reskontroLegacyConsumer.hentInformasjonOmInnkrevingssaken(personRequest)
 
     fun endreRmForSak(endreRmForSakRequest: EndreRmForSakRequest) {
         reskontroLegacyConsumer.endreRmForSak(endreRmForSakRequest)

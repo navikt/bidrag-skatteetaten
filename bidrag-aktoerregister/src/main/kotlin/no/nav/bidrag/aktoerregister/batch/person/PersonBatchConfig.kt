@@ -30,22 +30,18 @@ class PersonBatchConfig(
     }
 
     @Bean
-    fun personJob(): Job {
-        return JobBuilder(PERSON_BATCH_OPPDATERING_JOB, jobRepository)
-            .listener(PersonJobListener())
-            .incrementer(RunIdIncrementer())
-            .flow(personStep())
-            .end()
-            .build()
-    }
+    fun personJob(): Job = JobBuilder(PERSON_BATCH_OPPDATERING_JOB, jobRepository)
+        .listener(PersonJobListener())
+        .incrementer(RunIdIncrementer())
+        .flow(personStep())
+        .end()
+        .build()
 
     @Bean
-    fun personStep(): Step {
-        return StepBuilder(PERSON_OPPDATER_AKTOERER_STEP, jobRepository)
-            .chunk<Aktør, AktørBatchProcessorResult>(100, transactionManager)
-            .reader(personBatchReader)
-            .processor(personBatchProcessor)
-            .writer(aktørBatchWriter)
-            .build()
-    }
+    fun personStep(): Step = StepBuilder(PERSON_OPPDATER_AKTOERER_STEP, jobRepository)
+        .chunk<Aktør, AktørBatchProcessorResult>(100, transactionManager)
+        .reader(personBatchReader)
+        .processor(personBatchProcessor)
+        .writer(aktørBatchWriter)
+        .build()
 }

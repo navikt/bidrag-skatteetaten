@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component
 import java.util.Collections
 
 @Component
-class SamhandlerBatchReader(aktoerRepository: AktørRepository) : RepositoryItemReader<Aktør>(), ItemReader<Aktør> {
+class SamhandlerBatchReader(aktoerRepository: AktørRepository) :
+    RepositoryItemReader<Aktør>(),
+    ItemReader<Aktør> {
     init {
         this.setRepository(aktoerRepository)
         this.setMethodName("findAllByAktørType")

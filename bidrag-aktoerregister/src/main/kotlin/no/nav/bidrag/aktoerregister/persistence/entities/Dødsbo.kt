@@ -77,17 +77,15 @@ data class Dødsbo(
         return result
     }
 
-    override fun toString(): String {
-        return "Dødsbo(" +
-            "id=$id, " +
-            "kontaktperson=$kontaktperson, " +
-            "adresselinje1=$adresselinje1, " +
-            "adresselinje2=$adresselinje2, " +
-            "adresselinje3=$adresselinje3, " +
-            "leilighetsnummer=$leilighetsnummer, " +
-            "postnr=$postnr, " +
-            "poststed=$poststed, " +
-            "land=$land, " +
-            "aktør=${aktør?.id})"
-    }
+    override fun toString(): String = "Dødsbo(" +
+        "id=$id, " +
+        "kontaktperson=$kontaktperson, " +
+        "adresselinje1=$adresselinje1, " +
+        "adresselinje2=$adresselinje2, " +
+        "adresselinje3=$adresselinje3, " +
+        "leilighetsnummer=$leilighetsnummer, " +
+        "postnr=$postnr, " +
+        "poststed=$poststed, " +
+        "land=$land, " +
+        "aktør=${aktør?.id})"
 }
