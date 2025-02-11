@@ -17,6 +17,7 @@ database:
   navn: bidrag-regnskap-q1
   tier: db-custom-1-3840
   size: 25
+  auditlog: "off"
 bucket:
   navn: bidrag-regnskap-q1
 maskinporten:
