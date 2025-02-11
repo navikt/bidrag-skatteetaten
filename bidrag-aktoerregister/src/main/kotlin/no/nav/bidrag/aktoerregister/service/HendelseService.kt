@@ -42,12 +42,10 @@ class HendelseService(
         return hendelseDTOer
     }
 
-    private fun finnIdenttype(sekvensnummerOgIdent: SekvensnummerOgIdent): Identtype {
-        return if (Ident(sekvensnummerOgIdent.aktoer_ident).erPersonIdent()) {
-            Identtype.PERSONNUMMER
-        } else {
-            Identtype.AKTOERNUMMER
-        }
+    private fun finnIdenttype(sekvensnummerOgIdent: SekvensnummerOgIdent): Identtype = if (Ident(sekvensnummerOgIdent.aktoer_ident).erPersonIdent()) {
+        Identtype.PERSONNUMMER
+    } else {
+        Identtype.AKTOERNUMMER
     }
 
     fun opprettHendelserPåAktør(aktør: Aktør, originalIdent: String?, oppdaterteFelter: List<String> = listOf()) {

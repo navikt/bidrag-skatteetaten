@@ -105,10 +105,8 @@ class AktørService(
             ?: error("Konvertering av person til aktør feilet!")
     }
 
-    fun hentAktørFraDatabase(aktørIdent: Ident): Aktør? {
-        return aktørRepository.findByAktørIdent(aktørIdent.verdi)
-            ?: tidligereIdenterRepository.findByTidligereAktoerIdent(aktørIdent.verdi)?.aktør
-    }
+    fun hentAktørFraDatabase(aktørIdent: Ident): Aktør? = aktørRepository.findByAktørIdent(aktørIdent.verdi)
+        ?: tidligereIdenterRepository.findByTidligereAktoerIdent(aktørIdent.verdi)?.aktør
 
     fun oppdaterAktør(aktør: Aktør, nyAktør: Aktør, originalIdent: String?): String? {
         var slettetAktørIdent: String? = null
@@ -175,9 +173,7 @@ class AktørService(
         aktørRepository.deleteAktørByAktørIdent(aktoerIdDTO.aktoerId)
     }
 
-    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto {
-        return samhandlerConsumer.samhandlerSøk(samhandlerSøk) ?: throw AktørNotFoundException("Aktør ikke funnet i bidrag-samhandler under søk.")
-    }
+    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto = samhandlerConsumer.samhandlerSøk(samhandlerSøk) ?: throw AktørNotFoundException("Aktør ikke funnet i bidrag-samhandler under søk.")
 
     private fun finnFelterPåNyAktør(aktør: Aktør): List<String> {
         val oppdaterteFelterPåAktør = mutableListOf<String>()

@@ -12,12 +12,8 @@ import javax.sql.DataSource
 class BatchConfig {
 
     @Bean
-    fun lockProvider(dataSource: DataSource): LockProvider {
-        return JdbcTemplateLockProvider(dataSource, "aktoerregister.shedlock")
-    }
+    fun lockProvider(dataSource: DataSource): LockProvider = JdbcTemplateLockProvider(dataSource, "aktoerregister.shedlock")
 
     @Bean
-    fun taskExecutor(): TaskExecutor {
-        return SimpleAsyncTaskExecutor()
-    }
+    fun taskExecutor(): TaskExecutor = SimpleAsyncTaskExecutor()
 }

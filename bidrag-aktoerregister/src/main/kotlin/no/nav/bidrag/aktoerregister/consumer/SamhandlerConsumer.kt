@@ -20,8 +20,7 @@ import java.net.URI
 private val LOGGER = KotlinLogging.logger {}
 
 @Service
-class SamhandlerConsumer(@Value("\${BIDRAG_SAMHANDLER_URL}") val url: URI, @Qualifier("azure") private val restTemplate: RestOperations) :
-    AbstractRestClient(restTemplate, "bidrag-aktoerregister-samhandler") {
+class SamhandlerConsumer(@Value("\${BIDRAG_SAMHANDLER_URL}") val url: URI, @Qualifier("azure") private val restTemplate: RestOperations) : AbstractRestClient(restTemplate, "bidrag-aktoerregister-samhandler") {
 
     companion object {
         private const val SAMHANDLER_PATH = "/samhandler"

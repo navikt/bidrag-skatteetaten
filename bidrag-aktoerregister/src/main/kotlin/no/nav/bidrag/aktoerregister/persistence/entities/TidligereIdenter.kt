@@ -47,11 +47,9 @@ data class TidligereIdenter(
         return result
     }
 
-    override fun toString(): String {
-        return "TidligereIdenter(" +
-            "id=$id, " +
-            "tidligereAktoerIdent='$tidligereAktoerIdent', " +
-            "identtype='$identtype', " +
-            "aktør=${aktør?.id})"
-    }
+    override fun toString(): String = "TidligereIdenter(" +
+        "id=$id, " +
+        "tidligereAktoerIdent='$tidligereAktoerIdent', " +
+        "identtype='$identtype', " +
+        "aktør=${aktør?.id})"
 }

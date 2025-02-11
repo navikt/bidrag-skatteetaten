@@ -16,24 +16,21 @@ private val LOGGER = KotlinLogging.logger { }
 @Component
 class SamhandlerBatchProcessor(
     private val aktørService: AktørService,
-) :
-    ItemProcessor<Aktør, AktørBatchProcessorResult?> {
+) : ItemProcessor<Aktør, AktørBatchProcessorResult?> {
 
-    override fun process(aktør: Aktør): AktørBatchProcessorResult? {
-        return try {
-            aktørService.hentAktørFraSamhandler(Ident(aktør.aktørIdent))
-                .takeIf { it != aktør }
-                ?.let {
-                    AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED)
-                }
-        } catch (e: AktørNotFoundException) {
-            SECURE_LOGGER.warn("Samhandler: ${aktør.aktørIdent} finnes ikke. Feilmelding: ${e.message}")
-            LOGGER.warn(e) { e.message }
-            null
-        } catch (e: Exception) {
-            SECURE_LOGGER.error("Samhandler: ${aktør.aktørIdent} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}")
-            LOGGER.error(e) { e.message }
-            null
-        }
+    override fun process(aktør: Aktør): AktørBatchProcessorResult? = try {
+        aktørService.hentAktørFraSamhandler(Ident(aktør.aktørIdent))
+            .takeIf { it != aktør }
+            ?.let {
+                AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED)
+            }
+    } catch (e: AktørNotFoundException) {
+        SECURE_LOGGER.warn("Samhandler: ${aktør.aktørIdent} finnes ikke. Feilmelding: ${e.message}")
+        LOGGER.warn(e) { e.message }
+        null
+    } catch (e: Exception) {
+        SECURE_LOGGER.error("Samhandler: ${aktør.aktørIdent} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}")
+        LOGGER.error(e) { e.message }
+        null
     }
 }

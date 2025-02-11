@@ -30,22 +30,18 @@ class SamhandlerBatchConfig(
     }
 
     @Bean
-    fun samhandlerJob(): Job {
-        return JobBuilder(SAMHANDLER_BATCH_OPPDATERING_JOB, jobRepository)
-            .listener(SamhandlerJobListener())
-            .incrementer(RunIdIncrementer())
-            .flow(samhandlerStep())
-            .end()
-            .build()
-    }
+    fun samhandlerJob(): Job = JobBuilder(SAMHANDLER_BATCH_OPPDATERING_JOB, jobRepository)
+        .listener(SamhandlerJobListener())
+        .incrementer(RunIdIncrementer())
+        .flow(samhandlerStep())
+        .end()
+        .build()
 
     @Bean
-    fun samhandlerStep(): Step {
-        return StepBuilder(SAMHANDLER_OPPDATER_AKTOERER_STEP, jobRepository)
-            .chunk<Aktør, AktørBatchProcessorResult>(100, transactionManager)
-            .reader(samhandlerBatchReader)
-            .processor(samhandlerBatchProcessor)
-            .writer(aktørBatchWriter)
-            .build()
-    }
+    fun samhandlerStep(): Step = StepBuilder(SAMHANDLER_OPPDATER_AKTOERER_STEP, jobRepository)
+        .chunk<Aktør, AktørBatchProcessorResult>(100, transactionManager)
+        .reader(samhandlerBatchReader)
+        .processor(samhandlerBatchProcessor)
+        .writer(aktørBatchWriter)
+        .build()
 }

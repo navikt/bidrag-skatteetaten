@@ -8,9 +8,7 @@ import org.springframework.core.convert.converter.Converter
 @Configuration
 class ConverterConfig {
     @Bean
-    fun conversionService(converters: Set<Converter<*, *>>): ConversionServiceFactoryBean {
-        return ConversionServiceFactoryBean().apply {
-            this.setConverters(converters)
-        }
+    fun conversionService(converters: Set<Converter<*, *>>): ConversionServiceFactoryBean = ConversionServiceFactoryBean().apply {
+        this.setConverters(converters)
     }
 }

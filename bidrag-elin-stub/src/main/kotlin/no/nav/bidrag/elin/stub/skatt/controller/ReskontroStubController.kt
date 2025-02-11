@@ -16,22 +16,14 @@ class ReskontroStubController(
     private val reskontroStubService: ReskontroStubService,
 ) {
     @PostMapping("/BisysResk/bidragssak")
-    fun hentBidragssak(@RequestBody input: Input): ResponseEntity<Output> {
-        return reskontroStubService.hentBidragssak(input)
-    }
+    fun hentBidragssak(@RequestBody input: Input): ResponseEntity<Output> = reskontroStubService.hentBidragssak(input)
 
     @PostMapping("/BisysResk/transaksjoner")
-    fun hentTransaksjoner(@RequestBody input: Input): ResponseEntity<Output> {
-        return reskontroStubService.hentTransaksjoner(input)
-    }
+    fun hentTransaksjoner(@RequestBody input: Input): ResponseEntity<Output> = reskontroStubService.hentTransaksjoner(input)
 
     @PostMapping("/BisysResk/innkrevingssak")
-    fun hentInnkrevingssak(@RequestBody input: Input): ResponseEntity<Output> {
-        return reskontroStubService.hentInnkrevingssak(input)
-    }
+    fun hentInnkrevingssak(@RequestBody input: Input): ResponseEntity<Output> = reskontroStubService.hentInnkrevingssak(input)
 
     @PatchMapping("/BisysResk/endrerm")
-    fun endreRm(@RequestBody input: Input): ResponseEntity<Output> {
-        return reskontroStubService.endreRm(input)
-    }
+    fun endreRm(@RequestBody input: Input): ResponseEntity<Output> = reskontroStubService.endreRm(input)
 }

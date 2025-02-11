@@ -17,18 +17,16 @@ class PersonBatchProcessor(
     private val aktørService: AktørService,
 ) : ItemProcessor<Aktør, AktørBatchProcessorResult?> {
 
-    override fun process(aktør: Aktør): AktørBatchProcessorResult? {
-        return try {
-            aktørService.hentAktørFraPerson(Ident(aktør.aktørIdent))
-                .takeIf { it != aktør }
-                ?.let {
-                    val originalIdent = if (it.aktørIdent != aktør.aktørIdent) aktør.aktørIdent else null
-                    AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED, originalIdent)
-                }
-        } catch (e: Exception) {
-            SECURE_LOGGER.error("Person: ${aktør.aktørIdent} feilet i PersonBatchProcessor. Feilmelding: ${e.message}")
-            LOGGER.error(e) { e.message }
-            null
-        }
+    override fun process(aktør: Aktør): AktørBatchProcessorResult? = try {
+        aktørService.hentAktørFraPerson(Ident(aktør.aktørIdent))
+            .takeIf { it != aktør }
+            ?.let {
+                val originalIdent = if (it.aktørIdent != aktør.aktørIdent) aktør.aktørIdent else null
+                AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED, originalIdent)
+            }
+    } catch (e: Exception) {
+        SECURE_LOGGER.error("Person: ${aktør.aktørIdent} feilet i PersonBatchProcessor. Feilmelding: ${e.message}")
+        LOGGER.error(e) { e.message }
+        null
     }
 }

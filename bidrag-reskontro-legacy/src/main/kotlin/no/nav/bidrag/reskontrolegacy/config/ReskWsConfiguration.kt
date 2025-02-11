@@ -10,18 +10,14 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller
 class ReskWsConfiguration {
 
     @Bean
-    fun jaxb2marshaller(): Jaxb2Marshaller {
-        return Jaxb2Marshaller().apply {
-            contextPath = "no.nav.bidrag.reskontrolegacy.generated"
-        }
+    fun jaxb2marshaller(): Jaxb2Marshaller = Jaxb2Marshaller().apply {
+        contextPath = "no.nav.bidrag.reskontrolegacy.generated"
     }
 
     @Bean
-    fun reskWsClient(@Value("\${ELIN_URL}") elinUrl: String, jaxb2marshaller: Jaxb2Marshaller): ReskWsClient {
-        return ReskWsClient().apply {
-            defaultUri = elinUrl
-            marshaller = jaxb2marshaller
-            unmarshaller = jaxb2marshaller
-        }
+    fun reskWsClient(@Value("\${ELIN_URL}") elinUrl: String, jaxb2marshaller: Jaxb2Marshaller): ReskWsClient = ReskWsClient().apply {
+        defaultUri = elinUrl
+        marshaller = jaxb2marshaller
+        unmarshaller = jaxb2marshaller
     }
 }
