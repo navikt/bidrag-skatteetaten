@@ -74,7 +74,7 @@ class PåløpsfilGenerator(
         gcpFilBucket.lagreFil(påløpsMappe + påløpsfilnavn, byteArrayOutputStream)
         medLyttere { it.lastOppFilTilGcpBucket(påløp, "Fil lastet opp til GCP bucket!") }
 
-        if (!overførFil) {
+        if (overførFil) {
             medLyttere { it.lastOppFilTilFilsluse(påløp, "Starter opplasting til filsluse..") }
             filoverføringTilElinKlient.lastOppFilTilFilsluse(påløpsMappe, påløpsfilnavn)
             medLyttere { it.lastOppFilTilFilsluse(påløp, "Fil lastet opp til filsluse!") }
