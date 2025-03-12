@@ -39,7 +39,7 @@ class BehandlingsstatusController(
             ),
         ],
     )
-    fun hentBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> = skattConsumer.sjekkBehandlingsstatus(batchUid)
+    fun hentBehandlingsstatus(batchUid: String): BehandlingsstatusResponse? = skattConsumer.sjekkBehandlingsstatus(batchUid)
 
     @GetMapping("/behandlingsstatusScheduled")
     @Operation(
