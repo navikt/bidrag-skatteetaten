@@ -78,7 +78,7 @@ class OppslagService(
             .filter { it.sisteReferansekode != null }
             .distinctBy { it.sisteReferansekode }
             .map {
-                val sjekkAvBehandlingsstatusResponse = skattConsumer.sjekkBehandlingsstatus(it.sisteReferansekode!!).body
+                val sjekkAvBehandlingsstatusResponse = skattConsumer.sjekkBehandlingsstatus(it.sisteReferansekode!!)
                 var feilmelding: String? = null
                 if (sjekkAvBehandlingsstatusResponse?.batchStatus == Batchstatus.Done) {
                     it.behandlingsstatusOkTidspunkt = LocalDateTime.now()

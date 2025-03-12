@@ -11,7 +11,6 @@ import no.nav.bidrag.domene.enums.regnskap.Årsakskode
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
 import no.nav.security.token.support.core.api.Protected
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -40,7 +39,7 @@ class VedlikeholdsmodusController(
         ],
     )
     @Parameter(name = "kommentar", example = "Påløp for 2022-12 genereres hos NAV.")
-    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): ResponseEntity<Any> = skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar))
+    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): Any? = skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar)).body
 
     @GetMapping("/vedlikeholdsmodus")
     @Operation(
@@ -63,5 +62,5 @@ class VedlikeholdsmodusController(
             ),
         ],
     )
-    fun sjekkStatusPåVedlikeholdsmodus(): ResponseEntity<Any> = skattConsumer.hentStatusPåVedlikeholdsmodus()
+    fun sjekkStatusPåVedlikeholdsmodus(): Any? = skattConsumer.hentStatusPåVedlikeholdsmodus().body
 }
