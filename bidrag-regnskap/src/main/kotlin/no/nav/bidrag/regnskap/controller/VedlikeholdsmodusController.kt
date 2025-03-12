@@ -40,7 +40,7 @@ class VedlikeholdsmodusController(
         ],
     )
     @Parameter(name = "kommentar", example = "Påløp for 2022-12 genereres hos NAV.")
-    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): ResponseEntity<Any> = skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar))
+    fun endreVedlikeholdsmodus(aktiv: Boolean, årsakskode: Årsakskode, kommentar: String): Any? = skattConsumer.oppdaterVedlikeholdsmodus(Vedlikeholdsmodus(aktiv, årsakskode, kommentar)).body
 
     @GetMapping("/vedlikeholdsmodus")
     @Operation(

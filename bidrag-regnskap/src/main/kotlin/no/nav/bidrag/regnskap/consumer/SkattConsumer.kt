@@ -79,12 +79,13 @@ class SkattConsumer(
     fun hentStatusPåVedlikeholdsmodus(): ResponseEntity<Any> {
         LOGGER.debug { "Henter status på vedlikeholdsmodus." }
         return try {
-            restTemplate.exchange(
+            val response = restTemplate.exchange(
                 opprettSkattUrl(LIVENESS_PATH),
                 HttpMethod.GET,
                 HttpEntity<String>(opprettHttpHeaders()),
                 Any::class.java,
             )
+            ResponseEntity.status(response.statusCode).body(response.body)
         } catch (e: HttpStatusCodeException) {
             ResponseEntity.status(e.statusCode).body(e.responseBodyAsString)
         }
@@ -92,12 +93,13 @@ class SkattConsumer(
 
     fun sjekkBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> {
         LOGGER.debug { "Henter behandlingsstatus for batchUid: $batchUid" }
-        return restTemplate.exchange(
+        val response = restTemplate.exchange(
             opprettSkattUrl("$KRAV_PATH/$batchUid"),
             HttpMethod.GET,
             HttpEntity<String>(opprettHttpHeaders()),
             BehandlingsstatusResponse::class.java,
         )
+        return ResponseEntity.status(response.statusCode).body(response.body)
     }
 
     private fun opprettSkattUrl(path: String): URI = URI.create(skattUrl + path)
