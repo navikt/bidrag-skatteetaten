@@ -68,7 +68,7 @@ class BehandlingsstatusService(
     }
 
     private fun hentBehandlingsstatus(batchUid: String): BehandlingsstatusResponse {
-        val behandlingsstatus = skattConsumer.sjekkBehandlingsstatus(batchUid)
+        val behandlingsstatus = skattConsumer.sjekkBehandlingsstatus(batchUid).body
         return behandlingsstatus
             ?: error("Sjekk av behandlingsstatus feilet for batchUid: $batchUid!")
     }

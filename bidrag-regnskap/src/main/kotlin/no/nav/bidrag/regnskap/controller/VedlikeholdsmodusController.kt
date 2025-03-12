@@ -11,6 +11,7 @@ import no.nav.bidrag.domene.enums.regnskap.Årsakskode
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
 import no.nav.security.token.support.core.api.Protected
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -62,5 +63,5 @@ class VedlikeholdsmodusController(
             ),
         ],
     )
-    fun sjekkStatusPåVedlikeholdsmodus(): Any? = skattConsumer.hentStatusPåVedlikeholdsmodus().body
+    fun sjekkStatusPåVedlikeholdsmodus(): ResponseEntity<Any> = skattConsumer.hentStatusPåVedlikeholdsmodus()
 }
