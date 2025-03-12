@@ -69,7 +69,7 @@ class BehandlingsstatusService(
 
     private fun hentBehandlingsstatus(batchUid: String): BehandlingsstatusResponse {
         val behandlingsstatus = skattConsumer.sjekkBehandlingsstatus(batchUid)
-        return behandlingsstatus
-            ?: error("Sjekk av behandlingsstatus feilet for batchUid: $batchUid!")
+        return behandlingsstatus.body
+            ?: error("Sjekk av behandlingsstatus feilet for batchUid: $batchUid! Feilkode: ${behandlingsstatus.statusCode}")
     }
 }

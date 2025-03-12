@@ -19,6 +19,7 @@ import no.nav.bidrag.transport.regnskap.behandlingsstatus.Feilmelding
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -202,7 +203,7 @@ class OppslagServiceTest {
             oppdrag.oppdragsperioder = listOf(oppdragsperiode)
 
             every { persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi) } returns listOf(oppdrag)
-            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns
+            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns ResponseEntity.ok(
                 BehandlingsstatusResponse(
                     listOf(Feilmelding(null, null, null, null, null, feilmelding)),
                     Batchstatus.Failed,
@@ -210,7 +211,8 @@ class OppslagServiceTest {
                     1,
                     1,
                     0,
-                )
+                ),
+            )
 
             val utsatteOgFeiledeVedtak = oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer)
 
@@ -243,7 +245,7 @@ class OppslagServiceTest {
             oppdrag.oppdragsperioder = listOf(oppdragsperiode)
 
             every { persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi) } returns listOf(oppdrag)
-            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns
+            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns ResponseEntity.ok(
                 BehandlingsstatusResponse(
                     emptyList(),
                     Batchstatus.Done,
@@ -251,7 +253,8 @@ class OppslagServiceTest {
                     1,
                     0,
                     1,
-                )
+                ),
+            )
 
             val utsatteOgFeiledeVedtak = oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer)
 
@@ -284,7 +287,7 @@ class OppslagServiceTest {
             oppdrag.oppdragsperioder = listOf(oppdragsperiode)
 
             every { persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi) } returns listOf(oppdrag)
-            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns
+            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns ResponseEntity.ok(
                 BehandlingsstatusResponse(
                     emptyList(),
                     Batchstatus.Done,
@@ -292,7 +295,8 @@ class OppslagServiceTest {
                     1,
                     0,
                     1,
-                )
+                ),
+            )
 
             val utsatteOgFeiledeVedtak = oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer)
 
