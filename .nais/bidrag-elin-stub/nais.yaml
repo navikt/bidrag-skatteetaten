@@ -28,7 +28,7 @@ spec:
       memory: 1024Mi
     requests:
       cpu: 10m
-    memory: 512Mi
+      memory: 512Mi
   maskinporten:
     enabled: true
   ingresses:
