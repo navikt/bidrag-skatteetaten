@@ -5,10 +5,9 @@ database:
   size: 25
   auditlog: "off"
 limits:
-  cpu: 1000m
   memory: 2048Mi
 requests:
-  cpu: 250m
+  cpu: 50m
   memory: 512Mi
 replicas:
   max: 1
