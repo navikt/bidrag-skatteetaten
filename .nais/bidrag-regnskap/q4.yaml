@@ -2,7 +2,6 @@ name: bidrag-regnskap-q4
 ingresses:
   - https://bidrag-regnskap-q4.intern.dev.nav.no
 limits:
-  cpu: 1000m
   memory: 2048Mi
 requests:
   cpu: 50m

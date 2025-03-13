@@ -2,11 +2,10 @@ name: bidrag-reskontro
 ingresses:
   - https://bidrag-reskontro.intern.nav.no
 limits:
-  cpu: 500m
   memory: 1024Mi
 requests:
-  cpu: 500m
-  memory: 512Mi
+  cpu: 50m
+  memory: 206Mi
 replicas:
   max: 2
   min: 2
