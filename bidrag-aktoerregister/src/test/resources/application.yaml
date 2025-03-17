@@ -51,7 +51,6 @@ spring:
 no.nav.security.jwt:
   issuer.maskinporten:
     discovery-url: http://localhost:${mock-oauth2-server.port}/maskinporten/.well-known/openid-configuration
-    cookie_name: maskinporten-idtoken
     validation.optional-claims: aud
     accepted_audience: test-audience
   client:
