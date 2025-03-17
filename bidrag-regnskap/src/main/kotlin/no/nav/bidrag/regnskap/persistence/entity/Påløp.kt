@@ -13,7 +13,7 @@ data class Påløp(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "palop_id")
-    val påløpId: Int = 0,
+    val påløpId: Int? = null,
 
     @Column(name = "kjoredato")
     val kjøredato: LocalDateTime,

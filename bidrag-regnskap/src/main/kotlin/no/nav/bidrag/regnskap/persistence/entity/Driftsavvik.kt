@@ -13,7 +13,7 @@ data class Driftsavvik(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "driftsavvik_id")
-    val driftsavvikId: Int = 0,
+    val driftsavvikId: Int? = null,
 
     @Column(name = "palop_id")
     val påløpId: Int? = null,

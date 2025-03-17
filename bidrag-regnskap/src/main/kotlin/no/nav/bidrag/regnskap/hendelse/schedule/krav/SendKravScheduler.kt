@@ -54,7 +54,7 @@ class SendKravScheduler(
         val sakerMedIkkeOverførteKonteringer = HashMap<String, MutableList<Int>>()
         oppdragMedIkkeOverførteKonteringer.forEach {
             if (!oppdragHarNyligOpprettedeKonteringer(it)) {
-                sakerMedIkkeOverførteKonteringer.getOrPut(it.sakId) { mutableListOf() }.apply { add(it.oppdragId) }
+                sakerMedIkkeOverførteKonteringer.getOrPut(it.sakId) { mutableListOf() }.apply { add(it.oppdragId!!) }
             }
         }
 

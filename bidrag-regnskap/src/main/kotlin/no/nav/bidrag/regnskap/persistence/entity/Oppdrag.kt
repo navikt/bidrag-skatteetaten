@@ -20,7 +20,7 @@ data class Oppdrag(
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "oppdrag_sequence")
     @SequenceGenerator(name = "oppdrag_sequence", sequenceName = "oppdrag_id_sequence", allocationSize = 100)
     @Column(name = "oppdrag_id")
-    val oppdragId: Int = 0,
+    val oppdragId: Int? = null,
 
     @Column(name = "stonad_type")
     val stønadType: String,
@@ -86,7 +86,7 @@ data class Oppdrag(
     }
 
     override fun hashCode(): Int {
-        var result = oppdragId
+        var result = oppdragId ?: 0
         result = 31 * result + stønadType.hashCode()
         result = 31 * result + sakId.hashCode()
         result = 31 * result + (kravhaverIdent?.hashCode() ?: 0)

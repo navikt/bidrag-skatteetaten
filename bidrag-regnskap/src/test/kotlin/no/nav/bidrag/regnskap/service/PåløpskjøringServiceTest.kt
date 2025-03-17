@@ -66,6 +66,7 @@ class PåløpskjøringServiceTest {
 
         val oppdrag = TestData.opprettOppdrag(oppdragsperioder = emptyList())
         val oppdragsperiodeMedManglendeKonteringer = TestData.opprettOppdragsperiode(
+            oppdragsperiodeId = 0,
             periodeFra = LocalDate.of(2022, 1, 1),
             periodeTil = null,
             konteringer = emptyList(),
@@ -76,7 +77,7 @@ class PåløpskjøringServiceTest {
         oppdrag.oppdragsperioder = listOf(oppdragsperiodeMedManglendeKonteringer)
 
         val oppdragsperiodeIder = listOf(
-            oppdragsperiodeMedManglendeKonteringer.oppdragsperiodeId,
+            oppdragsperiodeMedManglendeKonteringer.oppdragsperiodeId!!,
         )
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
@@ -130,8 +131,8 @@ class PåløpskjøringServiceTest {
         oppdrag.oppdragsperioder = oppdragsperioder
 
         val oppdragsperiodeIder = listOf(
-            oppdragsperiodeMedManglendeKonteringer1.oppdragsperiodeId,
-            oppdragsperiodeMedManglendeKonteringer2.oppdragsperiodeId,
+            oppdragsperiodeMedManglendeKonteringer1.oppdragsperiodeId!!,
+            oppdragsperiodeMedManglendeKonteringer2.oppdragsperiodeId!!,
         )
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns oppdragsperioder
@@ -168,6 +169,7 @@ class PåløpskjøringServiceTest {
 
         val oppdrag = TestData.opprettOppdrag(oppdragsperioder = emptyList())
         val oppdragsperiodeMedManglendeKonteringer = TestData.opprettOppdragsperiode(
+            oppdragsperiodeId = 0,
             periodeFra = LocalDate.of(2022, 1, 1),
             periodeTil = null,
             konteringer = emptyList(),
@@ -179,7 +181,7 @@ class PåløpskjøringServiceTest {
         oppdrag.oppdragsperioder = listOf(oppdragsperiodeMedManglendeKonteringer)
 
         val oppdragsperiodeIder = listOf(
-            oppdragsperiodeMedManglendeKonteringer.oppdragsperiodeId,
+            oppdragsperiodeMedManglendeKonteringer.oppdragsperiodeId!!,
         )
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
