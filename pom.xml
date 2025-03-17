@@ -29,7 +29,7 @@
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>5.0.17</nav-token-support.version>
         <kotlin-logging-jvm.version>7.0.5</kotlin-logging-jvm.version>
-        <slack-api.version>1.44.1</slack-api.version>
+        <slack-api.version>1.45.3</slack-api.version>
         <shedlock.version>6.3.0</shedlock.version>
         <jsch.version>0.2.23</jsch.version>
         <google-cloud-storage.version>2.41.0</google-cloud-storage.version>
