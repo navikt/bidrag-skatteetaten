@@ -28,5 +28,5 @@ jobs:
       docker_context: ./bidrag-reskontro-legacy
       nais_variabler_filnavn: bidrag-reskontro-legacy/q1.yaml
       nais_hovedfil_navn: bidrag-reskontro-legacy/nais.yaml
-      image_suffix: bidrag-reskontro-legacy
+      image_suffix: app
       tag: bidrag-reskontro-legacy
