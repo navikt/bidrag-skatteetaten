@@ -64,7 +64,7 @@ class PåløpskjøringService(
 
             validerDriftsavvik(påløp, schedulertKjøring)
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
-            persistenceService.registrerPåløpStartet(påløp.påløpId, LocalDateTime.now())
+            persistenceService.registrerPåløpStartet(påløp.påløpId!!, LocalDateTime.now())
 
             if (genererFil && overførFil) {
                 endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_GENERERES, "Påløp for ${påløp.forPeriode} genereres hos NAV.")
@@ -174,7 +174,7 @@ class PåløpskjøringService(
     }
 
     fun avsluttDriftsavvik(påløp: Påløp) {
-        val driftsavvik = persistenceService.hentDriftsavvikForPåløp(påløp.påløpId) ?: error("Fant ikke driftsavvik på ID: ${påløp.påløpId}")
+        val driftsavvik = persistenceService.hentDriftsavvikForPåløp(påløp.påløpId!!) ?: error("Fant ikke driftsavvik på ID: ${påløp.påløpId}")
         persistenceService.lagreDriftsavvik(driftsavvik.copy(tidspunktTil = LocalDateTime.now()))
     }
 

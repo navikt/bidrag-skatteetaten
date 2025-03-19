@@ -67,13 +67,13 @@ class PersistenceService(
     fun lagreOppdrag(oppdrag: Oppdrag): Int {
         val lagretOppdrag = oppdragRepository.save(oppdrag)
         LOGGER.debug("Lagret oppdrag med ID: ${lagretOppdrag.oppdragId}")
-        return lagretOppdrag.oppdragId
+        return lagretOppdrag.oppdragId!!
     }
 
     fun lagreOppdrag(oppdrag: List<Oppdrag>): List<Int> {
         val lagredeOppdrag = oppdragRepository.saveAll(oppdrag)
         LOGGER.debug("Lagret alle oppdrag med ID: {}", lagredeOppdrag.map { it.oppdragId })
-        return lagredeOppdrag.map { it.oppdragId }
+        return lagredeOppdrag.map { it.oppdragId!! }
     }
 
     fun hentOppdragPåSaksnummerOgKravhaver(saksnummer: Saksnummer, kravhaver: Personident): List<Oppdrag> = oppdragRepository.findAllBySakIdAndKravhaverIdent(saksnummer.verdi, kravhaver.verdi)
@@ -96,7 +96,7 @@ class PersistenceService(
     fun lagrePåløp(påløp: Påløp): Int {
         val lagretPåløp = påløpRepository.save(påløp)
         LOGGER.debug("Lagret påløp med ID: ${lagretPåløp.påløpId}")
-        return lagretPåløp.påløpId
+        return lagretPåløp.påløpId!!
     }
 
     fun hentIkkeKjørtePåløp(): List<Påløp> {
@@ -136,17 +136,13 @@ class PersistenceService(
     fun lagreKontering(kontering: Kontering): Int {
         val lagretKontering = konteringRepository.save(kontering)
         LOGGER.debug("Lagret kontering med ID: ${lagretKontering.konteringId}")
-        return lagretKontering.konteringId
-    }
-
-    fun lagreKonteringer(konteringer: List<Kontering>) {
-        konteringRepository.saveAll(konteringer)
+        return lagretKontering.konteringId!!
     }
 
     fun lagreOppdragsperiode(oppdragsperiode: Oppdragsperiode): Int {
         val startTime = System.currentTimeMillis()
         try {
-            return oppdragsperiodeRepository.save(oppdragsperiode).oppdragsperiodeId
+            return oppdragsperiodeRepository.save(oppdragsperiode).oppdragsperiodeId!!
         } finally {
             LOGGER.debug("TIDSBRUK lagreOppdragsperiode: {}ms", System.currentTimeMillis() - startTime)
         }
@@ -157,7 +153,7 @@ class PersistenceService(
     }
 
     @CacheEvict(value = ["driftsaavik_cache"], allEntries = true)
-    fun lagreDriftsavvik(driftsavvik: Driftsavvik): Int = driftsavvikRepository.save(driftsavvik).driftsavvikId
+    fun lagreDriftsavvik(driftsavvik: Driftsavvik): Int = driftsavvikRepository.save(driftsavvik).driftsavvikId!!
 
     @Cacheable(value = ["driftsaavik_cache"], key = "#root.methodName")
     fun harAktivtDriftsavvik(): Boolean = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now()).isNotEmpty()

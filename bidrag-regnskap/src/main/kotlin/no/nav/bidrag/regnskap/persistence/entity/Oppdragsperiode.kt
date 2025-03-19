@@ -24,7 +24,7 @@ data class Oppdragsperiode(
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "oppdragsperiode_sequence")
     @SequenceGenerator(name = "oppdragsperiode_sequence", sequenceName = "oppdragsperiode_id_sequence", allocationSize = 100)
     @Column(name = "oppdragsperiode_id")
-    val oppdragsperiodeId: Int = 0,
+    val oppdragsperiodeId: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "oppdrag_id")
@@ -126,7 +126,7 @@ data class Oppdragsperiode(
     }
 
     override fun hashCode(): Int {
-        var result = oppdragsperiodeId
+        var result = oppdragsperiodeId ?: 0
         result = 31 * result + (oppdrag?.hashCode() ?: 0)
         result = 31 * result + vedtakId
         result = 31 * result + (referanse?.hashCode() ?: 0)

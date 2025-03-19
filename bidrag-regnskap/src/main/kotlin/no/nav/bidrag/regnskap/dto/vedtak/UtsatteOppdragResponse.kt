@@ -10,7 +10,7 @@ data class UtsatteOppdragResponse(
 )
 
 data class UtsatteOppdrag(
-    val oppdragsid: Int,
+    val oppdragsid: Int?,
     val saksnummer: Saksnummer,
     val stønadstype: Stønadstype? = null,
     val engangsbeløptype: Engangsbeløptype? = null,

@@ -24,7 +24,7 @@ import kotlin.random.Random
 object TestData {
 
     fun opprettOppdrag(
-        oppdragId: Int = 0,
+        oppdragId: Int? = null,
         stonadType: Stønadstype? = Stønadstype.BIDRAG,
         engangsbelopType: Engangsbeløptype? = null,
         sakId: String = "123456",
@@ -95,7 +95,7 @@ object TestData {
     )
 
     fun opprettOppdragsperiode(
-        oppdragsperiodeId: Int = 0,
+        oppdragsperiodeId: Int? = null,
         oppdrag: Oppdrag? = null,
         vedtakId: Int = 654321,
         vedtakType: Vedtakstype = Vedtakstype.FASTSETTELSE,
@@ -129,7 +129,7 @@ object TestData {
     )
 
     fun opprettKontering(
-        konteringId: Int = 0,
+        konteringId: Int? = null,
         oppdragsperiode: Oppdragsperiode? = null,
         transaksjonskode: String = Transaksjonskode.A1.name,
         overforingsperiode: String = YearMonth.now().toString(),
@@ -157,7 +157,7 @@ object TestData {
     )
 
     fun opprettPåløp(
-        påløpId: Int = 0,
+        påløpId: Int? = null,
         kjøredato: LocalDateTime = LocalDateTime.now(),
         fullførtTidspunkt: LocalDateTime? = null,
         forPeriode: String = "2022-01",
@@ -169,7 +169,7 @@ object TestData {
     )
 
     fun opprettDriftsavvik(
-        driftsavvikId: Int = 0,
+        driftsavvikId: Int? = null,
         påløpId: Int? = null,
         tidspunktFra: LocalDateTime = LocalDateTime.now(),
         tidspunktTil: LocalDateTime? = LocalDateTime.now().plusHours(1),

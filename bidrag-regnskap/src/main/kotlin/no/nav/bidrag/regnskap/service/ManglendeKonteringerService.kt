@@ -62,7 +62,7 @@ class ManglendeKonteringerService(
 
         persistenceService.lagreOppdragsperioder(oppdragsperioder)
 
-        return utsatteEllerFeiledeOppdragsperioder.map { it.oppdragsperiodeId }
+        return utsatteEllerFeiledeOppdragsperioder.map { it.oppdragsperiodeId!! }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
