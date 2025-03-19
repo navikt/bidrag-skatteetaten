@@ -22,7 +22,6 @@ jobs:
     with:
       maven_options: -B -q -fae -f bidrag-elin-stub
       ktlint_options: -f bidrag-elin-stub
-      dockerfile_with_path: ./bidrag-elin-stub/Dockerfile
       docker_context: ./bidrag-elin-stub
       nais_variabler_filnavn: bidrag-elin-stub/main.yaml
       nais_hovedfil_navn: bidrag-elin-stub/nais.yaml

@@ -24,7 +24,6 @@ jobs:
     with:
       maven_options: -B -q -fae -f bidrag-reskontro-legacy
       ktlint_options: -f bidrag-reskontro-legacy
-      dockerfile_with_path: ./bidrag-reskontro-legacy/Dockerfile
       docker_context: ./bidrag-reskontro-legacy
       nais_variabler_filnavn: bidrag-reskontro-legacy/q2.yaml
       nais_hovedfil_navn: bidrag-reskontro-legacy/nais.yaml
