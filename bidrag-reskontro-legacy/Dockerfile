@@ -15,7 +15,7 @@ COPY --from=locales /usr/lib/locale/ /usr/lib/locale/
 
 WORKDIR /app
 
-COPY ./target/app.jar app.jar
+COPY app.jar app.jar
 
 EXPOSE 8080
 ENV LANG=nb_NO.UTF-8 LANGUAGE='nb_NO:nb' LC_ALL=nb_NO.UTF-8 TZ="Europe/Oslo"
