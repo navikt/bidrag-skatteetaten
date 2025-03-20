@@ -3,6 +3,7 @@ package no.nav.bidrag.regnskap.hendelse.kafka.vedtak
 import com.fasterxml.jackson.core.JacksonException
 import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.regnskap.service.VedtakshendelseService
+import org.apache.kafka.common.TopicPartition
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.AbstractConsumerSeekAware
@@ -18,6 +19,8 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
 
     companion object {
         var hoppOverNesteMelding = false
+        var settOffsett = false
+        var nyOffsett = -1L
         var sisteOffset: Long = -1
     }
 
@@ -38,6 +41,13 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
                 LOGGER.info("Hopper over behandling av vedtakhendelse med offset: $offset")
                 acknowledgment.acknowledge() // Acknowledge meldingen for å gå videre til neste offset
                 hoppOverNesteMelding = false // Nullstill variabelen for å unngå hopping på påfølgende meldinger
+                return
+            }
+
+            if (settOffsett) {
+                LOGGER.warn("Setter ny offsett til: $nyOffsett!")
+                this.getSeekCallbacksFor(TopicPartition(topic, partition))?.forEach { it -> it.seek(topic, partition, nyOffsett) }
+                settOffsett = false
                 return
             }
 
@@ -75,4 +85,9 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
     }
 
     fun hentSisteLesteHendelse(): Long = sisteOffset
+
+    fun settNyOffsett(offsett: Long) {
+        settOffsett = true
+        nyOffsett = offsett
+    }
 }
