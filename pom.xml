@@ -129,6 +129,7 @@
     </profiles>
 
     <build>
+        <finalName>app</finalName>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>

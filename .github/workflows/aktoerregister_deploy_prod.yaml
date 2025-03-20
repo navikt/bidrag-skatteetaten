@@ -20,7 +20,6 @@ jobs:
     with:
       maven_options: -B -q -fae -f bidrag-aktoerregister
       ktlint_options: -f bidrag-aktoerregister
-      dockerfile_with_path: ./bidrag-aktoerregister/Dockerfile
       docker_context: ./bidrag-aktoerregister
       nais_variabler_filnavn: bidrag-aktoerregister/prod.yaml
       nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml

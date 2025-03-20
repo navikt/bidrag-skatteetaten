@@ -211,6 +211,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>bidrag-reskontro-legacy</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.jvnet.jaxb</groupId>

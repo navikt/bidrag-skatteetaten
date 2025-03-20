@@ -29,7 +29,6 @@ jobs:
       maven_options: -B -q -fae -Pit -f bidrag-regnskap
       maven_test_lifecycle: verify
       ktlint_options: -f bidrag-regnskap
-      dockerfile_with_path: ./bidrag-regnskap/Dockerfile
       docker_context: ./bidrag-regnskap
       nais_variabler_filnavn: bidrag-regnskap/q4.yaml
       nais_hovedfil_navn: bidrag-regnskap/nais.yaml
