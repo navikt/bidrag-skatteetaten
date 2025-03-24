@@ -64,13 +64,13 @@ class DefaultRestControllerAdvice {
     @ExceptionHandler(IngenDataFraSkattException::class)
     fun handleIngenDataFraSkattException(exception: IngenDataFraSkattException): ResponseEntity<*> = ResponseEntity
         .status(HttpStatus.NO_CONTENT)
-        .header(HttpHeaders.WARNING, "Fant ingen data")
+        .header(HttpHeaders.WARNING, "Fant ingen data: ${exception.message}")
         .build<Any>()
 
     @ResponseBody
     @ExceptionHandler(MaskinportenClientException::class)
     fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<*> = ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
-        .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt")
+        .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt: ${exception.message}")
         .build<Any>()
 }
