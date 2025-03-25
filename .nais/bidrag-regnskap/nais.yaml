@@ -50,9 +50,10 @@ spec:
     enabled: true
     scopes:
       consumes:
-        - name: "nav:bidrag/v1/bidragskrav"
-        - name: "nav:bidrag/v1/bidragskravq2"
-        - name: "nav:bidrag/v1/bidragskravq4"
+        - name: "nav:bidrag/v1/bidragskrav" #TODO(Fjerne denne når alle tjenester er over på nytt scope)
+        - name: "nav:bidrag/v1/bidragskravq2" #TODO(Fjerne denne når alle tjenester er over på nytt scope)
+        - name: "nav:bidrag/v1/bidragskravq4" #TODO(Fjerne denne når alle tjenester er over på nytt scope)
+        - name: "skatteetaten:barnebidragkrav"
   ingresses:
   {{#each ingresses as |url|}}
     - {{url}}
