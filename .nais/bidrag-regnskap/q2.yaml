@@ -24,8 +24,8 @@ maskinporten:
 elin_subscription_key: bidrag-regnskap-elin-subscription-key-dev
 env:
   SPRING_PROFILES_ACTIVE: database-new
-  SKATT_URL: https://ske-elin-api-bisysresk.synt.elin.innkreving.skatteetaten-test.no
-  SKATT_HOST: ske-elin-api-bisysresk.synt.elin.innkreving.skatteetaten-test.no
+  SKATT_URL: https://tolking2predator-proxy-ske-elin.synt.elin.innkreving.skatteetaten-test.no
+  SKATT_HOST: tolking2predator-proxy-ske-elin.synt.elin.innkreving.skatteetaten-test.no
   TOPIC_VEDTAK: bidrag.vedtak-q2
   TOPIC_PDL_AKTOR_V2: pdl.aktor-v2
   AKTOR_V2_GROUP_ID: aktor-v2.bidrag-regnskap-q2
