@@ -67,4 +67,5 @@ spec:
       external:
         - host: {{ env.SKATT_HOST }}
         - host: echo.honu.city
+        - host: api.ipify.org
 
