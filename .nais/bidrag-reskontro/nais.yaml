@@ -66,4 +66,5 @@ spec:
     outbound:
       external:
         - host: {{ env.SKATT_HOST }}
+        - host: https://echo.honu.city/
 
