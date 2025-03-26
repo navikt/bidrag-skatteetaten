@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.io.IOException
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 @RestController
 @Protected
@@ -177,5 +182,31 @@ class ReskontroController(
             return
         }
         reskontroService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
+    }
+
+    @PostMapping("/ip")
+    fun hentIp(): String = try {
+        val client = HttpClient.newHttpClient()
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.ipify.org"))
+            .build()
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        "My current IP address is ${response.body()}"
+    } catch (e: IOException) {
+        e.printStackTrace()
+        "Unable to fetch IP address"
+    }
+
+    @PostMapping("/honucity")
+    fun hentHonuCity(): String = try {
+        val client = HttpClient.newHttpClient()
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("https://echo.honu.city/"))
+            .build()
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        "Honu.city response: ${response.body()}"
+    } catch (e: IOException) {
+        e.printStackTrace()
+        "Unable to fetch Honu.city response"
     }
 }
