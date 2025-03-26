@@ -9,6 +9,8 @@ LABEL maintainer="Team Bidrag" \
 
 COPY --from=busybox /bin/sh /bin/sh
 COPY --from=busybox /bin/printenv /bin/printenv
+COPY --from=busybox /bin/curl /bin/curl
+COPY --from=busybox /bin/traceroute /bin/traceroute
 
 # Copy locale files from the locales stage
 COPY --from=locales /usr/lib/locale/ /usr/lib/locale/
