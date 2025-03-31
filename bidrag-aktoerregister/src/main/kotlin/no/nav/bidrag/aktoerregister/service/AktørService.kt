@@ -149,7 +149,7 @@ class AktørService(
             aktørRepository.save(aktør)
             return slettetAktørIdent
         } catch (e: Exception) {
-            SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.stackTrace}")
+            SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.printStackTrace()}")
             throw e
         }
     }
