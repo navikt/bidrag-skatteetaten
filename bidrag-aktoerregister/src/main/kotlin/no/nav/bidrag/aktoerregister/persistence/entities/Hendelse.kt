@@ -20,7 +20,7 @@ data class Hendelse(
 
     @ManyToOne
     @JoinColumn(name = "aktoer_id", referencedColumnName = "id")
-    val aktør: Aktør,
+    val aktør: Aktør? = null,
 
     @Column(name = "aktoer_ident")
     val aktørIdent: String,
@@ -76,7 +76,7 @@ data class Hendelse(
 
     override fun toString(): String = "Hendelse(" +
         "sekvensnummer=$sekvensnummer," +
-        "aktør=${aktør.id}, " +
+        "aktør=${aktør?.id}, " +
         "aktoerIdent='$aktørIdent', " +
         "sistEndret=$sistEndret)"
 
