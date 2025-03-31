@@ -16,7 +16,7 @@ data class Hendelse(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sekvensnummer")
-    val sekvensnummer: Int = 0,
+    val sekvensnummer: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "aktoer_id", referencedColumnName = "id")
@@ -70,7 +70,7 @@ data class Hendelse(
 
     override fun hashCode(): Int {
         var result = sekvensnummer
-        result = 31 * result + aktørIdent.hashCode()
+        result = 31 * (result ?: 0) + aktørIdent.hashCode()
         return result
     }
 
