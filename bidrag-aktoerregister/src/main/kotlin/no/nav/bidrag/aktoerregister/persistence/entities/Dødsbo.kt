@@ -14,31 +14,31 @@ data class Dødsbo(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int? = null,
+    var id: Int? = null,
 
     @Column(name = "kontaktperson")
-    val kontaktperson: String? = null,
+    var kontaktperson: String? = null,
 
     @Column(name = "adresselinje1")
-    val adresselinje1: String? = null,
+    var adresselinje1: String? = null,
 
     @Column(name = "adresselinje2")
-    val adresselinje2: String? = null,
+    var adresselinje2: String? = null,
 
     @Column(name = "adresselinje3")
-    val adresselinje3: String? = null,
+    var adresselinje3: String? = null,
 
     @Column(name = "leilighetsnummer")
-    val leilighetsnummer: String? = null,
+    var leilighetsnummer: String? = null,
 
     @Column(name = "postnr")
-    val postnr: String? = null,
+    var postnr: String? = null,
 
     @Column(name = "poststed")
-    val poststed: String? = null,
+    var poststed: String? = null,
 
     @Column(name = "land")
-    val land: String? = null,
+    var land: String? = null,
 
     @OneToOne
     @JoinColumn(name = "aktoer_id")
