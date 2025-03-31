@@ -126,6 +126,7 @@ class AktørService(
                         hendelseRepository.delete(hendelse)
                     }
                     aktørRepository.delete(it)
+                    aktør.id = null
                 }
                 entityManager.flush()
             }
