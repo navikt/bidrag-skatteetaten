@@ -109,63 +109,96 @@ class AktørService(
         ?: tidligereIdenterRepository.findByTidligereAktoerIdent(aktørIdent.verdi)?.aktør
 
     fun oppdaterAktør(aktør: Aktør, nyAktør: Aktør, originalIdent: String?): String? {
-        var slettetAktørIdent: String? = null
         try {
             // Denne kodesnutten går igjennom og sletter aktører som er duplikater. Dette har forekommet siden aktørregisteret
             // ikke har hatt ett forhold til tidligereIdenter fra starten av, noe som har ført til at aktører med ny ident har
             // blitt opprettet som en ny aktør.
             if (originalIdent != null && originalIdent != nyAktør.aktørIdent) {
-                aktørRepository.findByAktørIdent(nyAktør.aktørIdent)?.let {
-                    LOGGER.info { "Sletter aktør grunnet duplikat. Se secure logs." }
-                    SECURE_LOGGER.info(
-                        "Sletter aktør grunnet duplikat. " +
-                            "Original ident: $originalIdent, ny aktør ident: ${nyAktør.aktørIdent}, gammel ident: ${it.aktørIdent}",
-                    )
-                    slettetAktørIdent = it.aktørIdent
-                    it.hendelser.forEach { hendelse ->
-                        hendelseRepository.delete(hendelse)
-                    }
-                    aktørRepository.delete(it)
-                    aktør.id = null
-                }
-                entityManager.flush()
+                return slettDuplikatOgOppdaterMedNyInfo(aktør, nyAktør, originalIdent)
             }
 
             val oppdaterteFelterPåAktør = finnOppdaterteFelterPåAktør(aktør, nyAktør)
 
-            aktør.tidligereIdenter.forEach {
-                tidligereIdenterRepository.delete(it)
-            }
+            fjernEksisterendeTidligereIdenter(aktør)
 
             aktør.oppdaterAlleFelter(nyAktør)
 
             entityManager.flush()
 
-            aktør.tidligereIdenter.forEach {
-                it.aktør = aktør
-            }
-            aktør.dødsbo?.aktør = aktør
+            settNyeTidligereIdenter(aktør)
+            settDødsbo(aktør)
             hendelseService.opprettHendelserPåAktør(aktør, originalIdent, oppdaterteFelterPåAktør)
             SECURE_LOGGER.info("Lagrer aktør: ${aktør.aktørIdent}")
             aktørRepository.save(aktør)
-            return slettetAktørIdent
+            return null
         } catch (e: Exception) {
             SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.stackTraceToString()}")
             throw e
         }
     }
 
+    private fun fjernEksisterendeTidligereIdenter(aktør: Aktør) {
+        aktør.tidligereIdenter.forEach {
+            tidligereIdenterRepository.delete(it)
+        }
+    }
+
+    private fun slettDuplikatOgOppdaterMedNyInfo(
+        aktør: Aktør,
+        nyAktør: Aktør,
+        originalIdent: String,
+    ): String? {
+        var slettetAktørIdent: String? = null
+
+        aktørRepository.findByAktørIdent(nyAktør.aktørIdent)?.let {
+            LOGGER.info { "Sletter aktør grunnet duplikat. Se secure logs." }
+            SECURE_LOGGER.info(
+                "Sletter aktør grunnet duplikat. " +
+                    "Original ident: $originalIdent, ny aktør ident: ${nyAktør.aktørIdent}, gammel ident: ${it.aktørIdent}",
+            )
+            slettetAktørIdent = it.aktørIdent
+            it.hendelser.forEach { hendelse ->
+                hendelseRepository.delete(hendelse)
+            }
+            aktørRepository.delete(it)
+        }
+        entityManager.flush()
+
+        val oppdaterteFelterPåAktør = finnOppdaterteFelterPåAktør(aktør, nyAktør)
+        fjernEksisterendeTidligereIdenter(aktør)
+
+        val oppdatertAktør = Aktør(aktørIdent = aktør.aktørIdent, aktørType = aktør.aktørType)
+        oppdatertAktør.oppdaterAlleFelter(nyAktør)
+
+        entityManager.flush()
+
+        settNyeTidligereIdenter(oppdatertAktør)
+        settDødsbo(oppdatertAktør)
+        hendelseService.opprettHendelserPåAktør(oppdatertAktør, originalIdent, oppdaterteFelterPåAktør)
+        SECURE_LOGGER.info("Lagrer oppdatert aktør etter sletting av duplikat: ${oppdatertAktør.aktørIdent}")
+        aktørRepository.save(oppdatertAktør)
+        return slettetAktørIdent
+    }
+
     fun lagreNyAktør(aktør: Aktør) {
         try {
             aktørRepository.save(aktør)
-            aktør.tidligereIdenter.forEach {
-                it.aktør = aktør
-            }
-            aktør.dødsbo?.aktør = aktør
+            settNyeTidligereIdenter(aktør)
+            settDødsbo(aktør)
             hendelseService.opprettHendelserPåAktør(aktør, null, finnFelterPåNyAktør(aktør))
         } catch (e: DataIntegrityViolationException) {
             SECURE_LOGGER.error("DataIntegrityViolationException for ident: ${aktør.aktørIdent}. \nFeil: $e ")
             throw e
+        }
+    }
+
+    private fun settDødsbo(aktør: Aktør) {
+        aktør.dødsbo?.aktør = aktør
+    }
+
+    private fun settNyeTidligereIdenter(aktør: Aktør) {
+        aktør.tidligereIdenter.forEach {
+            it.aktør = aktør
         }
     }
 
