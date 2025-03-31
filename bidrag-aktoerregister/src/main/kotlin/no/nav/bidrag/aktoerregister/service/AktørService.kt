@@ -2,8 +2,6 @@ package no.nav.bidrag.aktoerregister.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.EntityManager
-import jakarta.persistence.LockModeType
-import jakarta.persistence.OptimisticLockException
 import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.consumer.PersonConsumer
 import no.nav.bidrag.aktoerregister.consumer.SamhandlerConsumer
@@ -113,9 +111,6 @@ class AktørService(
     fun oppdaterAktør(aktør: Aktør, nyAktør: Aktør, originalIdent: String?): String? {
         var slettetAktørIdent: String? = null
         try {
-            // Lock the entity to prevent concurrent updates
-            entityManager.lock(aktør, LockModeType.OPTIMISTIC)
-
             // Denne kodesnutten går igjennom og sletter aktører som er duplikater. Dette har forekommet siden aktørregisteret
             // ikke har hatt ett forhold til tidligereIdenter fra starten av, noe som har ført til at aktører med ny ident har
             // blitt opprettet som en ny aktør.
@@ -153,11 +148,8 @@ class AktørService(
             SECURE_LOGGER.info("Lagrer aktør: ${aktør.aktørIdent}")
             aktørRepository.save(aktør)
             return slettetAktørIdent
-        } catch (e: OptimisticLockException) {
-            SECURE_LOGGER.error("Optimistic lock exception for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} ")
-            throw e
         } catch (e: Exception) {
-            SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} ")
+            SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.stackTrace}")
             throw e
         }
     }
