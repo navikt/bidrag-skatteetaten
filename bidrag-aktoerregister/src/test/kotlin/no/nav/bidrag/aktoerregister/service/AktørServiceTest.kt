@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
