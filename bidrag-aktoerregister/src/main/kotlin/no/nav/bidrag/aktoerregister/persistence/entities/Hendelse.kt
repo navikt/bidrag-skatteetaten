@@ -2,7 +2,7 @@ package no.nav.bidrag.aktoerregister.persistence.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Generatedvarue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -14,47 +14,47 @@ import java.sql.Timestamp
 data class Hendelse(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Generatedvarue(strategy = GenerationType.IDENTITY)
     @Column(name = "sekvensnummer")
-    val sekvensnummer: Int? = null,
+    var sekvensnummer: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "aktoer_id", referencedColumnName = "id")
-    val aktør: Aktør? = null,
+    var aktør: Aktør? = null,
 
     @Column(name = "aktoer_ident")
-    val aktørIdent: String,
+    var aktørIdent: String,
 
     @Version
     @Column(name = "sist_endret")
-    val sistEndret: Timestamp? = null,
+    var sistEndret: Timestamp? = null,
 
     @Column(name = "kontonummer_oppdatering")
     var kontonummerOppdatering: Boolean? = null,
 
     @Column(name = "ident_oppdatering")
-    val identOppdatering: Boolean? = null,
+    var identOppdatering: Boolean? = null,
 
     @Column(name = "navn_oppdatering")
-    val navnOppdatering: Boolean? = null,
+    var navnOppdatering: Boolean? = null,
 
     @Column(name = "adresse_oppdatering")
-    val adresseOppdatering: Boolean? = null,
+    var adresseOppdatering: Boolean? = null,
 
     @Column(name = "fodt_dato_oppdatering")
-    val fødtDatoOppdatering: Boolean? = null,
+    var fødtDatoOppdatering: Boolean? = null,
 
     @Column(name = "dod_dato_oppdatering")
-    val dødDatoOppdatering: Boolean? = null,
+    var dødDatoOppdatering: Boolean? = null,
 
     @Column(name = "gradering_oppdatering")
-    val graderingOppdatering: Boolean? = null,
+    var graderingOppdatering: Boolean? = null,
 
     @Column(name = "dodsbo_oppdatering")
-    val dødsboOppdatering: Boolean? = null,
+    var dødsboOppdatering: Boolean? = null,
 
     @Column(name = "sprak_oppdatering")
-    val språkOppdatering: Boolean? = null,
+    var språkOppdatering: Boolean? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
