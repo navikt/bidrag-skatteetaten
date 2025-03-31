@@ -14,7 +14,7 @@ data class Dødsbo(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    val id: Int? = null,
 
     @Column(name = "kontaktperson")
     val kontaktperson: String? = null,
