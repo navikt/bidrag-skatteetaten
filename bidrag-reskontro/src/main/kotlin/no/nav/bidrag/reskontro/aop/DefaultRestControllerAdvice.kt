@@ -1,6 +1,8 @@
 package no.nav.bidrag.reskontro.aop
 
+import jakarta.servlet.http.HttpServletRequest
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
+import no.nav.bidrag.reskontro.SECURE_LOGGER
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.slf4j.LoggerFactory
@@ -52,8 +54,9 @@ class DefaultRestControllerAdvice {
 
     @ResponseBody
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<*> {
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException, httpServletRequest: HttpServletRequest): ResponseEntity<*> {
         LOGGER.warn("Ugyldig eller manglende sikkerhetstoken", exception)
+        SECURE_LOGGER.warn("Ugyldig eller manglende sikkerhetstoken. Token benyttet: ${httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)}", exception)
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken")
