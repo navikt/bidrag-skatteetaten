@@ -43,7 +43,7 @@ class DefaultRestControllerAdvice {
     fun handleException(exception: Exception): ResponseEntity<*> {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message} Stacktrace: ${exception.printStackTrace()}").build<Any>()
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message} Stacktrace: ${exception.stackTraceToString()}").build<Any>()
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {
