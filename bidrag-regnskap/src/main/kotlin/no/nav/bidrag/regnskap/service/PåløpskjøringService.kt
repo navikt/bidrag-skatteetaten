@@ -44,15 +44,15 @@ class PåløpskjøringService(
     @Transactional
     fun hentPåløp() = persistenceService.hentIkkeKjørtePåløp().minByOrNull { it.forPeriode }
 
-    fun startPåløpskjøringManuelt(påløp: Påløp, genererFil: Boolean, overførFil: Boolean) {
-        startPåløpskjøring(påløp, false, genererFil, overførFil)
+    fun startPåløpskjøringManuelt(påløp: Påløp, genererFil: Boolean, overførFil: Boolean, duration: Duration) {
+        startPåløpskjøring(påløp, false, genererFil, overførFil, duration)
     }
 
     fun startPåløpskjøringMaskinelt(påløp: Påløp) {
         startPåløpskjøring(påløp, true, påløp.genererFil, påløp.overførFil)
     }
 
-    private fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean) {
+    private fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean, duration: Duration = Duration.ofMinutes(1)) {
         if (påløp.startetTidspunkt != null) {
             LOGGER.warn("Påløpskjøring har satt startet tidspunkt! Dette kan være grunnet allerede kjørende påløp. Starter derfor ikke nytt påløp.")
             return
@@ -66,7 +66,7 @@ class PåløpskjøringService(
             validerDriftsavvik(påløp, schedulertKjøring)
             // Sleep 1 minutt for å sikre at driftsavvik_cache er utløpt på begge noder og ingen nye vedtak blir lest inn før vi starter påløpet.
             medLyttere { it.driftsavvikCache(påløp, "Venter på at driftsavvik-cache utløper (1 minutt)...") }
-            Thread.sleep(Duration.ofMinutes(1))
+            Thread.sleep(duration)
             medLyttere { it.driftsavvikCache(påløp, "Driftsavvik-cache utløpt. Fortsetter påløpet.") }
 
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()

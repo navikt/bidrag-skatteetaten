@@ -21,6 +21,7 @@ import no.nav.bidrag.regnskap.util.PeriodeUtils.hentAllePerioderMellomDato
 import no.nav.bidrag.regnskap.utils.TestData
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -82,7 +83,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,
@@ -137,7 +138,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns oppdragsperioder
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer1.periodeFra,
@@ -186,7 +187,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,

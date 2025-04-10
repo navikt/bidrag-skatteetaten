@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.Duration
 import java.time.LocalDate
 
 @RestController
@@ -51,7 +52,7 @@ class PåløpskjøringController(
         @RequestParam(required = true) overførFil: Boolean,
     ): ResponseEntity<Int> {
         val påløp = påløpskjøringService.hentPåløp()?.copy(startetTidspunkt = null) ?: return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil)
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil, Duration.ofMinutes(1))
         return ResponseEntity.status(HttpStatus.CREATED).body(påløp.påløpId)
     }
 
