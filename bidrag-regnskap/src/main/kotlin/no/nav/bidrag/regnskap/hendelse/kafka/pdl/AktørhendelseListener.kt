@@ -32,15 +32,15 @@ class AktørhendelseListener(private val aktørhendelseService: AktørhendelseSe
         acknowledgment: Acknowledgment,
     ) {
         try {
-            LOGGER.info("Behandler aktorhendelse med offset: $offset i consumergroup: $groupId for topic: $topic")
-            SECURE_LOGGER.info("Behandler aktorhendelse: $consumerRecord")
+            LOGGER.debug("Behandler aktorhendelse med offset: $offset i consumergroup: $groupId for topic: $topic")
+            SECURE_LOGGER.debug("Behandler aktorhendelse: $consumerRecord")
 
             val aktør = consumerRecord.value()
             aktørhendelseService.behandleAktoerHendelse(aktør)
 
             acknowledgment.acknowledge()
-            LOGGER.info("Behandlet aktorhendelse med offset: $offset")
-            SECURE_LOGGER.info("Behandlet aktorhendelse for: $aktør")
+            LOGGER.debug("Behandlet aktorhendelse med offset: $offset")
+            SECURE_LOGGER.debug("Behandlet aktorhendelse for: $aktør")
         } catch (e: RuntimeException) {
             LOGGER.warn(
                 "Feil i prosessering av ident-hendelser med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId",
