@@ -19,6 +19,8 @@ class DriftsavvikService(
         Driftsavvik(tidspunktFra = tidspunktFra, tidspunktTil = tidspunktTil, opprettetAv = opprettetAv, årsak = årsak),
     )
 
+    fun harAktivtDriftsavvik(): Boolean = persistenceService.harAktivtDriftsavvik()
+
     @Transactional
     fun endreDriftsavvik(driftsavvikId: Int, tidspunktTil: LocalDateTime?): Int? {
         val driftsavvik = persistenceService.hentDriftsavvik(driftsavvikId) ?: return null

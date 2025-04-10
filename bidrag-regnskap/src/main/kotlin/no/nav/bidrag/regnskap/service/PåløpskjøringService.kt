@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -63,6 +64,11 @@ class PåløpskjøringService(
             sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
 
             validerDriftsavvik(påløp, schedulertKjøring)
+            // Sleep 1 minutt for å sikre at driftsavvik_cache er utløpt på begge noder og ingen nye vedtak blir lest inn før vi starter påløpet.
+            medLyttere { it.driftsavvikCache(påløp, "Venter på at driftsavvik-cache utløper (1 minutt)...") }
+            Thread.sleep(Duration.ofMinutes(1))
+            medLyttere { it.driftsavvikCache(påløp, "Driftsavvik-cache utløpt. Fortsetter påløpet.") }
+
             val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
             persistenceService.registrerPåløpStartet(påløp.påløpId!!, LocalDateTime.now())
 
@@ -189,6 +195,7 @@ class PåløpskjøringService(
 
 interface PåløpskjøringLytter {
     fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overføreFil: Boolean)
+
     fun rapporterOppdragsperioderBehandlet(påløp: Påløp, antallBehandlet: Int, antallOppdragsperioder: Int)
 
     fun rapporterAntallUtsatteEllerFeiledeKonteringer(påløp: Påløp, antallOppdragsperioder: Int)
@@ -212,4 +219,6 @@ interface PåløpskjøringLytter {
     fun lastOppFilTilFilsluse(påløp: Påløp, melding: String)
 
     fun skalIkkeLasteOppPåløpsfil(påløp: Påløp, melding: String)
+
+    fun driftsavvikCache(påløp: Påløp, melding: String)
 }

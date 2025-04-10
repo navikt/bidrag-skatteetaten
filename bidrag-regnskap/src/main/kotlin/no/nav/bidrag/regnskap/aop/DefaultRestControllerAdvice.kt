@@ -2,6 +2,7 @@ package no.nav.bidrag.regnskap.aop
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
+import no.nav.bidrag.regnskap.util.PåløpException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -57,6 +58,14 @@ class DefaultRestControllerAdvice {
     fun handleMaskinportenClientExcpetion(exception: MaskinportenClientException): ResponseEntity<*> {
         LOGGER.error(exception) { "Noe gikk galt ved kall til maskinporten: ${exception.message}}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(exception.message)
+    }
+
+    @ResponseBody
+    @ExceptionHandler(PåløpException::class)
+    fun handlePåløpException(exception: PåløpException): ResponseEntity<*> {
+        LOGGER.error(exception) { "Ble stoppet grunnet påløp: ${exception.message}}" }
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
             .body(exception.message)
     }
 }
