@@ -159,6 +159,18 @@ class SlackPåløpVarsler(
         }
     }
 
+    override fun driftsavvikCache(påløp: Påløp, melding: String) {
+        val varsel = pågåendePåløp(påløp)
+        if (varsel != null) {
+            if (varsel.driftsavvikCacheMelding == null) {
+                varsel.driftsavvikCacheMelding =
+                    pågåendePåløp?.melding?.svarITråd(melding)
+            } else {
+                varsel.driftsavvikCacheMelding?.oppdaterMelding(melding)
+            }
+        }
+    }
+
     private fun pågåendePåløp(påløp: Påløp) = if (påløp.equals(pågåendePåløp?.påløp)) pågåendePåløp else null
 
     private fun fremdriftsindikator(antall: Int, totalt: Int): String {
@@ -181,6 +193,7 @@ class SlackPåløpVarsler(
         var lastOppFilTilGcpMelding: SlackService.SlackMelding? = null
         var lastOppFilTilFilsluseMelding: SlackService.SlackMelding? = null
         var skalIkkeLasteOppPåløpsfilMelding: SlackService.SlackMelding? = null
+        var driftsavvikCacheMelding: SlackService.SlackMelding? = null
         var nesteOppdateringKonteringerMelding: Instant? = Instant.now()
         var nestSisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)
         var sisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)

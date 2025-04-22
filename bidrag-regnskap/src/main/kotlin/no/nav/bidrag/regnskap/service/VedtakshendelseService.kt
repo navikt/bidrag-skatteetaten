@@ -10,6 +10,7 @@ import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.dto.vedtak.Periode
 import no.nav.bidrag.regnskap.util.IdentUtils
+import no.nav.bidrag.regnskap.util.PåløpException
 import no.nav.bidrag.transport.behandling.vedtak.Engangsbeløp
 import no.nav.bidrag.transport.behandling.vedtak.Stønadsendring
 import no.nav.bidrag.transport.behandling.vedtak.VedtakHendelse
@@ -28,9 +29,14 @@ class VedtakshendelseService(
     private val kravService: KravService,
     private val persistenceService: PersistenceService,
     private val identUtils: IdentUtils,
+    private val driftsavvikService: DriftsavvikService,
 ) {
 
     fun behandleHendelse(hendelse: String): List<Int> {
+        if (driftsavvikService.harAktivtDriftsavvik()) {
+            throw PåløpException("Det finnes aktive driftsavvik. Kan derfor ikke opprette oppdrag for vedtakshendelse.")
+        }
+
         val vedtakHendelse = mapVedtakHendelse(hendelse)
 
         LOGGER.info("Behandler vedakHendelse for vedtakid: ${vedtakHendelse.id}")
