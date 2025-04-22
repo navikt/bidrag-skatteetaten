@@ -20,12 +20,14 @@ object KonteringUtils {
         Søknadstype.EN.name
     }
 
-    fun vurderSøknadType(vedtakType: String, stønadType: String, indexPeriode: Int): String = if (vedtakType == Vedtakstype.INDEKSREGULERING.name && indexPeriode == 0) {
+    fun vurderSøknadType(vedtakType: String, stønadType: String, indexPeriode: Int, påløpskjøring: Boolean = false): String = if (vedtakType == Vedtakstype.INDEKSREGULERING.name && indexPeriode == 0) {
         Søknadstype.IR.name
     } else if (stønadType == Engangsbeløptype.GEBYR_MOTTAKER.name) {
         Søknadstype.FABM.name
     } else if (stønadType == Engangsbeløptype.GEBYR_SKYLDNER.name) {
         Søknadstype.FABP.name
+    } else if (påløpskjøring) {
+        Søknadstype.MP.name
     } else {
         Søknadstype.EN.name
     }

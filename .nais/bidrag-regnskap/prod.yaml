@@ -2,7 +2,7 @@ name: bidrag-regnskap
 ingresses:
   - https://bidrag-regnskap.intern.nav.no
 limits:
-  memory: 4096Mi
+  memory: 8192Mi
 requests:
   cpu: 50m
   memory: 1024Mi

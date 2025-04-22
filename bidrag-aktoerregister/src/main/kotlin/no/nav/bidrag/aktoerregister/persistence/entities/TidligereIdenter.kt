@@ -14,13 +14,13 @@ data class TidligereIdenter(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    var id: Int? = null,
 
     @Column(name = "tidligere_aktoer_ident")
-    val tidligereAktoerIdent: String,
+    var tidligereAktoerIdent: String,
 
     @Column(name = "identtype")
-    val identtype: String,
+    var identtype: String,
 
     @ManyToOne
     @JoinColumn(name = "aktoer_id")

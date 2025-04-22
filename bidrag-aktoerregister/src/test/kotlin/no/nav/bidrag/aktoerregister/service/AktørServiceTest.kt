@@ -1,6 +1,9 @@
 package no.nav.bidrag.aktoerregister.service
 
 import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import jakarta.persistence.EntityManager
 import no.nav.bidrag.aktoerregister.AktoerregisterApplicationTest
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
@@ -18,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
@@ -35,6 +38,9 @@ class AktørServiceTest {
 
     @Autowired
     private lateinit var hendelseRepository: HendelseRepository
+
+    @Autowired
+    private lateinit var entityManager: EntityManager
 
     companion object {
         @Container
@@ -79,6 +85,69 @@ class AktørServiceTest {
 
         savedAktoerer.size shouldBeExactly 20
         savedHendelser.size shouldBeExactly 40
+    }
+
+    @Test
+    fun `skal oppdatere aktør og slette duplikater`() {
+        val originalIdent = "originalIdent"
+        val nyAktørIdent = "nyAktørIdent"
+        val aktør = Aktør(
+            aktørIdent = originalIdent,
+            aktørType = Identtype.PERSONNUMMER.name,
+            land = "Norge",
+            postnr = "0682",
+            poststed = "Oslo",
+            adresselinje1 = "Testgate 1",
+            norskKontonr = "12345678901",
+        )
+        val nyAktør = Aktør(
+            aktørIdent = nyAktørIdent,
+            aktørType = Identtype.PERSONNUMMER.name,
+            land = "Norge",
+            postnr = "0682",
+            poststed = "Oslo",
+            adresselinje1 = "Testgate 2",
+            norskKontonr = "12345678901",
+        )
+
+        aktørRepository.save(aktør)
+        aktørRepository.save(nyAktør)
+
+        val slettetAktørIdent = aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
+
+        slettetAktørIdent shouldBe nyAktørIdent
+        aktørRepository.findByAktørIdent(nyAktørIdent) shouldNotBe null
+    }
+
+    @Test
+    fun `skal oppdaterer aktør`() {
+        val originalIdent = "originalIdent"
+        val aktør = Aktør(
+            aktørIdent = originalIdent,
+            aktørType = Identtype.PERSONNUMMER.name,
+            land = "Norge",
+            postnr = "0682",
+            poststed = "Oslo",
+            adresselinje1 = "Testgate 1",
+            norskKontonr = "12345678901",
+        )
+        val nyAktør = Aktør(
+            aktørIdent = originalIdent,
+            aktørType = Identtype.PERSONNUMMER.name,
+            land = "Norge",
+            postnr = "0682",
+            poststed = "Oslo",
+            adresselinje1 = "Testgate 2",
+            norskKontonr = "10987654321",
+        )
+
+        aktørRepository.save(aktør)
+
+        aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
+
+        val updatedAktør = aktørRepository.findByAktørIdent(originalIdent)
+        updatedAktør?.adresselinje1 shouldBe "Testgate 2"
+        updatedAktør?.norskKontonr shouldBe "10987654321"
     }
 
     private fun opprettAktoerListeMed20Aktører(): List<Aktør> {

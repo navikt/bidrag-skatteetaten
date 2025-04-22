@@ -16,45 +16,45 @@ data class Hendelse(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sekvensnummer")
-    val sekvensnummer: Int = 0,
+    var sekvensnummer: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "aktoer_id", referencedColumnName = "id")
-    val aktør: Aktør,
+    var aktør: Aktør? = null,
 
     @Column(name = "aktoer_ident")
-    val aktørIdent: String,
+    var aktørIdent: String,
 
     @Version
     @Column(name = "sist_endret")
-    val sistEndret: Timestamp? = null,
+    var sistEndret: Timestamp? = null,
 
     @Column(name = "kontonummer_oppdatering")
     var kontonummerOppdatering: Boolean? = null,
 
     @Column(name = "ident_oppdatering")
-    val identOppdatering: Boolean? = null,
+    var identOppdatering: Boolean? = null,
 
     @Column(name = "navn_oppdatering")
-    val navnOppdatering: Boolean? = null,
+    var navnOppdatering: Boolean? = null,
 
     @Column(name = "adresse_oppdatering")
-    val adresseOppdatering: Boolean? = null,
+    var adresseOppdatering: Boolean? = null,
 
     @Column(name = "fodt_dato_oppdatering")
-    val fødtDatoOppdatering: Boolean? = null,
+    var fødtDatoOppdatering: Boolean? = null,
 
     @Column(name = "dod_dato_oppdatering")
-    val dødDatoOppdatering: Boolean? = null,
+    var dødDatoOppdatering: Boolean? = null,
 
     @Column(name = "gradering_oppdatering")
-    val graderingOppdatering: Boolean? = null,
+    var graderingOppdatering: Boolean? = null,
 
     @Column(name = "dodsbo_oppdatering")
-    val dødsboOppdatering: Boolean? = null,
+    var dødsboOppdatering: Boolean? = null,
 
     @Column(name = "sprak_oppdatering")
-    val språkOppdatering: Boolean? = null,
+    var språkOppdatering: Boolean? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -70,13 +70,13 @@ data class Hendelse(
 
     override fun hashCode(): Int {
         var result = sekvensnummer
-        result = 31 * result + aktørIdent.hashCode()
+        result = 31 * (result ?: 0) + aktørIdent.hashCode()
         return result
     }
 
     override fun toString(): String = "Hendelse(" +
         "sekvensnummer=$sekvensnummer," +
-        "aktør=${aktør.id}, " +
+        "aktør=${aktør?.id}, " +
         "aktoerIdent='$aktørIdent', " +
         "sistEndret=$sistEndret)"
 

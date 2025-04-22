@@ -161,7 +161,7 @@ class KravService(
                 HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> {
                     LOGGER.error(
                         "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. " +
-                            "Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. Feilmelding: ${skattResponse.body}",
+                            "Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. Feilmelding: $skattResponse",
                     )
                 }
 

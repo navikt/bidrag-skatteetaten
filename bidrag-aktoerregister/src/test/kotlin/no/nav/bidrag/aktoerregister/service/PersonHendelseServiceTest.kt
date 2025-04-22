@@ -33,7 +33,7 @@ class PersonHendelseServiceTest {
         val personIdent1 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.MANN)
         val personIdent2 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.KVINNE)
         val aktør = Aktør(id = 0, aktørIdent = personIdent2, aktørType = Identtype.PERSONNUMMER.name)
-        val aktørMedNyId = Aktør(id = 0, aktørIdent = personIdent1, aktørType = Identtype.PERSONNUMMER.name)
+        val aktørMedNyId = Aktør(id = 1, aktørIdent = personIdent1, aktørType = Identtype.PERSONNUMMER.name)
         val hendelse = "{" +
             "\"aktørid\":\"123456\"," +
             "\"personidenter\":[" +
