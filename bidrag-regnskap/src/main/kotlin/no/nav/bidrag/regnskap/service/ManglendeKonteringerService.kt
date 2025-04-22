@@ -119,7 +119,7 @@ class ManglendeKonteringerService(
                         transaksjonskode = transaksjonskode,
                         overføringsperiode = periode.toString(),
                         type = vurderType(alleOppdragsperioderPåOppdrag, periode),
-                        søknadType = vurderSøknadType(vedtakType, stønadType, periodeIndex),
+                        søknadType = vurderSøknadType(vedtakType, stønadType, periodeIndex, settPåløpsperiode),
                         oppdragsperiode = oppdragsperiode,
                         sendtIPåløpsperiode = if (settPåløpsperiode) påløpsPeriode.toString() else null,
                         vedtakId = vedtakId,
