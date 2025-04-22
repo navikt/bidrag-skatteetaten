@@ -127,12 +127,12 @@ class ReskontroServiceTest {
                 saksnummerRequest,
             )!!
 
-        bidragssak.saksnummer.verdi shouldBe saksnummer.toString()
+        bidragssak.saksnummer?.verdi shouldBe saksnummer.toString()
         bidragssak.bmGjeldRest shouldBe bmGjeldRest
         bidragssak.bmGjeldFastsettelsesgebyr shouldBe bmGjeldGebyr
         bidragssak.bpGjeldFastsettelsesgebyr shouldBe bpGjeldGebyr
         bidragssak.barn shouldHaveSize 1
-        bidragssak.barn.first().personident.verdi shouldBe barnISak.fodselsnummer
+        bidragssak.barn.first().personident?.verdi shouldBe barnISak.fodselsnummer
         bidragssak.barn.first().erStoppIUtbetaling shouldBe false
         bidragssak.barn.first().restGjeldPrivat shouldBe restGjeldPrivat
         bidragssak.barn.first().restGjeldOffentlig shouldBe restGjeldOffentlig

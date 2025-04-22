@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
+        <version>3.4.4</version>
         <relativePath/>
     </parent>
 
@@ -20,21 +20,21 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
-        <kotlin.version>2.1.10</kotlin.version>
-        <bidrag-felles.version>2025.03.14.125946</bidrag-felles.version>
+        <kotlin.version>2.1.20</kotlin.version>
+        <bidrag-felles.version>2025.04.22.104017</bidrag-felles.version>
         <jackson.version>2.18.3</jackson.version>
         <kotest.version>5.9.1</kotest.version>
         <ktlint.version>1.4.1</ktlint.version>
         <mockk.version>1.13.17</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
-        <nav-token-support.version>5.0.17</nav-token-support.version>
+        <nav-token-support.version>5.0.20</nav-token-support.version>
         <kotlin-logging-jvm.version>7.0.5</kotlin-logging-jvm.version>
         <slack-api.version>1.45.3</slack-api.version>
         <shedlock.version>6.3.0</shedlock.version>
         <jsch.version>0.2.24</jsch.version>
         <google-cloud-storage.version>2.50.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
-        <springdoc-openapi-ui.version>2.8.5</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.8.6</springdoc-openapi-ui.version>
         <logback-encoder.version>8.0</logback-encoder.version>
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->

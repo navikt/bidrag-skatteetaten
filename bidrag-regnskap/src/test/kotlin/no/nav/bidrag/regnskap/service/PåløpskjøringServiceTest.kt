@@ -96,7 +96,7 @@ class PåløpskjøringServiceTest {
         konteringer shouldHaveSize perioderMellomDato.size
         konteringer.shouldBeUnique()
         konteringer.all { it.type == Type.NY.name } shouldBe true
-        konteringer.all { it.søknadType == Søknadstype.EN.name } shouldBe true
+        konteringer.all { it.søknadType == Søknadstype.MP.name } shouldBe true
         konteringer.forEach { it.sendtIPåløpsperiode shouldBe "2023-01" }
         konteringer.forEachIndexed { index, kontering ->
             val periodeForKontering = perioderMellomDato[index]
@@ -151,7 +151,7 @@ class PåløpskjøringServiceTest {
         konteringer shouldHaveSize perioderMellomDato.size
         konteringer.shouldBeUnique()
         konteringer.all { it.type == Type.NY.name } shouldBe true
-        konteringer.all { it.søknadType == Søknadstype.EN.name } shouldBe true
+        konteringer.all { it.søknadType == Søknadstype.MP.name } shouldBe true
         konteringer.forEach { it.sendtIPåløpsperiode shouldBe "2023-01" }
         konteringer.forEachIndexed { index, kontering ->
             val periodeForKontering = perioderMellomDato[index]
@@ -202,7 +202,7 @@ class PåløpskjøringServiceTest {
         konteringer[0].søknadType shouldBe Søknadstype.IR.name
         konteringer.subList(1, konteringer.size).none { it.søknadType == Søknadstype.IR.name } shouldBe true
         konteringer.all { it.type == Type.NY.name } shouldBe true
-        konteringer.subList(1, konteringer.size).all { it.søknadType == Søknadstype.EN.name } shouldBe true
+        konteringer.subList(1, konteringer.size).all { it.søknadType == Søknadstype.MP.name } shouldBe true
         konteringer.forEach { it.sendtIPåløpsperiode shouldBe "2023-01" }
         konteringer.forEachIndexed { index, kontering ->
             val periodeForKontering = perioderMellomDato[index]
