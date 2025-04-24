@@ -38,6 +38,9 @@ sftp:
   privateKey: ${SFTP_PRIVATE_KEY}
   skalOverforeFil: ${SFTP_SKAL_OVERFORE_FIL}
 
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.http.client.requests: true
+
 spring.config.activate.on-profile: nais
 
 no.nav.security.jwt:

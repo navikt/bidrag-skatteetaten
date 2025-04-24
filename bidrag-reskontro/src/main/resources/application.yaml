@@ -19,6 +19,9 @@ maskinporten:
   privateKey: ${MASKINPORTEN_CLIENT_JWK}
   validInSeconds: 120 #120 er maks antall sekunder et maskinporten Jwt-token kan være gyldig.
 
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.http.client.requests: true
+
 spring.config.activate.on-profile: nais,lokal-nais
 
 no.nav.security.jwt:
