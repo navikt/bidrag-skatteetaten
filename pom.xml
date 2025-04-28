@@ -27,7 +27,7 @@
         <ktlint.version>1.4.1</ktlint.version>
         <mockk.version>1.13.17</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
-        <nav-token-support.version>5.0.20</nav-token-support.version>
+        <nav-token-support.version>5.0.25</nav-token-support.version>
         <kotlin-logging-jvm.version>7.0.5</kotlin-logging-jvm.version>
         <slack-api.version>1.45.3</slack-api.version>
         <shedlock.version>6.3.0</shedlock.version>
