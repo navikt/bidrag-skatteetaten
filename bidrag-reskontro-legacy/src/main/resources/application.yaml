@@ -11,6 +11,9 @@ springdoc:
     display-request-duration: true
     try-it-out-enabled: true
 
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.http.client.requests: true
+
 spring.config.activate.on-profile: nais,lokal-nais
 
 no.nav.security.jwt:
