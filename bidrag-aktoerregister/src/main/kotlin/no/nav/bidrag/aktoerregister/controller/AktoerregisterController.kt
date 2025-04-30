@@ -2,7 +2,6 @@ package no.nav.bidrag.aktoerregister.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -71,10 +70,8 @@ class AktoerregisterController(
     )
     @GetMapping(path = ["/hendelser"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentHendelser(
-        @Parameter(description = "Angir første sekvensnummer som ønskes hentet. Default-verdi er 0")
         @RequestParam(name = "fraSekvensnummer", defaultValue = "0")
         fraSekvensnummer: Int = 0,
-        @Parameter(description = "Maksimalt antall hendelser som ønskes hentet. Default-verdi er 1000.")
         @RequestParam(name = "antall", defaultValue = "1000")
         antall: Int = 1000,
     ): ResponseEntity<List<HendelseDTO>> = try {
