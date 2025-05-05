@@ -1,6 +1,5 @@
 package no.nav.bidrag.regnskap.dto.patch
 
-import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 
 data class ReferanseForVedtakResponse(
@@ -9,7 +8,7 @@ data class ReferanseForVedtakResponse(
     val oppdragId: Int,
     val oppdragsperiodeId: Int,
     val sakId: String,
-    val stønadstype: Stønadstype,
+    val stønadstype: String,
     val vedtakstype: Vedtakstype,
 )
 

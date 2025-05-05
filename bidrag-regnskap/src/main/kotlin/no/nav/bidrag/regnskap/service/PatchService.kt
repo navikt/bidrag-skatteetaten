@@ -1,6 +1,5 @@
 package no.nav.bidrag.regnskap.service
 
-import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 import no.nav.bidrag.regnskap.dto.patch.OppdaterReferanseRequest
 import no.nav.bidrag.regnskap.dto.patch.ReferanseForVedtakResponse
@@ -19,7 +18,7 @@ class PatchService(
             oppdragId = oppdragsperiode.oppdrag!!.oppdragId!!,
             oppdragsperiodeId = oppdragsperiode.oppdragsperiodeId!!,
             sakId = oppdragsperiode.oppdrag.sakId,
-            stønadstype = Stønadstype.valueOf(oppdragsperiode.oppdrag.stønadType),
+            stønadstype = oppdragsperiode.oppdrag.stønadType,
             vedtakstype = Vedtakstype.valueOf(oppdragsperiode.vedtakType),
         )
     }
