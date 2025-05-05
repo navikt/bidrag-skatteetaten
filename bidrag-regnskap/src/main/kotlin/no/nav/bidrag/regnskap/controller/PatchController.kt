@@ -31,6 +31,12 @@ class PatchController(
         return ResponseEntity.ok(referanseForVedtak)
     }
 
+    @GetMapping("/hentAlleVedtakMedTommeReferanser")
+    fun hentAlleVedtakMedTommeReferanser(): ResponseEntity<List<Int>> {
+        val tommeRefernaser = patchService.hentAlleTommeReferanser()
+        return ResponseEntity.ok(tommeRefernaser)
+    }
+
     @PostMapping("/patchReferanseForOppdragsperiode")
     fun patchReferanseForOppdragsperiode(@RequestBody oppdaterReferanseRequest: OppdaterReferanseRequest) {
         patchService.oppdaterReferanseForOppdragsperiode(oppdaterReferanseRequest)
