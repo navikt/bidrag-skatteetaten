@@ -98,15 +98,17 @@ class ReskontroServiceTest {
                         1,
                         saksnummer,
                     ),
-                    bidragssak =
-                    Bidragssak(
-                        bidragssaksnummer = saksnummer,
-                        bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
-                        bmGjeldRest = bmGjeldRest,
-                        bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
-                        perBarnISak =
-                        listOf(
-                            barnISak,
+                    bidragssaker =
+                    listOf(
+                        Bidragssak(
+                            bidragssaksnummer = saksnummer,
+                            bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
+                            bmGjeldRest = bmGjeldRest,
+                            bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
+                            perBarnISak =
+                            listOf(
+                                barnISak,
+                            ),
                         ),
                     ),
                     retur =
