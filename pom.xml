@@ -34,7 +34,7 @@
         <jsch.version>0.2.24</jsch.version>
         <google-cloud-storage.version>2.50.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.2.1</spring-cloud-contract-wiremock.version>
-        <springdoc-openapi-ui.version>2.8.6</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.8.8</springdoc-openapi-ui.version>
         <logback-encoder.version>8.0</logback-encoder.version>
 
         <!-- Plugins som ikke finnes i spring-boot-dependencies -->
