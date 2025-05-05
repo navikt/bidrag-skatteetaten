@@ -11,7 +11,7 @@ class PatchService(
     private val oppdragsperiodeRepository: OppdragsperiodeRepository,
 ) {
 
-    fun hentReferanseForVedtak(vedtakId: Int): List<ReferanseForVedtakResponse> = oppdragsperiodeRepository.findAllByVedtakId(vedtakId).map { oppdragsperiode ->
+    fun hentReferanseForVedtak(vedtakId: Int): List<ReferanseForVedtakResponse> = oppdragsperiodeRepository.findAllByVedtakIdAndReferanseIsNotNull(vedtakId).map { oppdragsperiode ->
         ReferanseForVedtakResponse(
             referanse = oppdragsperiode.referanse,
             vedtakId = oppdragsperiode.vedtakId,
