@@ -53,3 +53,6 @@ azure:
       - application: bisys
         namespace: bidrag
         cluster: dev-fss
+      - application: bidrag-vedtak-q4
+        namespace: bidrag
+        cluster: dev-gcp

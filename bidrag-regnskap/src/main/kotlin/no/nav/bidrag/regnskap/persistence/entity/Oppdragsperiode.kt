@@ -34,7 +34,7 @@ data class Oppdragsperiode(
     val vedtakId: Int,
 
     @Column(name = "referanse")
-    val referanse: String?,
+    var referanse: String?,
 
     @Column(name = "vedtak_type")
     var vedtakType: String,
