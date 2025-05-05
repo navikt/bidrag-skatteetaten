@@ -31,6 +31,12 @@ class PatchController(
         return ResponseEntity.ok(referanseForVedtak)
     }
 
+    @GetMapping("/hentReferanseForSak")
+    fun hentReferanseForSak(@RequestParam saksnummer: String): ResponseEntity<List<ReferanseForVedtakResponse>> {
+        val referanseForVedtak = patchService.hentReferanseForSak(saksnummer)
+        return ResponseEntity.ok(referanseForVedtak)
+    }
+
     @GetMapping("/hentAlleVedtakMedTommeReferanser")
     fun hentAlleVedtakMedTommeReferanser(): ResponseEntity<List<Int>> {
         val tommeRefernaser = patchService.hentAlleTommeReferanser()
