@@ -86,7 +86,7 @@ data class Transaksjon(
     val restBeloep: BigDecimal? = null,
     val valutaOpprinneligBeloep: BigDecimal? = null,
     val valutakode: String? = null,
-    val bidragssaksnummer: Long,
+    val bidragssaksnummer: Long? = null,
     val periodeSisteDatoFom: String? = null,
     val periodeSisteDatoTom: String? = null,
     val barnFodselsnr: String? = null,

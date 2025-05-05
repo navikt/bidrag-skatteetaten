@@ -109,7 +109,7 @@ class SkattConsumer(
         httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         httpHeaders.set("Accept", MediaType.APPLICATION_JSON_VALUE)
         httpHeaders.set("Authorization", "Bearer " + hentJwtToken())
-        httpHeaders.set("Ocp-Apim-Subscription-Key", subscriptionKey)
+        httpHeaders.set("Ocp-Apim-Subscription-Key", subscriptionKey) // TODO(Fjerne etter at vi ikke lenger går via api portalen mot Elin)
         return httpHeaders
     }
 
