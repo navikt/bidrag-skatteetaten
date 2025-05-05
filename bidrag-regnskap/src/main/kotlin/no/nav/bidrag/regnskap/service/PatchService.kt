@@ -23,7 +23,7 @@ class PatchService(
         )
     }
 
-    fun hentAlleTommeReferanser(): List<Int> = oppdragsperiodeRepository.findAllByReferanseIsNull().map { it.vedtakId }
+    fun hentAlleTommeReferanser(): List<Int> = oppdragsperiodeRepository.findAllByReferanseIsEmpty().map { it.vedtakId }
 
     fun oppdaterReferanseForOppdragsperiode(oppdaterReferanseRequest: OppdaterReferanseRequest) {
         val oppdragsperiode = oppdragsperiodeRepository.findById(oppdaterReferanseRequest.oppdragsperiodeId).orElseThrow { IllegalArgumentException("Oppdragsperiode med id ${oppdaterReferanseRequest.oppdragsperiodeId} finnes ikke") }
