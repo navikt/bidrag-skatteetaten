@@ -77,7 +77,7 @@ class ReskontroLegacyService(
             personRequest.ident.verdi,
         )
         validerRespons(respons, "rohPrPersPrSakPrBarn")
-        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
+        val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak
         val skyldner = respons?.utParameter?.colCpersOrg?.cpersOrg?.getOrNull(0)
 
         return BidragssakMedSkyldnerDto(
@@ -88,20 +88,20 @@ class ReskontroLegacyService(
                     gjeldIlagtGebyr = skyldner.dgjeldGebyrIlagtTI,
                 )
             },
-            bidragssak = bidragSak?.let {
+            bidragssaker = bidragSak?.map { it ->
                 BidragssakDto(
-                    saksnummer = Saksnummer(bidragSak.nBidragsSaksnr.toString()),
-                    bmGjeldFastsettelsesgebyr = bidragSak.dbmGjeldFastsGebyr,
-                    bpGjeldFastsettelsesgebyr = bidragSak.dbpGjeldFastGebyr,
-                    bmGjeldRest = bidragSak.dbmGjeldRest,
-                    barn = bidragSak.colCbarnISak.cbarnISak.map {
+                    saksnummer = Saksnummer(it.nBidragsSaksnr.toString()),
+                    bmGjeldFastsettelsesgebyr = it.dbmGjeldFastsGebyr,
+                    bpGjeldFastsettelsesgebyr = it.dbpGjeldFastGebyr,
+                    bmGjeldRest = it.dbmGjeldRest,
+                    barn = it.colCbarnISak.cbarnISak.map {
                         SaksinformasjonBarnDto(
                             personident = Personident(it.sFnr),
                             restGjeldOffentlig = it.dbpBelGjeldOff,
                             restGjeldPrivat = it.dbpBelGjeldPrivTot,
                             sumForskuddUtbetalt = it.dforskUtbetTot,
                             restGjeldPrivatAndel = it.dbpBelGjeldPrivAndel,
-                            sumInnbetaltAndel = it.dbidUtbetAndel,
+                            sumUtbetaltAndel = it.dbidUtbetAndel,
                             sumForskuddUtbetaltAndel = it.dforskUtbetAndel,
                         )
                     },

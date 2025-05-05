@@ -34,19 +34,21 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
         val innkrevingssak = validerOutput(innkrevingssakResponse)
 
+        val sak = innkrevingssak.bidragssaker?.first { it.bidragssaksnummer.toString() == saksnummerRequest.saksnummer.verdi }
+
         return BidragssakDto(
-            saksnummer = Saksnummer(innkrevingssak.bidragssak!!.bidragssaksnummer.toString()),
-            bmGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bmGjeldFastsettelsesgebyr,
-            bpGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bpGjeldFastsettelsesgebyr,
-            bmGjeldRest = innkrevingssak.bidragssak.bmGjeldRest,
+            saksnummer = Saksnummer(sak?.bidragssaksnummer.toString()),
+            bmGjeldFastsettelsesgebyr = sak?.bmGjeldFastsettelsesgebyr,
+            bpGjeldFastsettelsesgebyr = sak?.bpGjeldFastsettelsesgebyr,
+            bmGjeldRest = sak?.bmGjeldRest,
             barn =
-            innkrevingssak.bidragssak.perBarnISak?.map {
+            sak?.perBarnISak?.map { it ->
                 SaksinformasjonBarnDto(
-                    personident = Personident(it.fodselsnummer!!),
-                    restGjeldOffentlig = it.restGjeldOffentlig!!,
-                    restGjeldPrivat = it.restGjeldPrivat!!,
-                    sumIkkeUtbetalt = it.sumIkkeUtbetalt!!,
-                    sumForskuddUtbetalt = it.sumForskuddUtbetalt!!,
+                    personident = it.fodselsnummer?.let { Personident(it) },
+                    restGjeldOffentlig = it.restGjeldOffentlig,
+                    restGjeldPrivat = it.restGjeldPrivat,
+                    sumIkkeUtbetalt = it.sumIkkeUtbetalt,
+                    sumForskuddUtbetalt = it.sumForskuddUtbetalt,
                     periode =
                     Datoperiode(
                         LocalDateTime.parse(it.periodeSisteDatoFom!!).toLocalDate(),
@@ -65,29 +67,30 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         return BidragssakMedSkyldnerDto(
             skyldner =
             SkyldnerDto(
-                personident = Personident(innkrevingssak.skyldner!!.fodselsOrgnr!!),
-                innbetaltBeløpUfordelt = innkrevingssak.skyldner.innbetBelopUfordelt,
-                gjeldIlagtGebyr = innkrevingssak.skyldner.gjeldIlagtGebyr,
+                personident = innkrevingssak.skyldner?.fodselsOrgnr?.let { Personident(it) },
+                innbetaltBeløpUfordelt = innkrevingssak.skyldner?.innbetBelopUfordelt,
+                gjeldIlagtGebyr = innkrevingssak.skyldner?.gjeldIlagtGebyr,
             ),
-            bidragssak =
-            BidragssakDto(
-                saksnummer = Saksnummer(innkrevingssak.bidragssak!!.bidragssaksnummer.toString()),
-                bmGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bmGjeldFastsettelsesgebyr,
-                bpGjeldFastsettelsesgebyr = innkrevingssak.bidragssak.bpGjeldFastsettelsesgebyr,
-                bmGjeldRest = innkrevingssak.bidragssak.bmGjeldRest,
-                barn =
-                innkrevingssak.bidragssak.perBarnISak?.map {
-                    SaksinformasjonBarnDto(
-                        personident = Personident(it.fodselsnummer!!),
-                        restGjeldOffentlig = it.restGjeldOffentlig!!,
-                        restGjeldPrivat = it.restGjeldPrivat!!,
-                        sumForskuddUtbetalt = it.sumForskuddUtbetalt!!,
-                        restGjeldPrivatAndel = it.restGjeldPrivatAndel!!,
-                        sumInnbetaltAndel = it.sumInnbetaltAndel!!,
-                        sumForskuddUtbetaltAndel = it.sumForskuddUtbetaltAndel!!,
-                    )
-                } ?: emptyList(),
-            ),
+            bidragssaker = innkrevingssak.bidragssaker?.map { it ->
+                BidragssakDto(
+                    saksnummer = Saksnummer(it.bidragssaksnummer.toString()),
+                    bmGjeldFastsettelsesgebyr = it.bmGjeldFastsettelsesgebyr,
+                    bpGjeldFastsettelsesgebyr = it.bpGjeldFastsettelsesgebyr,
+                    bmGjeldRest = it.bmGjeldRest,
+                    barn =
+                    it.perBarnISak?.map {
+                        SaksinformasjonBarnDto(
+                            personident = it.fodselsnummer?.let { Personident(it) },
+                            restGjeldOffentlig = it.restGjeldOffentlig,
+                            restGjeldPrivat = it.restGjeldPrivat,
+                            sumForskuddUtbetalt = it.sumForskuddUtbetalt,
+                            restGjeldPrivatAndel = it.restGjeldPrivatAndel,
+                            sumUtbetaltAndel = it.sumUtbetaltAndel,
+                            sumForskuddUtbetaltAndel = it.sumForskuddUtbetaltAndel,
+                        )
+                    } ?: emptyList(),
+                )
+            },
         )
     }
 
@@ -116,37 +119,37 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         return InnkrevingssaksinformasjonDto(
             skyldnerinformasjon =
             SkyldnerinformasjonDto(
-                personident = Personident(innkrevingsinformasjon.skyldner!!.fodselsOrgnr!!),
-                sumLøpendeBidrag = innkrevingsinformasjon.skyldner.sumLopendeBidrag,
-                innkrevingssaksstatus = innkrevingsinformasjon.skyldner.statusInnkrevingssak!!,
-                fakturamåte = innkrevingsinformasjon.skyldner.fakturamaate!!,
-                sisteAktivitet = innkrevingsinformasjon.skyldner.sisteAktivitet!!,
+                personident = innkrevingsinformasjon.skyldner?.fodselsOrgnr?.let { Personident(it) },
+                sumLøpendeBidrag = innkrevingsinformasjon.skyldner?.sumLopendeBidrag,
+                innkrevingssaksstatus = innkrevingsinformasjon.skyldner?.statusInnkrevingssak,
+                fakturamåte = innkrevingsinformasjon.skyldner?.fakturamaate,
+                sisteAktivitet = innkrevingsinformasjon.skyldner?.sisteAktivitet,
             ),
             gjeldendeBetalingsordning =
             GjeldendeBetalingsordningDto(
-                typeBehandlingsordning = innkrevingsinformasjon.gjeldendeBetalingsordning!!.typeBetalingsordning!!,
-                kilde = Organisasjonsnummer(innkrevingsinformasjon.gjeldendeBetalingsordning.kildeOrgnummer!!),
-                kildeNavn = innkrevingsinformasjon.gjeldendeBetalingsordning.kildeNavn!!,
-                datoSisteGiro = LocalDateTime.parse(innkrevingsinformasjon.gjeldendeBetalingsordning.datoSisteGiro!!),
-                nesteForfall = LocalDateTime.parse(innkrevingsinformasjon.gjeldendeBetalingsordning.datoNesteForfall!!),
-                beløp = innkrevingsinformasjon.gjeldendeBetalingsordning.belop!!,
-                sistEndret = LocalDateTime.parse(innkrevingsinformasjon.gjeldendeBetalingsordning.datoSistEndret!!),
-                sistEndretÅrsak = innkrevingsinformasjon.gjeldendeBetalingsordning.aarsakSistEndret!!,
-                sumUbetalt = innkrevingsinformasjon.gjeldendeBetalingsordning.sumUbetalt!!,
+                typeBehandlingsordning = innkrevingsinformasjon.gjeldendeBetalingsordning?.typeBetalingsordning,
+                kilde = innkrevingsinformasjon.gjeldendeBetalingsordning?.kildeOrgnummer?.let { Organisasjonsnummer(it) },
+                kildeNavn = innkrevingsinformasjon.gjeldendeBetalingsordning?.kildeNavn,
+                datoSisteGiro = innkrevingsinformasjon.gjeldendeBetalingsordning?.datoSisteGiro?.let { LocalDateTime.parse(it) },
+                nesteForfall = innkrevingsinformasjon.gjeldendeBetalingsordning?.datoNesteForfall?.let { LocalDateTime.parse(it) },
+                beløp = innkrevingsinformasjon.gjeldendeBetalingsordning?.belop,
+                sistEndret = innkrevingsinformasjon.gjeldendeBetalingsordning?.datoSistEndret?.let { LocalDateTime.parse(it) },
+                sistEndretÅrsak = innkrevingsinformasjon.gjeldendeBetalingsordning?.aarsakSistEndret,
+                sumUbetalt = innkrevingsinformasjon.gjeldendeBetalingsordning?.sumUbetalt,
             ),
             nyBetalingsordning =
             NyBetalingsordningDto(
-                dato = Datoperiode(LocalDateTime.parse(innkrevingsinformasjon.nyBetalingsordning!!.datoFraOgMed!!).toLocalDate(), null),
-                beløp = innkrevingsinformasjon.nyBetalingsordning.belop!!,
+                dato = innkrevingsinformasjon.nyBetalingsordning?.datoFraOgMed?.let { Datoperiode(LocalDateTime.parse(it).toLocalDate(), null) },
+                beløp = innkrevingsinformasjon.nyBetalingsordning?.belop,
             ),
             innkrevingssakshistorikk =
-            innkrevingsinformasjon.innkrevingssaksHistorikk!!.map {
+            innkrevingsinformasjon.innkrevingssaksHistorikk!!.map { it ->
                 InnkrevingssakshistorikkDto(
-                    beskrivelse = it.beskrivelse!!,
-                    ident = Ident(it.fodselsOrgNr!!),
-                    navn = it.navn!!,
-                    dato = LocalDateTime.parse(it.dato!!),
-                    beløp = it.belop!!,
+                    beskrivelse = it.beskrivelse,
+                    ident = it.fodselsOrgNr?.let { Ident(it) },
+                    navn = it.navn,
+                    dato = it.dato?.let { LocalDateTime.parse(it) },
+                    beløp = it.belop,
                 )
             },
         )
@@ -159,26 +162,26 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
 
     private fun opprettTransaksjonerResponse(transaksjoner: ReskontroConsumerOutput) = TransaksjonerDto(
         transaksjoner =
-        transaksjoner.transaksjoner!!.map {
+        transaksjoner.transaksjoner!!.map { it ->
             TransaksjonDto(
                 transaksjonsid = it.transaksjonsId,
-                transaksjonskode = it.kode!!,
-                beskrivelse = it.beskrivelse!!,
+                transaksjonskode = it.kode,
+                beskrivelse = it.beskrivelse,
                 dato = LocalDateTime.parse(it.dato!!).toLocalDate(),
-                skyldner = Personident(it.kildeFodselsOrgNr!!),
-                mottaker = Personident(it.mottakerFodslesOrgNr!!),
-                beløp = it.opprinneligBeloep!!,
-                restBeløp = it.restBeloep!!,
-                beløpIOpprinneligValuta = it.valutaOpprinneligBeloep!!,
-                valutakode = it.valutakode!!,
+                skyldner = it.kildeFodselsOrgNr?.let { Personident(it) },
+                mottaker = it.mottakerFodselsOrgNr?.let { Personident(it) },
+                beløp = it.opprinneligBeloep,
+                restBeløp = it.restBeloep,
+                beløpIOpprinneligValuta = it.valutaOpprinneligBeloep,
+                valutakode = it.valutakode,
                 saksnummer = Saksnummer(it.bidragssaksnummer.toString()),
                 periode =
                 Datoperiode(
                     LocalDateTime.parse(it.periodeSisteDatoFom!!).toLocalDate(),
                     it.periodeSisteDatoTom?.let { tom -> LocalDateTime.parse(tom).toLocalDate().plusDays(1) },
                 ),
-                barn = Personident(it.barnFodselsnr!!),
-                delytelsesid = it.bidragsId!!,
+                barn = it.barnFodselsnr?.let { Personident(it) },
+                delytelsesid = it.bidragsId,
                 søknadstype = it.soeknadsType,
             )
         },
