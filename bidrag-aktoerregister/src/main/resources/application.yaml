@@ -28,6 +28,9 @@ springdoc:
   swagger-ui:
     path: /
 
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.http.client.requests: true
+
 no.nav.security.jwt:
   client:
     registration:

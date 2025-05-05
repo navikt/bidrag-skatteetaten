@@ -93,7 +93,8 @@ class ReskontroServiceTest {
                     1,
                     saksnummer,
                 ),
-                bidragssak =
+                bidragssaker =
+                    listOf(
                 Bidragssak(
                     bidragssaksnummer = saksnummer,
                     bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
@@ -101,7 +102,7 @@ class ReskontroServiceTest {
                     bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
                     perBarnISak =
                     listOf(
-                        barnISak,
+                        barnISak,),
                     ),
                 ),
                 retur =

@@ -10,6 +10,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import no.nav.bidrag.regnskap.util.IdentUtils
+import no.nav.bidrag.regnskap.util.PåløpException
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,6 +31,9 @@ class VedtakshendelseServiceTest {
 
     @MockK(relaxed = true)
     private lateinit var identUtils: IdentUtils
+
+    @MockK(relaxed = true)
+    private lateinit var driftsavvikService: DriftsavvikService
 
     @InjectMockKs
     private lateinit var vedtakshendelseService: VedtakshendelseService
@@ -116,6 +120,12 @@ class VedtakshendelseServiceTest {
                 """.trimIndent(),
             )
         }
+    }
+
+    @Test
+    fun `Skal ikke lese hendelse om det finnes aktivt driftsavvik`() {
+        every { driftsavvikService.harAktivtDriftsavvik() } returns true
+        assertThrows<PåløpException> { vedtakshendelseService.behandleHendelse(opprettVedtakshendelse()) }
     }
 
     private fun opprettVedtakshendelse(): String = """

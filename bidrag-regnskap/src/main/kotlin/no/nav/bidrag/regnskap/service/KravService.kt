@@ -140,7 +140,7 @@ class KravService(
         try {
             when (skattResponse.statusCode) {
                 HttpStatus.ACCEPTED -> {
-                    SECURE_LOGGER.info("Mottok svar fra skatt: \n$skattResponse")
+                    SECURE_LOGGER.info("Mottok svar fra skatt for sak ${oppdrag.first().sakId}: \n$skattResponse")
                     val kravResponse = objectMapper.readValue(skattResponse.body, KravResponse::class.java)
                     lagreVellykketOverføringAvKrav(konteringerFraOverførtKrav, kravResponse, oppdrag)
                 }
@@ -161,7 +161,7 @@ class KravService(
                 HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> {
                     LOGGER.error(
                         "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. " +
-                            "Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. Feilmelding: ${skattResponse.body}",
+                            "Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. Feilmelding: $skattResponse",
                     )
                 }
 

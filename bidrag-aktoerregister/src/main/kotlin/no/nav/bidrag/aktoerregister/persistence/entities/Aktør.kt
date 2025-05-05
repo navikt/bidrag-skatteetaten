@@ -17,7 +17,7 @@ data class Aktør(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    var id: Int? = null,
 
     @Column(name = "aktoer_ident")
     var aktørIdent: String,
@@ -98,11 +98,11 @@ data class Aktør(
     var dødsbo: Dødsbo? = null,
 
     @OneToMany(mappedBy = "aktør", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val hendelser: MutableList<Hendelse> = ArrayList(),
+    var hendelser: MutableList<Hendelse> = ArrayList(),
 
     @Version
     @Column(name = "sist_endret")
-    val sistEndret: Timestamp? = null,
+    var sistEndret: Timestamp? = null,
 
 ) {
 

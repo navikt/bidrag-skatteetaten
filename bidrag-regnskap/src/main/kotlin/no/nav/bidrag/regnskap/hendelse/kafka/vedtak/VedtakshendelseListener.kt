@@ -58,7 +58,7 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
                 vedtakshendelseService.sendKrav(opprettedeOppdrag)
                 LOGGER.info("Ferdig med behandling av vedtakshendelse med offset: $offset")
             } catch (e: Exception) {
-                LOGGER.error("Oversending av krav feilet for oppdrag: $opprettedeOppdrag med offset: $offset! Feilmelding: $e")
+                LOGGER.error("Oversending av krav feilet for oppdrag: $opprettedeOppdrag med offset: $offset! Feilmelding: ${e.stackTraceToString()}")
             } finally {
                 // Markerer vedtaket som opprettet for Kafka slik at om oversending feiler vil neste vedtak leses inn og prosesseres
                 acknowledgment.acknowledge()

@@ -23,6 +23,7 @@ import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.PostgreSQLContainer
 import java.math.BigDecimal
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -75,7 +76,12 @@ class PåløpskjøringServiceIT {
     @Test
     fun `skal ta tiden på opprettelse av manglende konteringer`() {
         val tidsbruk = measureTime {
-            påløpskjøringService.startPåløpskjøringManuelt(påløp!!, genererFil = false, overførFil = false)
+            påløpskjøringService.startPåløpskjøringManuelt(
+                påløp!!,
+                genererFil = false,
+                overførFil = false,
+                Duration.ofSeconds(1),
+            )
         }
 
         val tidsbrukISekunder = tidsbruk.inWholeMilliseconds.toDouble() / 1000
