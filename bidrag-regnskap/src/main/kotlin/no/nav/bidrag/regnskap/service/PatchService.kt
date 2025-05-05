@@ -3,7 +3,6 @@ package no.nav.bidrag.regnskap.service
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 import no.nav.bidrag.regnskap.dto.patch.OppdaterReferanseRequest
-import no.nav.bidrag.regnskap.dto.patch.ReferanseForVedtakRequest
 import no.nav.bidrag.regnskap.dto.patch.ReferanseForVedtakResponse
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import org.springframework.stereotype.Service
@@ -13,7 +12,7 @@ class PatchService(
     private val oppdragsperiodeRepository: OppdragsperiodeRepository,
 ) {
 
-    fun hentReferanseForVedtak(referanseForVedtakRequest: ReferanseForVedtakRequest): List<ReferanseForVedtakResponse> = oppdragsperiodeRepository.findAllByVedtakId(referanseForVedtakRequest.vedtakId).map { oppdragsperiode ->
+    fun hentReferanseForVedtak(vedtakId: Int): List<ReferanseForVedtakResponse> = oppdragsperiodeRepository.findAllByVedtakId(vedtakId).map { oppdragsperiode ->
         ReferanseForVedtakResponse(
             referanse = oppdragsperiode.referanse,
             vedtakId = oppdragsperiode.vedtakId,
