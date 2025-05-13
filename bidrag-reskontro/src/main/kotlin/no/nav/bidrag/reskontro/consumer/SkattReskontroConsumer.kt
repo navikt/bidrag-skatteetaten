@@ -1,14 +1,17 @@
 package no.nav.bidrag.reskontro.consumer
 
+import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.reskontro.SECURE_LOGGER
+import no.nav.bidrag.reskontro.combinedLogger
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
+import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
@@ -26,27 +29,31 @@ class SkattReskontroConsumer(
         const val ENDRE_RM_PATH = "/BisysResk/endrerm"
     }
 
-    fun hentInnkrevningssakerPåSak(saksnummer: Long): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent bidragssak for sak: $saksnummer")
-        return restTemplate.postForEntity(
+    fun hentInnkrevningssakerPåSak(saksnummer: Long): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hent bidragssak for sak: $saksnummer")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + BIDRAGSSAK_PATH),
             ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Kaller hent bidragssak for sak: $saksnummer.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun hentInnkrevningssakerPåPerson(person: Personident): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent bidragssaker for person: ${person.verdi}")
-        return restTemplate.postForEntity(
+    fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hent bidragssaker for person: ${person.verdi}")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + BIDRAGSSAK_PATH),
             ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Kaller hent bidragssaker for person: ${person.verdi}.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun hentTransaksjonerPåBidragssak(saksnummer: Long): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for sak: $saksnummer")
-        return restTemplate.postForEntity(
+    fun hentTransaksjonerPåBidragssak(saksnummer: Long): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hent transaksjoner for sak: $saksnummer")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + TRANSAKSJONER_PATH),
             ReskontroConsumerInput(
                 aksjonskode = 3,
@@ -57,11 +64,13 @@ class SkattReskontroConsumer(
             ),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun hentTransaksjonerPåPerson(person: Personident): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for person: ${person.verdi}")
-        return restTemplate.postForEntity(
+    fun hentTransaksjonerPåPerson(person: Personident): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hent transaksjoner for person: ${person.verdi}")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + TRANSAKSJONER_PATH),
             ReskontroConsumerInput(
                 aksjonskode = 4,
@@ -72,11 +81,13 @@ class SkattReskontroConsumer(
             ),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid")
-        return restTemplate.postForEntity(
+    fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + TRANSAKSJONER_PATH),
             ReskontroConsumerInput(
                 aksjonskode = 5,
@@ -86,20 +97,24 @@ class SkattReskontroConsumer(
             ),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun hentInformasjonOmInnkrevingssaken(person: Personident): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller hent informasjonOmInnkrevingssaken for person: ${person.verdi}")
-        return restTemplate.postForEntity(
+    fun hentInformasjonOmInnkrevingssaken(person: Personident): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller hentInformasjonOmInnkrevingssaken for person: ${person.verdi}")
+        val response = restTemplate.postForEntity(
             URI.create(skattUrl + INNKREVINGSSAK_PATH),
             ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nFra skatt: $response.")
+        return validerOutput(response)
     }
 
-    fun endreRmForSak(saksnummer: Long, barn: Personident, nyRm: Personident): ResponseEntity<ReskontroConsumerOutput> {
-        SECURE_LOGGER.info("Kaller endre RM for sak. NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}")
-        return restTemplate.exchange(
+    fun endreRmForSak(saksnummer: Long, barn: Personident, nyRm: Personident): ReskontroConsumerOutput {
+        combinedLogger.debug("Kaller endre RM for sak. NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}")
+        val response = restTemplate.exchange(
             URI.create(skattUrl + ENDRE_RM_PATH),
             HttpMethod.PATCH,
             HttpEntity<ReskontroConsumerInput>(
@@ -112,5 +127,36 @@ class SkattReskontroConsumer(
             ),
             ReskontroConsumerOutput::class.java,
         )
+        combinedLogger.info("Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nFra skatt: $response.")
+        return validerOutput(response)
+    }
+
+    /*
+    Dette må gjøres siden det ikke returneres en korrekt HTTP statuskode i REST kallet mot Skatteetaten.
+    Det blir derimot vedlagt en returnkode i responsen som avgjør om kallet var velykket eller ikke.
+    Mulige returkoder er følgende:
+        0  = OK
+        -1 = Feilmelding
+        -2 = Ugyldig aksjonskode - Aksjonskoden er satt individuelt for hvert endepunkt på vår side, burde ikke oppstå.
+        -3 = Ingen data funnet - Tilsvarer 204 No Content.
+     */
+    private fun validerOutput(reskontroConsumerOutputResponse: ResponseEntity<ReskontroConsumerOutput>): ReskontroConsumerOutput {
+        if (reskontroConsumerOutputResponse.statusCode == HttpStatus.UNAUTHORIZED) {
+            throw MaskinportenClientException("Feil i maskinportentoken benyttet mot skatt")
+        }
+        if (reskontroConsumerOutputResponse.body == null) {
+            error("Det mangler body i responsen fra Skatt!")
+        }
+        if (reskontroConsumerOutputResponse.body!!.retur == null) {
+            error("Responsekoden mangler i responsen fra Skatt!")
+        }
+
+        when (reskontroConsumerOutputResponse.body?.retur?.kode) {
+            0 -> return reskontroConsumerOutputResponse.body!!
+            -1 -> error("Kallet mot skatt feilet med feilmelding: ${reskontroConsumerOutputResponse.body?.retur?.beskrivelse}")
+            -2 -> error("Kallet mot skatt hadde ugyldig aksjonskode! Dette er ikke basert på innput og må rettes i koden/hos skatt.")
+            -3 -> throw IngenDataFraSkattException("Skatt svarte med ingen data.")
+            else -> error("Kallet mot skatt returnerte ukjent returnkode ${reskontroConsumerOutputResponse.body?.retur?.kode}")
+        }
     }
 }

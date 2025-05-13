@@ -24,8 +24,8 @@ maskinporten:
 elin_subscription_key: bidrag-regnskap-elin-subscription-key-dev
 env:
   SPRING_PROFILES_ACTIVE: database-new
-  SKATT_URL: https://api-preprod.nav.no/bidrag/v1/bidragskravq2
-  SKATT_HOST: api-preprod.nav.no
+  SKATT_URL: https://tolking2predator-proxy-ske-elin.synt.elin.innkreving.skatteetaten-test.no/Tolkning2PredatorV2.RestApi
+  SKATT_HOST: tolking2predator-proxy-ske-elin.synt.elin.innkreving.skatteetaten-test.no
   TOPIC_VEDTAK: bidrag.vedtak-q2
   TOPIC_PDL_AKTOR_V2: pdl.aktor-v2
   AKTOR_V2_GROUP_ID: aktor-v2.bidrag-regnskap-q2
@@ -39,7 +39,7 @@ env:
   PERSON_SCOPE: dev-fss.bidrag.bidrag-person-q2
   PERSON_HOST: bidrag-person-q2.dev-fss-pub.nais.io
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
-  MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskravq2"
+  MASKINPORTEN_SCOPES: "skatteetaten:barnebidragkrav"
   KONTERINGER_FORELDET_DATO: 2006-04
   SEND_KRAV_CRON: "0 */10 * * * *" #Hvert 10. minutt
   RESEND_KRAV_CRON: "0 2 4 * * *" #Hver dag kl 04:02

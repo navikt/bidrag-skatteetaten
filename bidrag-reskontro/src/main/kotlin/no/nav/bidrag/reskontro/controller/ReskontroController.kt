@@ -66,7 +66,7 @@ class ReskontroController(
 
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
+    fun hentInnkrevingssakPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
         if (reskontroLegacyEnabled) {
             return reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest)
         }

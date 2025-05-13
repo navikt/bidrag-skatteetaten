@@ -1,13 +1,11 @@
 package no.nav.bidrag.reskontro.service
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.reskontro.consumer.SkattReskontroConsumer
@@ -16,11 +14,9 @@ import no.nav.bidrag.reskontro.dto.consumer.Bidragssak
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
 import no.nav.bidrag.reskontro.dto.consumer.Retur
-import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -90,31 +86,29 @@ class ReskontroServiceTest {
                     saksnummer.toString(),
                 ),
             )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        saksnummer,
-                    ),
-                    bidragssaker =
-                    listOf(
-                        Bidragssak(
-                            bidragssaksnummer = saksnummer,
-                            bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
-                            bmGjeldRest = bmGjeldRest,
-                            bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
-                            perBarnISak =
-                            listOf(
-                                barnISak,
-                            ),
+        val innkrevingssaksResponse =
+            ReskontroConsumerOutput(
+                innParametre =
+                ReskontroConsumerInput(
+                    1,
+                    saksnummer,
+                ),
+                bidragssaker =
+                listOf(
+                    Bidragssak(
+                        bidragssaksnummer = saksnummer,
+                        bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
+                        bmGjeldRest = bmGjeldRest,
+                        bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
+                        perBarnISak =
+                        listOf(
+                            barnISak,
                         ),
                     ),
-                    retur =
-                    Retur(
-                        0,
-                    ),
+                ),
+                retur =
+                Retur(
+                    0,
                 ),
             )
 
@@ -153,245 +147,5 @@ class ReskontroServiceTest {
                 .plusDays(
                     1,
                 )
-    }
-
-    @Test
-    fun `skal feile når skatt returnerer 401`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.status(
-                401,
-            )
-                .build()
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        shouldThrow<MaskinportenClientException> {
-            reskontroService.hentInnkrevingssakPåSak(
-                saksnummerRequest,
-            )
-        }
-    }
-
-    @Test
-    fun `skal feile når body mangler i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok()
-                .build()
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        shouldThrow<IllegalStateException> {
-            reskontroService.hentInnkrevingssakPåSak(
-                saksnummerRequest,
-            )
-        }
-    }
-
-    @Test
-    fun `skal feile når retur objektet mangler i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        123,
-                    ),
-                ),
-            )
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        shouldThrow<IllegalStateException> {
-            reskontroService.hentInnkrevingssakPåSak(
-                saksnummerRequest,
-            )
-        }
-    }
-
-    @Test
-    fun `skal feile når retur kode er -1 i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        123,
-                    ),
-                    retur =
-                    Retur(
-                        -1,
-                        "FEILMELDING HER",
-                    ),
-                ),
-            )
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        val exception =
-            shouldThrow<IllegalStateException> {
-                reskontroService.hentInnkrevingssakPåSak(
-                    saksnummerRequest,
-                )
-            }
-        exception.message shouldBe "Kallet mot skatt feilet med feilmelding: FEILMELDING HER"
-    }
-
-    @Test
-    fun `skal feile når retur kode er -2 i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        123,
-                    ),
-                    retur =
-                    Retur(
-                        -2,
-                        "FEILMELDING HER",
-                    ),
-                ),
-            )
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        val exception =
-            shouldThrow<IllegalStateException> {
-                reskontroService.hentInnkrevingssakPåSak(
-                    saksnummerRequest,
-                )
-            }
-
-        exception.message shouldBe "Kallet mot skatt hadde ugyldig aksjonskode! " +
-            "Dette er ikke basert på innput og må rettes i koden/hos skatt."
-    }
-
-    @Test
-    fun `skal feile når retur kode er -3 i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        123,
-                    ),
-                    retur =
-                    Retur(
-                        -3,
-                        "INGEN DATA",
-                    ),
-                ),
-            )
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        shouldThrow<IngenDataFraSkattException> {
-            reskontroService.hentInnkrevingssakPåSak(
-                saksnummerRequest,
-            )
-        }
-    }
-
-    @Test
-    fun `skal feile når retur kode er ukjent i response fra skatt`() {
-        val saksnummerRequest =
-            SaksnummerRequest(
-                Saksnummer(
-                    "123",
-                ),
-            )
-        val innkrevingssaksResponse: ResponseEntity<ReskontroConsumerOutput> =
-            ResponseEntity.ok(
-                ReskontroConsumerOutput(
-                    innParametre =
-                    ReskontroConsumerInput(
-                        1,
-                        123,
-                    ),
-                    retur =
-                    Retur(
-                        -10,
-                        "FEILMELDING HER",
-                    ),
-                ),
-            )
-
-        every {
-            skattReskontroConsumer.hentInnkrevningssakerPåSak(
-                123,
-            )
-        } returns innkrevingssaksResponse
-
-        val exception =
-            shouldThrow<IllegalStateException> {
-                reskontroService.hentInnkrevingssakPåSak(
-                    saksnummerRequest,
-                )
-            }
-        exception.message shouldBe "Kallet mot skatt returnerte ukjent returnkode -10"
     }
 }
