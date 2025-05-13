@@ -86,7 +86,7 @@ class ReskontroServiceTest {
                     saksnummer.toString(),
                 ),
             )
-        val innkrevingssaksResponse: ReskontroConsumerOutput =
+        val innkrevingssaksResponse =
             ReskontroConsumerOutput(
                 innParametre =
                 ReskontroConsumerInput(
@@ -94,15 +94,16 @@ class ReskontroServiceTest {
                     saksnummer,
                 ),
                 bidragssaker =
-                    listOf(
-                Bidragssak(
-                    bidragssaksnummer = saksnummer,
-                    bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
-                    bmGjeldRest = bmGjeldRest,
-                    bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
-                    perBarnISak =
-                    listOf(
-                        barnISak,),
+                listOf(
+                    Bidragssak(
+                        bidragssaksnummer = saksnummer,
+                        bmGjeldFastsettelsesgebyr = bmGjeldGebyr,
+                        bmGjeldRest = bmGjeldRest,
+                        bpGjeldFastsettelsesgebyr = bpGjeldGebyr,
+                        perBarnISak =
+                        listOf(
+                            barnISak,
+                        ),
                     ),
                 ),
                 retur =
