@@ -51,7 +51,8 @@ spec:
     enabled: true
     scopes:
       consumes:
-        - name: "nav:bidrag/v1/bidragskrav"
+        - name: "nav:bidrag/v1/bidragskrav" #TODO(Fjerne denne når alle tjenester er over på nytt scope)
+        - name: "skatteetaten:barnebidragreskontro"
   ingresses:
   {{#each ingresses as |url|}}
     - {{url}}
@@ -64,5 +65,7 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: {{ env.RESKONTRO_LEGACY_HOST }}
-
+        - host: {{ env.SKATT_HOST }}
+      rules:
+        - application: logging
+          namespace: nais-system
