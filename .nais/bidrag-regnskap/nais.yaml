@@ -102,6 +102,8 @@ spec:
         - application: bidrag-elin-stub
           namespace: bidrag
           cluster: dev-gcp
+        - application: logging
+          namespace: nais-system
     inbound:
       rules:
       {{#each azure.inbound.rules}}

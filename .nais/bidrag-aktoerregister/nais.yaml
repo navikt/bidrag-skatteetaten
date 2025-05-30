@@ -88,3 +88,6 @@ spec:
       external:
         - host: {{ env.BIDRAG_PERSON_HOST }}
         - host: {{ env.BIDRAG_SAMHANDLER_HOST }}
+      rules:
+        - application: logging
+          namespace: nais-system

@@ -66,3 +66,6 @@ spec:
     outbound:
       external:
         - host: {{ env.SKATT_HOST }}
+      rules:
+        - application: logging
+          namespace: nais-system
