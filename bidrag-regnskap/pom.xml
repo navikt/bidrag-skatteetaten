@@ -95,18 +95,6 @@
       <version>${nav-token-support.version}</version>
     </dependency>
 
-    <!-- Kodegenerering -->
-    <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro</artifactId>
-      <version>${maven-avro-plugin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.confluent</groupId>
-      <artifactId>kafka-avro-serializer</artifactId>
-      <version>${avro-serializer.version}</version>
-    </dependency>
-
     <!-- Logging -->
     <dependency>
       <groupId>io.github.oshai</groupId>
@@ -255,25 +243,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.avro</groupId>
-        <artifactId>avro-maven-plugin</artifactId>
-        <version>${maven-avro-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>idl-protocol</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/main/resources/avro</sourceDirectory>
-              <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
