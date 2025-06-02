@@ -1,5 +1,6 @@
 package no.nav.bidrag.regnskap.service
 
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.commons.util.SjekkForNyIdent
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
@@ -9,7 +10,6 @@ import no.nav.bidrag.regnskap.consumer.SakConsumer
 import no.nav.bidrag.regnskap.dto.patch.OppdaterUtsattTilDatoRequest
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
-import no.nav.bidrag.regnskap.util.IdentUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

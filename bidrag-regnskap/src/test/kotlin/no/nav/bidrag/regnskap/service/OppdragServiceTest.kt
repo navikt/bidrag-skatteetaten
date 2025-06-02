@@ -6,13 +6,13 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.regnskap.consumer.SakConsumer
-import no.nav.bidrag.regnskap.util.IdentUtils
 import no.nav.bidrag.regnskap.utils.TestData
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

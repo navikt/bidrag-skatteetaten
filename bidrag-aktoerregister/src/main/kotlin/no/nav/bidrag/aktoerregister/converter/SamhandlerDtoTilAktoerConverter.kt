@@ -14,7 +14,7 @@ class SamhandlerDtoTilAktoerConverter : Converter<SamhandlerDto, Aktør> {
         aktørType = Identtype.AKTOERNUMMER.name,
         etternavn = samhandler.navn,
         offentligId = samhandler.offentligId,
-        offentligIdType = samhandler.offentligIdType,
+        offentligIdType = samhandler.offentligIdType.name,
         adresselinje1 = samhandler.adresse?.adresselinje1,
         adresselinje2 = samhandler.adresse?.adresselinje2,
         adresselinje3 = samhandler.adresse?.adresselinje3,
@@ -27,6 +27,6 @@ class SamhandlerDtoTilAktoerConverter : Converter<SamhandlerDto, Aktør> {
         iban = samhandler.kontonummer?.iban,
         bankLandkode = samhandler.kontonummer?.landkodeBank?.verdi,
         swift = samhandler.kontonummer?.swift,
-        valutaKode = samhandler.kontonummer?.valutakode,
+        valutaKode = samhandler.kontonummer?.valutakode?.name,
     )
 }

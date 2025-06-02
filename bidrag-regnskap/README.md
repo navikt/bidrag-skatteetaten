@@ -152,10 +152,10 @@ Bidrag-regnskap kaller ELINs KravAPI for å sende over konteringer og endre stat
 Bidrag-regnskap har en integrasjon mot bidrag-sak for å hente ut ident til BM i saken. Se [SakConsumer.kt](src/main/kotlin/no/nav/bidrag/regnskap/consumer/SakConsumer.kt).
 
 ### Bidrag-person
-Bidrag-regnskap benytter seg av @SjekkForNyIdent annotasjon for å søke etter nye identer på vedtak som mottas fra bidrag-vedtak. Se: [IdentUtils.kt](src/main/kotlin/no/nav/bidrag/regnskap/util/IdentUtils.kt) for bruk.
+Bidrag-regnskap benytter seg av @SjekkForNyIdent annotasjon for å søke etter nye identer på vedtak som mottas fra bidrag-vedtak.
 
 ### PDL
-Bidrag-regnskap lytter på AktorV2 topic fra PDL for å lese inn endringer på identer. Se [AktørhendelseListener](src/main/kotlin/no/nav/bidrag/regnskap/hendelse/kafka/pdl/AktørhendelseListener.kt)
+Bidrag-regnskap lytter på person-hendelse topic for å få endringer på identer fra PDL.
 
 ## Lokal utvikling
 
