@@ -3,7 +3,8 @@ SAK_URL: http://localhost:8098
 PERSON_URL: http://localhost:8099
 AZURE_OPENID_CONFIG_ISSUER: http://localhost:${mock-oauth2-server.port}/aad
 TOPIC_VEDTAK: bidrag.vedtak-feature-test
-TOPIC_PDL_AKTOR_V2: pdl.aktor-v2-test
+TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
+PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
 BIDRAG_BOT_SLACK_OAUTH_TOKEN: ikkeGyldigToken
 
 scheduler:

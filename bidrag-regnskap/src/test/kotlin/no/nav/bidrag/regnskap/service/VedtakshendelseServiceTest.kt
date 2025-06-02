@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import no.nav.bidrag.regnskap.util.IdentUtils
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.regnskap.util.PåløpException
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.BeforeEach
