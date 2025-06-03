@@ -18,6 +18,6 @@ class BidragRegnskapLocal
 
 fun main(args: Array<String>) {
     val app = SpringApplication(BidragRegnskapLocal::class.java)
-    app.setAdditionalProfiles("local", "nais")
+    app.setAdditionalProfiles("local", "nais", "lokal-nais-secrets", "lokal-nais")
     app.run(*args)
 }
