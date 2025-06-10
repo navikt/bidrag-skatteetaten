@@ -24,7 +24,11 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
         var sisteOffset: Long = -1
     }
 
-    @KafkaListener(groupId = "bidrag-regnskap", topics = ["\${TOPIC_VEDTAK}"])
+    @KafkaListener(
+        groupId = "bidrag-regnskap",
+        topics = ["\${TOPIC_VEDTAK}"],
+        properties = ["auto.offset.reset=\${KAFKA_AUTO_OFFSET_RESET:earliest}"],
+    )
     fun lesHendelse(
         hendelse: String,
         @Header(KafkaHeaders.OFFSET) offset: Long,
