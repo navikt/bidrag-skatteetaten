@@ -31,7 +31,7 @@ env:
   PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
   BUCKET_NAME: bidrag-regnskap-q1
   SFTP_HOST: sftp-q.nav.no
-  SFTP_SKAL_OVERFORE_FIL: true
+  SFTP_SKAL_OVERFORE_FIL: false
   SAK_URL: https://bidrag-sak-q1.dev-fss-pub.nais.io
   SAK_SCOPE: dev-fss.bidrag.bidrag-sak-q1
   SAK_HOST: bidrag-sak-q1.dev-fss-pub.nais.io
@@ -47,6 +47,7 @@ env:
   AVSTEMNING_CRON: "0 15 0 * * *" #Hver dag kl 00:15
   PALOSKJORING_CRON: "0 5 * * * *" #Hver time 5 minutter over hel
   SLACK_CHANNEL_ID: C05HQPLTFAA
+  KAFKA_AUTO_OFFSET_RESET: latest
 azure:
   inbound:
     rules:
