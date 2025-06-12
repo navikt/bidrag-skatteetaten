@@ -1,5 +1,6 @@
 package no.nav.bidrag.regnskap.service
 
+import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.regnskap.SECURE_LOGGER
@@ -13,6 +14,7 @@ import no.nav.bidrag.regnskap.persistence.repository.KonteringRepository
 import no.nav.bidrag.regnskap.persistence.repository.OppdragRepository
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.regnskap.persistence.repository.PåløpRepository
+import no.nav.bidrag.transport.regnskap.avstemning.SumPrSak
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
@@ -171,4 +173,9 @@ class PersistenceService(
     fun hentAlleSkyldnereMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllBySkyldnerIdent(ident)
 
     fun hentAlleGjelderMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByGjelderIdent(ident)
+
+    fun hentSakSumForStønadOgMåned(stønadstype: Stønadstype, måned: YearMonth): List<SumPrSak> = konteringRepository.hentSakSumForStønadOgMåned(
+        stønadstype.name,
+        LocalDate.of(måned.year, måned.month, 1),
+    )
 }

@@ -1,11 +1,14 @@
 package no.nav.bidrag.regnskap.service
 
+import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.regnskap.fil.avstemning.AvstemmingsfilGenerator
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
+import no.nav.bidrag.transport.regnskap.avstemning.SumPrSakResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -45,5 +48,10 @@ class AvstemmingService(
 
         filoverføringTilElinKlient.lastOppFilTilFilsluse(avstemmingMappe, avstemmingKonteringFilnavn)
         filoverføringTilElinKlient.lastOppFilTilFilsluse(avstemmingMappe, avstemmingSummeringFilnavn)
+    }
+
+    fun hentSumForSaker(stønadstype: Stønadstype, måned: YearMonth): SumPrSakResponse {
+        LOGGER.info("Henter summering for saker av type $stønadstype for måned $måned")
+        return SumPrSakResponse(persistenceService.hentSakSumForStønadOgMåned(stønadstype, måned))
     }
 }
