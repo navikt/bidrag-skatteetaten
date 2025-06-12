@@ -47,7 +47,7 @@ interface KonteringRepository : JpaRepository<Kontering, Int> {
         GROUP BY o.sakId
     """,
     )
-    fun hentSakSumForStønadOgMåned(
+    fun hentSakSumForStønadOgPeriode(
         @Param("stonadType") stonadType: String,
         @Param("overforingsperiode") overforingsperiode: LocalDate,
     ): List<SumPrSak>

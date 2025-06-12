@@ -174,8 +174,8 @@ class PersistenceService(
 
     fun hentAlleGjelderMedIdent(ident: String): List<Oppdrag> = oppdragRepository.findAllByGjelderIdent(ident)
 
-    fun hentSakSumForStønadOgMåned(stønadstype: Stønadstype, måned: YearMonth): List<SumPrSak> = konteringRepository.hentSakSumForStønadOgMåned(
+    fun hentSakSumForStønadOgMåned(stønadstype: Stønadstype, periode: YearMonth): List<SumPrSak> = konteringRepository.hentSakSumForStønadOgPeriode(
         stønadstype.name,
-        LocalDate.of(måned.year, måned.month, 1),
+        LocalDate.of(periode.year, periode.month, 1),
     )
 }
