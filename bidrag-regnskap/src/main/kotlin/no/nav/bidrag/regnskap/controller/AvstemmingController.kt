@@ -133,7 +133,7 @@ class AvstemmingController(
     @Parameters(
         value = [
             Parameter(name = "stønadstype", example = "FORSKUDD"),
-            Parameter(name = "måned", example = "2022-01"),
+            Parameter(name = "periode", example = "2022-01"),
         ],
     )
     fun hentSumForSaker(
