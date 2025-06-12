@@ -50,8 +50,8 @@ class AvstemmingService(
         filoverføringTilElinKlient.lastOppFilTilFilsluse(avstemmingMappe, avstemmingSummeringFilnavn)
     }
 
-    fun hentSumForSaker(stønadstype: Stønadstype, måned: YearMonth): SumPrSakResponse {
-        LOGGER.info("Henter summering for saker av type $stønadstype for måned $måned")
-        return SumPrSakResponse(persistenceService.hentSakSumForStønadOgMåned(stønadstype, måned))
+    fun hentSumForSaker(stønadstype: Stønadstype, periode: YearMonth): SumPrSakResponse {
+        LOGGER.info("Henter summering for saker av type $stønadstype for periode $periode")
+        return SumPrSakResponse(persistenceService.hentSakSumForStønadOgMåned(stønadstype, periode))
     }
 }

@@ -18,6 +18,7 @@ import no.nav.security.token.support.core.api.Protected
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
@@ -136,10 +137,10 @@ class AvstemmingController(
         ],
     )
     fun hentSumForSaker(
-        @RequestParam(required = true) stønadstype: Stønadstype,
-        @RequestParam(required = true) måned: YearMonth,
+        @PathVariable(required = true) stønadstype: Stønadstype,
+        @PathVariable(required = true) periode: YearMonth,
     ): ResponseEntity<SumPrSakResponse> {
-        val sumPrSakResponse = avstemmingService.hentSumForSaker(stønadstype, måned)
+        val sumPrSakResponse = avstemmingService.hentSumForSaker(stønadstype, periode)
         return ResponseEntity.ok(sumPrSakResponse)
     }
 }
