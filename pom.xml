@@ -25,7 +25,7 @@
         <jackson.version>2.19.1</jackson.version>
         <kotest.version>5.9.1</kotest.version>
         <ktlint.version>1.4.1</ktlint.version>
-        <mockk.version>1.14.0</mockk.version>
+        <mockk.version>1.14.2</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>5.0.29</nav-token-support.version>
         <kotlin-logging-jvm.version>7.0.7</kotlin-logging-jvm.version>
