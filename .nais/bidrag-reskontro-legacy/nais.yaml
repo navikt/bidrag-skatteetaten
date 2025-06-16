@@ -60,4 +60,8 @@ spec:
           namespace: {{this.namespace}}
           cluster: {{this.cluster}}
       {{/each}}
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
   webproxy: true

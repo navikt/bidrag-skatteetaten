@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.domene.enums.vedtak.Beslutningstype
 import no.nav.bidrag.domene.enums.vedtak.Innkrevingstype
 import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.dto.vedtak.Periode
-import no.nav.bidrag.regnskap.util.IdentUtils
 import no.nav.bidrag.regnskap.util.PåløpException
 import no.nav.bidrag.transport.behandling.vedtak.Engangsbeløp
 import no.nav.bidrag.transport.behandling.vedtak.Stønadsendring
@@ -72,9 +72,9 @@ class VedtakshendelseService(
             val hendelse = Hendelse(
                 type = stønadsendring.type.name,
                 vedtakType = vedtakHendelse.type,
-                kravhaverIdent = identUtils.hentNyesteIdent(stønadsendring.kravhaver.verdi),
-                skyldnerIdent = identUtils.hentNyesteIdent(stønadsendring.skyldner.verdi),
-                mottakerIdent = identUtils.hentNyesteIdent(stønadsendring.mottaker.verdi),
+                kravhaverIdent = identUtils.hentNyesteIdent(stønadsendring.kravhaver).verdi,
+                skyldnerIdent = identUtils.hentNyesteIdent(stønadsendring.skyldner).verdi,
+                mottakerIdent = identUtils.hentNyesteIdent(stønadsendring.mottaker).verdi,
                 sakId = stønadsendring.sak.verdi,
                 vedtakId = vedtakHendelse.id,
                 vedtakDato = vedtakHendelse.vedtakstidspunkt.toLocalDate(),
@@ -110,9 +110,9 @@ class VedtakshendelseService(
             val hendelse = Hendelse(
                 type = engangsbeløp.type.name,
                 vedtakType = vedtakHendelse.type,
-                kravhaverIdent = identUtils.hentNyesteIdent(engangsbeløp.kravhaver.verdi),
-                skyldnerIdent = identUtils.hentNyesteIdent(engangsbeløp.skyldner.verdi),
-                mottakerIdent = identUtils.hentNyesteIdent(engangsbeløp.mottaker.verdi),
+                kravhaverIdent = identUtils.hentNyesteIdent(engangsbeløp.kravhaver).verdi,
+                skyldnerIdent = identUtils.hentNyesteIdent(engangsbeløp.skyldner).verdi,
+                mottakerIdent = identUtils.hentNyesteIdent(engangsbeløp.mottaker).verdi,
                 sakId = engangsbeløp.sak.verdi,
                 vedtakId = vedtakHendelse.id,
                 vedtakDato = vedtakHendelse.vedtakstidspunkt.toLocalDate(),

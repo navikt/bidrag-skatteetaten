@@ -1,11 +1,3 @@
-AZURE_APP_CLIENT_ID: 694551e0-9fd5-4d76-b790-b0fd89505697
-AZURE_APP_CLIENT_SECRET: <CLIENT_SECRET>
-
-maskinporten:
-  clientId: 0f5c38e8-e0bb-4708-96aa-7b30da8bcc3b
-  scope: nav:bidrag/v1/bidragskrav
-  privateKey: <JWK_MASKINPORTEN>
-
 BIDRAG_BOT_SLACK_OAUTH_TOKEN: <BIDRAG_BOT_SLACK_OAUTH_TOKEN>
 
 spring:

@@ -1,6 +1,5 @@
 package no.nav.bidrag.reskontro.service
 
-import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Organisasjonsnummer
 import no.nav.bidrag.domene.ident.Personident
@@ -8,7 +7,6 @@ import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.domene.tid.Datoperiode
 import no.nav.bidrag.reskontro.consumer.SkattReskontroConsumer
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
-import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakDto
@@ -22,8 +20,6 @@ import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.NyB
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.SkyldnerinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -31,8 +27,7 @@ import java.time.LocalDateTime
 class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsumer) {
 
     fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? {
-        val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
-        val innkrevingssak = validerOutput(innkrevingssakResponse)
+        val innkrevingssak = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
 
         val sak = innkrevingssak.bidragssaker?.first { it.bidragssaksnummer.toString() == saksnummerRequest.saksnummer.verdi }
 
@@ -50,19 +45,20 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                     sumIkkeUtbetalt = it.sumIkkeUtbetalt,
                     sumForskuddUtbetalt = it.sumForskuddUtbetalt,
                     periode =
-                    Datoperiode(
-                        LocalDateTime.parse(it.periodeSisteDatoFom!!).toLocalDate(),
-                        it.periodeSisteDatoTom?.let { tom -> LocalDateTime.parse(tom).toLocalDate().plusDays(1) },
-                    ),
-                    erStoppIUtbetaling = it.stoppUtbetaling!! == "J",
+                    it.periodeSisteDatoFom?.let { fom ->
+                        Datoperiode(
+                            LocalDateTime.parse(fom).toLocalDate(),
+                            it.periodeSisteDatoTom?.let { tom -> LocalDateTime.parse(tom).toLocalDate().plusDays(1) },
+                        )
+                    },
+                    erStoppIUtbetaling = it.stoppUtbetaling == "J",
                 )
             } ?: emptyList(),
         )
     }
 
     fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
-        val innkrevingssakResponse = skattReskontroConsumer.hentInnkrevningssakerPåPerson(personRequest.ident)
-        val innkrevingssak = validerOutput(innkrevingssakResponse)
+        val innkrevingssak = skattReskontroConsumer.hentInnkrevningssakerPåPerson(personRequest.ident)
 
         return BidragssakMedSkyldnerDto(
             skyldner =
@@ -95,27 +91,22 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
     }
 
     fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
-        val transaksjonerResponse =
-            skattReskontroConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest.saksnummer.verdi.toLong())
-        val transaksjoner = validerOutput(transaksjonerResponse)
+        val transaksjoner = skattReskontroConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest.saksnummer.verdi.toLong())
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
     fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto? {
-        val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåPerson(personRequest.ident)
-        val transaksjoner = validerOutput(transaksjonerResponse)
+        val transaksjoner = skattReskontroConsumer.hentTransaksjonerPåPerson(personRequest.ident)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
     fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto? {
-        val transaksjonerResponse = skattReskontroConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
-        val transaksjoner = validerOutput(transaksjonerResponse)
+        val transaksjoner = skattReskontroConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
         return opprettTransaksjonerResponse(transaksjoner)
     }
 
     fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
-        val innkrevingsinformasjonResponse = skattReskontroConsumer.hentInformasjonOmInnkrevingssaken(personRequest.ident)
-        val innkrevingsinformasjon = validerOutput(innkrevingsinformasjonResponse)
+        val innkrevingsinformasjon = skattReskontroConsumer.hentInformasjonOmInnkrevingssaken(personRequest.ident)
         return InnkrevingssaksinformasjonDto(
             skyldnerinformasjon =
             SkyldnerinformasjonDto(
@@ -143,7 +134,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                 beløp = innkrevingsinformasjon.nyBetalingsordning?.belop,
             ),
             innkrevingssakshistorikk =
-            innkrevingsinformasjon.innkrevingssaksHistorikk!!.map { it ->
+            innkrevingsinformasjon.innkrevingssaksHistorikk?.map { it ->
                 InnkrevingssakshistorikkDto(
                     beskrivelse = it.beskrivelse,
                     ident = it.fodselsOrgNr?.let { Ident(it) },
@@ -156,13 +147,12 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
     }
 
     fun endreRmForSak(saksnummer: Saksnummer, barn: Personident, nyRm: Personident) {
-        val endreRmResponse = skattReskontroConsumer.endreRmForSak(saksnummer.verdi.toLong(), barn, nyRm)
-        validerOutput(endreRmResponse)
+        skattReskontroConsumer.endreRmForSak(saksnummer.verdi.toLong(), barn, nyRm)
     }
 
     private fun opprettTransaksjonerResponse(transaksjoner: ReskontroConsumerOutput) = TransaksjonerDto(
         transaksjoner =
-        transaksjoner.transaksjoner!!.map { it ->
+        transaksjoner.transaksjoner?.map { it ->
             TransaksjonDto(
                 transaksjonsid = it.transaksjonsId,
                 transaksjonskode = it.kode,
@@ -175,44 +165,16 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                 beløpIOpprinneligValuta = it.valutaOpprinneligBeloep,
                 valutakode = it.valutakode,
                 saksnummer = Saksnummer(it.bidragssaksnummer.toString()),
-                periode =
-                Datoperiode(
-                    LocalDateTime.parse(it.periodeSisteDatoFom!!).toLocalDate(),
-                    it.periodeSisteDatoTom?.let { tom -> LocalDateTime.parse(tom).toLocalDate().plusDays(1) },
-                ),
+                periode = it.periodeSisteDatoFom?.let { fom ->
+                    Datoperiode(
+                        LocalDateTime.parse(fom).toLocalDate(),
+                        it.periodeSisteDatoTom?.let { tom -> LocalDateTime.parse(tom).toLocalDate().plusDays(1) },
+                    )
+                },
                 barn = it.barnFodselsnr?.let { Personident(it) },
                 delytelsesid = it.bidragsId,
                 søknadstype = it.soeknadsType,
             )
-        },
+        } ?: emptyList(),
     )
-
-    /*
-    Dette må gjøres siden det ikke returneres en korrekt HTTP statuskode i REST kallet mot Skatteetaten.
-    Det blir derimot vedlagt en returnkode i responsen som avgjør om kallet var velykket eller ikke.
-    Mulige returkoder er følgende:
-        0  = OK
-        -1 = Feilmelding
-        -2 = Ugyldig aksjonskode - Aksjonskoden er satt individuelt for hvert endepunkt på vår side, burde ikke oppstå.
-        -3 = Ingen data funnet - Tilsvarer 204 No Content.
-     */
-    private fun validerOutput(reskontroConsumerOutputResponse: ResponseEntity<ReskontroConsumerOutput>): ReskontroConsumerOutput {
-        if (reskontroConsumerOutputResponse.statusCode == HttpStatus.UNAUTHORIZED) {
-            throw MaskinportenClientException("Feil i maskinportentoken benyttet mot skatt")
-        }
-        if (reskontroConsumerOutputResponse.body == null) {
-            error("Det mangler body i responsen fra Skatt!")
-        }
-        if (reskontroConsumerOutputResponse.body!!.retur == null) {
-            error("Responsekoden mangler i responsen fra Skatt!")
-        }
-
-        when (reskontroConsumerOutputResponse.body!!.retur!!.kode) {
-            0 -> return reskontroConsumerOutputResponse.body!!
-            -1 -> error("Kallet mot skatt feilet med feilmelding: ${reskontroConsumerOutputResponse.body!!.retur!!.beskrivelse}")
-            -2 -> error("Kallet mot skatt hadde ugyldig aksjonskode! Dette er ikke basert på innput og må rettes i koden/hos skatt.")
-            -3 -> throw IngenDataFraSkattException("Skatt svarte med ingen data.")
-            else -> error("Kallet mot skatt returnerte ukjent returnkode ${reskontroConsumerOutputResponse.body!!.retur!!.kode}")
-        }
-    }
 }

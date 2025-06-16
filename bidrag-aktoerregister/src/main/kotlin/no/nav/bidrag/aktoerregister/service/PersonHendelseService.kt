@@ -3,9 +3,9 @@ package no.nav.bidrag.aktoerregister.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.transaction.Transactional
 import no.nav.bidrag.aktoerregister.SECURE_LOGGER
-import no.nav.bidrag.aktoerregister.dto.Endringsmelding
 import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
 import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.transport.person.hendelse.Endringsmelding
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -34,7 +34,7 @@ class PersonHendelseService(private val objectMapper: ObjectMapper, private val 
                         SECURE_LOGGER.info("Lagret aktør $it er ikke ulik ny aktør fra hendelse. Går til neste hendelse.")
                     }
                     return
-                } catch (e: AktørNotFoundException) {
+                } catch (_: AktørNotFoundException) {
                     LOGGER.error("Aktør ikke funnet i bidrag-person! Se sikker logg for mer info.")
                     SECURE_LOGGER.error("Aktør ikke funnet i bidrag-person! Fant ikke person for hendelse: $hendelse")
                 }

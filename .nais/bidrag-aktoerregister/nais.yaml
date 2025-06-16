@@ -10,6 +10,9 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+    logging:
+      destinations:
+        - id: elastic
   azure:
     application:
       enabled: true
@@ -88,3 +91,6 @@ spec:
       external:
         - host: {{ env.BIDRAG_PERSON_HOST }}
         - host: {{ env.BIDRAG_SAMHANDLER_HOST }}
+      rules:
+        - application: logging
+          namespace: nais-system
