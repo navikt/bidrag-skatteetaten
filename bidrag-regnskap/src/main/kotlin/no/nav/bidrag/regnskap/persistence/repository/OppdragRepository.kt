@@ -37,4 +37,6 @@ interface OppdragRepository : JpaRepository<Oppdrag, Int> {
     fun findAllByGjelderIdent(gjelderIdent: String): List<Oppdrag>
 
     fun findAllByUtsattTilDatoIsNotNullAndUtsattTilDatoIsAfter(utsattTilDato: LocalDate): List<Oppdrag>
+
+    fun findAllBySakId(sakId: String): List<Oppdrag>
 }

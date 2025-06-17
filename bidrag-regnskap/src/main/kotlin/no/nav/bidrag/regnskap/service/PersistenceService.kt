@@ -63,7 +63,12 @@ class PersistenceService(
 
     fun hentOppdragPåReferanseOgOmgjørVedtakId(referanse: String, omgjørVedtakId: Int): Oppdrag? {
         LOGGER.debug("Henter oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId")
-        return oppdragsperiodeRepository.hentOppdragPåReferanseOgVedtakId(referanse, omgjørVedtakId).firstOrNull()?.oppdrag
+        val oppdrag = oppdragsperiodeRepository.hentOppdragPåReferanseOgVedtakId(referanse, omgjørVedtakId)
+        if (oppdrag.size > 1) {
+            SECURE_LOGGER.error("Fant flere oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId. Følgende oppdrag ble funnet: $oppdrag")
+            throw IllegalStateException("Fant flere oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId. Følgende oppdrag ble funnet: $oppdrag")
+        }
+        return oppdrag.firstOrNull()?.oppdrag
     }
 
     fun lagreOppdrag(oppdrag: Oppdrag): Int {
