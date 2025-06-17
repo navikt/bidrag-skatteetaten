@@ -47,4 +47,9 @@ class PatchController(
     fun patchReferanseForOppdragsperiode(@RequestBody oppdaterReferanseRequest: OppdaterReferanseRequest) {
         patchService.oppdaterReferanseForOppdragsperiode(oppdaterReferanseRequest)
     }
+
+    @PostMapping("/patchTommerReferanser")
+    fun patchTommerReferanser() {
+        patchService.patchTommeReferanser()
+    }
 }
