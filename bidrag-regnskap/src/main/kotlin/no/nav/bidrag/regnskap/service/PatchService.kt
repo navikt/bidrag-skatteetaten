@@ -1,7 +1,9 @@
 package no.nav.bidrag.regnskap.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.regnskap.consumer.BidragVedtakConsumer
 import no.nav.bidrag.regnskap.dto.patch.OppdaterReferanseRequest
 import no.nav.bidrag.regnskap.dto.patch.ReferanseForVedtakResponse
@@ -17,6 +19,7 @@ class PatchService(
     private val oppdragsperiodeRepository: OppdragsperiodeRepository,
     private val oppdragRepository: OppdragRepository,
     private val bidragVedtakConsumer: BidragVedtakConsumer,
+    private val identUtils: IdentUtils,
 ) {
 
     fun hentReferanseForVedtak(vedtakId: Int): List<ReferanseForVedtakResponse> = oppdragsperiodeRepository.findAllByVedtakIdAndReferanseIsNotNull(vedtakId).map { oppdragsperiode ->
@@ -49,8 +52,8 @@ class PatchService(
             val vedtakResponse = bidragVedtakConsumer.hentVedtak(oppdragsperiode.vedtakId)
             val matcheneEngangsbeløp = vedtakResponse?.engangsbeløpListe
                 ?.filter { it.type.name == oppdragsperiode.oppdrag!!.stønadType }
-                ?.filter { it.skyldner.verdi == oppdragsperiode.oppdrag!!.skyldnerIdent }
-                ?.filter { it.kravhaver.verdi == oppdragsperiode.oppdrag!!.kravhaverIdent }
+                ?.filter { erSammePerson(it.skyldner, oppdragsperiode.oppdrag!!.skyldnerIdent) }
+                ?.filter { erSammePerson(it.kravhaver, oppdragsperiode.oppdrag!!.kravhaverIdent!!) }
 
             if (matcheneEngangsbeløp.isNullOrEmpty()) {
                 LOGGER.error { "Fant ingen matchende engangsbeløp for vedtak: ${oppdragsperiode.vedtakId} ved oppslag på oppdragsperiode: ${oppdragsperiode.oppdragsperiodeId}." }
@@ -65,6 +68,11 @@ class PatchService(
             oppdragsperiodeRepository.save(oppdragsperiode)
         }
     }
+
+    private fun erSammePerson(
+        personFraVedtak: Personident,
+        personFraOppdragsperiode: String,
+    ): Boolean = identUtils.hentNyesteIdent(personFraVedtak).verdi == personFraOppdragsperiode
 
     private fun opprettReferanseForVedtakResponse(oppdragsperiode: Oppdragsperiode): ReferanseForVedtakResponse = ReferanseForVedtakResponse(
         referanse = oppdragsperiode.referanse,
