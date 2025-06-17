@@ -5,6 +5,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.domene.enums.vedtak.Beslutningstype
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Innkrevingstype
@@ -20,6 +21,7 @@ import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.regnskap.utils.TestData
 import no.nav.bidrag.transport.behandling.vedtak.response.EngangsbeløpDto
 import no.nav.bidrag.transport.behandling.vedtak.response.VedtakDto
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
@@ -36,8 +38,16 @@ class PatchServiceTest {
     @RelaxedMockK
     private lateinit var bidragVedtakConsumer: BidragVedtakConsumer
 
+    @RelaxedMockK
+    private lateinit var identUtils: IdentUtils
+
     @InjectMockKs
     private lateinit var patchService: PatchService
+
+    @BeforeEach
+    fun setUp() {
+        every { identUtils.hentNyesteIdent(any()) } returnsArgument 0
+    }
 
     @Test
     fun skalOppdatereTommeReferanser() {
