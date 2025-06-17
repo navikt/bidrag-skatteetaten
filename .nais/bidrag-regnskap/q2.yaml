@@ -38,6 +38,9 @@ env:
   PERSON_URL: https://bidrag-person-q2.dev-fss-pub.nais.io/bidrag-person
   PERSON_SCOPE: dev-fss.bidrag.bidrag-person-q2
   PERSON_HOST: bidrag-person-q2.dev-fss-pub.nais.io
+  BIDRAG_VEDTAK_URL: https://bidrag-vedtak-q2.intern.dev.nav.no
+  BIDRAG_VEDTAK_SCOPE: dev-gcp.bidrag.bidrag-vedtak-q2
+  BIDRAG_VEDTAK_HOST: bidrag-vedtak-q2.intern.dev.nav.no
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   MASKINPORTEN_SCOPES: "skatteetaten:barnebidragkrav"
   KONTERINGER_FORELDET_DATO: 2006-04

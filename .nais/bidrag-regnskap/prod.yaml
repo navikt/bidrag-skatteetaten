@@ -38,6 +38,9 @@ env:
   PERSON_URL: https://bidrag-person.prod-fss-pub.nais.io/bidrag-person
   PERSON_SCOPE: prod-fss.bidrag.bidrag-person
   PERSON_HOST: bidrag-person.prod-fss-pub.nais.io
+  BIDRAG_VEDTAK_URL: https://bidrag-vedtak.intern.nav.no
+  BIDRAG_VEDTAK_SCOPE: prod-gcp.bidrag.bidrag-vedtak
+  BIDRAG_VEDTAK_HOST: bidrag-vedtak.intern.nav.no
   MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav"
   JAVA_OPTS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   KONTERINGER_FORELDET_DATO: 2006-04
