@@ -14,7 +14,7 @@ kafka:
   pool: nav-prod
 database:
   navn: bidrag-regnskap-prod
-  tier: db-custom-2-3840
+  tier: db-custom-2-5120
   size: 25
   auditlog: "on"
 bucket:
