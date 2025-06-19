@@ -22,35 +22,43 @@ class HendelseService(
                 val person = personConsumer.hentPerson(Ident(endring.identendring!!.identifikasjonsnummer!!))!!.person.ident
 
                 endringsmelding.personidenter.forEach {
-                    persistenceService.hentAlleMottakereMedIdent(it).forEach { mottaker ->
-                        mottaker.mottakerIdent = person.verdi
-                        logIdentendring(it, person, mottaker)
-                    }
+                    persistenceService.hentAlleMottakereMedIdent(it)
+                        .filter { mottaker -> mottaker.mottakerIdent != person.verdi }
+                        .forEach { mottaker ->
+                            mottaker.mottakerIdent = person.verdi
+                            logIdentendring(it, person, mottaker)
+                        }
 
-                    persistenceService.hentAlleKravhavereMedIdent(it).forEach { kravhaver ->
-                        kravhaver.kravhaverIdent = person.verdi
-                        logIdentendring(it, person, kravhaver)
-                    }
+                    persistenceService.hentAlleKravhavereMedIdent(it)
+                        .filter { kravhaver -> kravhaver.mottakerIdent != person.verdi }
+                        .forEach { kravhaver ->
+                            kravhaver.kravhaverIdent = person.verdi
+                            logIdentendring(it, person, kravhaver)
+                        }
 
-                    persistenceService.hentAlleSkyldnereMedIdent(it).forEach { skyldner ->
-                        skyldner.skyldnerIdent = person.verdi
-                        logIdentendring(it, person, skyldner)
-                    }
+                    persistenceService.hentAlleSkyldnereMedIdent(it)
+                        .filter { skyldner -> skyldner.mottakerIdent != person.verdi }
+                        .forEach { skyldner ->
+                            skyldner.skyldnerIdent = person.verdi
+                            logIdentendring(it, person, skyldner)
+                        }
 
-                    persistenceService.hentAlleGjelderMedIdent(it).forEach { gjelder ->
-                        gjelder.gjelderIdent = person.verdi
-                        logIdentendring(it, person, gjelder)
-                    }
+                    persistenceService.hentAlleGjelderMedIdent(it)
+                        .filter { gjelder -> gjelder.mottakerIdent != person.verdi }
+                        .forEach { gjelder ->
+                            gjelder.gjelderIdent = person.verdi
+                            logIdentendring(it, person, gjelder)
+                        }
                 }
             }
         }
     }
 
     fun logIdentendring(
-        string: String,
-        person: Personident,
-        mottaker: Oppdrag,
+        gammelIdent: String,
+        nyPersonident: Personident,
+        oppdrag: Oppdrag,
     ) {
-        SECURE_LOGGER.info("Personhendelse: $string oppdatert til $person for oppdragId: ${mottaker.oppdragId}")
+        SECURE_LOGGER.info("Personhendelse: $gammelIdent oppdatert til $nyPersonident for oppdragId: ${oppdrag.oppdragId}")
     }
 }
