@@ -76,7 +76,7 @@ spec:
     outbound:
       external:
         - host: {{ env.SKATT_HOST }}
-        - host: {{ env.RESKONTRO_LEGACY_URL }}
+        - host: {{ env.RESKONTRO_LEGACY_HOST }}
       rules:
         - application: logging
           namespace: nais-system
