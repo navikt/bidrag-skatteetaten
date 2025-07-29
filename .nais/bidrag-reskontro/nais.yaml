@@ -66,6 +66,13 @@ spec:
        value: "{{this}}"
   {{/each}}
   accessPolicy:
+    inbound:
+      rules:
+      {{#each azure.inbound.rules}}
+      - application: {{this.application}}
+        namespace: {{this.namespace}}
+        cluster: {{this.cluster}}
+      {{/each}}
     outbound:
       external:
         - host: {{ env.SKATT_HOST }}
