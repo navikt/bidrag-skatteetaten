@@ -27,3 +27,6 @@ azure:
       - application: bisys
         namespace: bidrag
         cluster: prod-fss
+      - application: bidrag-dokument-bestilling
+        namespace: bidrag
+        cluster: prod-gcp
