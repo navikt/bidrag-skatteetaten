@@ -9,6 +9,12 @@ spec:
   azure:
     application:
       enabled: true
+  observability:
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
+        - id: secure_logs
   image: {{ image }}
   liveness:
     path: /actuator/health

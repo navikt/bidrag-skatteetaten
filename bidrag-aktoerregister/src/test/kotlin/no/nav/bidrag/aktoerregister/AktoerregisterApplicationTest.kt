@@ -13,5 +13,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 class AktoerregisterApplicationTest
 
 fun main(args: Array<String>) {
-    SpringApplication.run(AktoerregisterApplicationTest::class.java, *args)
+    val app = SpringApplication(AktoerregisterApplicationTest::class.java)
+    app.setAdditionalProfiles("local", "nais", "lokal-nais-secrets", "lokal-nais")
+    app.run(*args)
 }
