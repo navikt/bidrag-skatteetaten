@@ -14,6 +14,12 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
+  observability:
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
+        - id: secure_logs
   secureLogs:
     enabled: true
   image: {{ image }}
