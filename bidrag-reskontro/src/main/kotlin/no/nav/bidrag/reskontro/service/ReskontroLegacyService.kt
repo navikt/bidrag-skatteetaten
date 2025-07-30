@@ -8,7 +8,6 @@ import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSkyldnerDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 /**
@@ -20,17 +19,17 @@ class ReskontroLegacyService(
     private val reskontroLegacyConsumer: ReskontroLegacyConsumer,
 ) {
 
-    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> = reskontroLegacyConsumer.hentInnkrevningssakerPåSak(saksnummerRequest)
+    fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? = reskontroLegacyConsumer.hentInnkrevningssakerPåSak(saksnummerRequest)
 
-    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> = reskontroLegacyConsumer.hentInnkrevningssakerPåPerson(personRequest)
+    fun hentInnkrevingssakPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto? = reskontroLegacyConsumer.hentInnkrevningssakerPåPerson(personRequest)
 
-    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest)
+    fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto? = reskontroLegacyConsumer.hentTransaksjonerPåBidragssak(saksnummerRequest)
 
-    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåPerson(personRequest)
+    fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto? = reskontroLegacyConsumer.hentTransaksjonerPåPerson(personRequest)
 
-    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> = reskontroLegacyConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
+    fun hentTransaksjonerPåTransaksjonsid(transaksjonsid: Long): TransaksjonerDto? = reskontroLegacyConsumer.hentTransaksjonerPåTransaksjonsId(transaksjonsid)
 
-    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> = reskontroLegacyConsumer.hentInformasjonOmInnkrevingssaken(personRequest)
+    fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto? = reskontroLegacyConsumer.hentInformasjonOmInnkrevingssaken(personRequest)
 
     fun endreRmForSak(endreRmForSakRequest: EndreRmForSakRequest) {
         reskontroLegacyConsumer.endreRmForSak(endreRmForSakRequest)
