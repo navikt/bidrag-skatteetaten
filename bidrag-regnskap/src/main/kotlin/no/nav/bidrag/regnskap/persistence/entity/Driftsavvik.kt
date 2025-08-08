@@ -27,6 +27,9 @@ data class Driftsavvik(
     @Column(name = "opprettet_av")
     val opprettetAv: String? = null,
 
+    @Column("skal_stoppe_innlesning")
+    val skalStoppeInnlesning: Boolean = true,
+
     @Column(name = "arsak")
     val årsak: String? = null,
 ) {
@@ -37,5 +40,6 @@ data class Driftsavvik(
         "tidspunktFra = $tidspunktFra , " +
         "tidspunktTil = $tidspunktTil , " +
         "opprettetAv = $opprettetAv , " +
+        "skalStoppeInnlesning = $skalStoppeInnlesning , " +
         "årsak = $årsak )"
 }

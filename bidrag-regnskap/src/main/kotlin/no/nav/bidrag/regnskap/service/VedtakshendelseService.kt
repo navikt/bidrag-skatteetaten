@@ -33,8 +33,8 @@ class VedtakshendelseService(
 ) {
 
     fun behandleHendelse(hendelse: String): List<Int> {
-        if (driftsavvikService.harAktivtDriftsavvik()) {
-            throw PåløpException("Det finnes aktive driftsavvik. Kan derfor ikke opprette oppdrag for vedtakshendelse.")
+        if (driftsavvikService.harAktivtDriftsavvik(erInnlesing = true)) {
+            throw PåløpException("Det finnes aktive driftsavvik som ikke tillater innlesing. Kan derfor ikke opprette oppdrag for vedtakshendelse.")
         }
 
         val vedtakHendelse = mapVedtakHendelse(hendelse)
@@ -152,5 +152,5 @@ class VedtakshendelseService(
 
     private fun erVedlikeholdsmodusPåslått(): Boolean = kravService.erVedlikeholdsmodusPåslått()
 
-    private fun harAktiveDriftAvvik(): Boolean = persistenceService.harAktivtDriftsavvik()
+    private fun harAktiveDriftAvvik(erInnlesning: Boolean = false): Boolean = persistenceService.harAktivtDriftsavvik(erInnlesning)
 }

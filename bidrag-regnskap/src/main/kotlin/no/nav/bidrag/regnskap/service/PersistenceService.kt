@@ -163,7 +163,17 @@ class PersistenceService(
     fun lagreDriftsavvik(driftsavvik: Driftsavvik): Int = driftsavvikRepository.save(driftsavvik).driftsavvikId!!
 
     @Cacheable(value = ["driftsaavik_cache"], key = "#root.methodName")
-    fun harAktivtDriftsavvik(): Boolean = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now()).isNotEmpty()
+    fun harAktivtDriftsavvik(erInnlesing: Boolean): Boolean {
+        val aktiveDriftsavvik = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
+
+        if (aktiveDriftsavvik.isEmpty()) {
+            return false
+        }
+        if (erInnlesing && aktiveDriftsavvik.all { !it.skalStoppeInnlesning }) {
+            return false
+        }
+        return true
+    }
 
     fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
 
