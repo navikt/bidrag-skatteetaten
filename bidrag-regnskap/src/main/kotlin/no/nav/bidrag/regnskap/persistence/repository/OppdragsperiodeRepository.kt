@@ -38,4 +38,6 @@ interface OppdragsperiodeRepository : JpaRepository<Oppdragsperiode, Int> {
     fun findAllByReferanse(referanse: String): List<Oppdragsperiode>
 
     fun findAllByVedtakIdAndReferanseIsNotNull(vedtakId: Int): List<Oppdragsperiode>
+
+    fun findAllByVedtakId(vedtakId: Int): List<Oppdragsperiode>
 }

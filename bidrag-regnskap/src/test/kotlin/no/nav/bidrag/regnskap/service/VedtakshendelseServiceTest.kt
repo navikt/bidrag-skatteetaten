@@ -40,7 +40,7 @@ class VedtakshendelseServiceTest {
 
     @BeforeEach
     fun setup() {
-        every { persistenceService.harAktivtDriftsavvik() } returns false
+        every { persistenceService.harAktivtDriftsavvik(false) } returns false
         every { kravService.erVedlikeholdsmodusPåslått() } returns false
     }
 
@@ -124,7 +124,7 @@ class VedtakshendelseServiceTest {
 
     @Test
     fun `Skal ikke lese hendelse om det finnes aktivt driftsavvik`() {
-        every { driftsavvikService.harAktivtDriftsavvik() } returns true
+        every { driftsavvikService.harAktivtDriftsavvik(true) } returns true
         assertThrows<PåløpException> { vedtakshendelseService.behandleHendelse(opprettVedtakshendelse()) }
     }
 

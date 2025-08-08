@@ -91,7 +91,8 @@ class DriftsavvikController(
         tidspunktTil: LocalDateTime?,
         @RequestParam(required = false) opprettetAv: String?,
         @RequestParam(required = false) årsak: String?,
-    ): ResponseEntity<Int> = ResponseEntity.ok(driftsavvikService.lagreDriftsavvik(tidspunktFra, tidspunktTil, opprettetAv, årsak))
+        @RequestParam(required = false) skalStoppeInnlesning: Boolean?,
+    ): ResponseEntity<Int> = ResponseEntity.ok(driftsavvikService.lagreDriftsavvik(tidspunktFra, tidspunktTil, opprettetAv, årsak, skalStoppeInnlesning))
 
     @PutMapping("/driftsavvik")
     @Operation(
@@ -115,10 +116,19 @@ class DriftsavvikController(
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         tidspunktTil: LocalDateTime?,
+        @RequestParam(required = false) skalStoppeInnlesning: Boolean?,
     ): ResponseEntity<*> {
-        val driftsavvik = driftsavvikService.endreDriftsavvik(driftsavvikId, tidspunktTil) ?: return ResponseEntity.badRequest()
+        val driftsavvik = driftsavvikService.endreDriftsavvik(driftsavvikId, tidspunktTil, skalStoppeInnlesning) ?: return ResponseEntity.badRequest()
             .body("Finner ingen driftsavvik med id: $driftsavvikId")
 
         return ResponseEntity.ok(driftsavvik)
+    }
+
+    @PostMapping("/driftsavvik/slippVedtakGjennom")
+    fun slippVedtakGjennomDriftsavvik(
+        @RequestParam(required = true) vedtakId: Int,
+    ): ResponseEntity<*> {
+        driftsavvikService.slippVedtakGjennomDriftsavvik(vedtakId)
+        return ResponseEntity.ok().build<Any>()
     }
 }

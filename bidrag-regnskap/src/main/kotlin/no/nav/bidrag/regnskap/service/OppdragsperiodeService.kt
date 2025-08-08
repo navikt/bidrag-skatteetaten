@@ -4,12 +4,15 @@ import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.dto.vedtak.Periode
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
 import no.nav.bidrag.regnskap.persistence.entity.Oppdragsperiode
+import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
 
 @Service
-class OppdragsperiodeService {
+class OppdragsperiodeService(
+    private val oppdragsperiodeRepository: OppdragsperiodeRepository,
+) {
 
     fun opprettNyOppdragsperiode(hendelse: Hendelse, periode: Periode, oppdrag: Oppdrag): Oppdragsperiode = Oppdragsperiode(
         vedtakId = hendelse.vedtakId,
@@ -39,4 +42,6 @@ class OppdragsperiodeService {
             }
         }
     }
+
+    fun hentAlleOppdragsperiodeMedVedtaksId(vedtakId: Int): List<Oppdragsperiode> = oppdragsperiodeRepository.findAllByVedtakId(vedtakId)
 }
