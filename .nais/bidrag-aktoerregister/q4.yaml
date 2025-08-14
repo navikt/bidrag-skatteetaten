@@ -32,5 +32,5 @@ env:
 spec:
   gcp:
     sqlInstances:
-      - name: {{ database.navn }}
+      - name: bidrag-aktoerregister-q4
         deleteCascade: true
