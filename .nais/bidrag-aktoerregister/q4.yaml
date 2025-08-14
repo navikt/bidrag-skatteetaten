@@ -28,3 +28,9 @@ env:
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
   TOPIC_SAMHANDLER: bidrag.samhandler-q4
   KAFKA_GROUP_ID: bidrag-aktoerregister-q4
+
+spec:
+  gcp:
+    sqlInstances:
+      - name: {{ database.navn }}
+        deleteCascade: true
