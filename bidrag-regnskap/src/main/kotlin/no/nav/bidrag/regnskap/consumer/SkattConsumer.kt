@@ -26,10 +26,9 @@ private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class SkattConsumer(
-    @Value("\${SKATT_URL}") private val skattUrl: String,
-    @Value("\${maskinporten.scope}") private val scope: String,
-    @Value("\${ELIN_SUBSCRIPTION_KEY}") private val subscriptionKey: String,
-    @Qualifier("regnskap") private val restTemplate: RestTemplate,
+    @param:Value("\${SKATT_URL}") private val skattUrl: String,
+    @param:Value("\${maskinporten.scope}") private val scope: String,
+    @param:Qualifier("regnskap") private val restTemplate: RestTemplate,
     private val maskinportenClient: MaskinportenClient,
     private val objectMapper: ObjectMapper,
     private val meterRegistry: MeterRegistry,
@@ -109,7 +108,6 @@ class SkattConsumer(
         httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         httpHeaders.set("Accept", MediaType.APPLICATION_JSON_VALUE)
         httpHeaders.set("Authorization", "Bearer " + hentJwtToken())
-        httpHeaders.set("Ocp-Apim-Subscription-Key", subscriptionKey) // TODO(Fjerne etter at vi ikke lenger går via api portalen mot Elin)
         return httpHeaders
     }
 

@@ -21,7 +21,6 @@ bucket:
   navn: bidrag-regnskap-q1
 maskinporten:
   url: https://test.maskinporten.no
-elin_subscription_key: bidrag-regnskap-elin-subscription-key-dev
 env:
   SPRING_PROFILES_ACTIVE: database-new
   SKATT_URL: https://api-preprod.nav.no/bidrag/v1/bidragskrav
