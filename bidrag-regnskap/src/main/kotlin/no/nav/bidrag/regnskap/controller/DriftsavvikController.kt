@@ -45,7 +45,7 @@ class DriftsavvikController(
 
     @GetMapping("/driftsavvik")
     @Operation(
-        summary = "Henter siste driftsavvik",
+        summary = "Henter første driftsavvik",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -57,7 +57,7 @@ class DriftsavvikController(
             ),
         ],
     )
-    fun hentDriftsavvik(antallDriftsavvik: Int): ResponseEntity<List<Driftsavvik>> = ResponseEntity.ok(driftsavvikService.hentFlereDriftsavvik(antallDriftsavvik))
+    fun hentDriftsavvik(@RequestParam(required = false) antallDriftsavvik: Int = 1000): ResponseEntity<List<Driftsavvik>> = ResponseEntity.ok(driftsavvikService.hentFlereDriftsavvik(antallDriftsavvik))
 
     @PostMapping("/driftsavvik")
     @Operation(

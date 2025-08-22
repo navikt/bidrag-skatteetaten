@@ -164,7 +164,7 @@ class PersistenceService(
 
     @Cacheable(value = ["driftsaavik_cache"], key = "#root.methodName")
     fun harAktivtDriftsavvik(erInnlesing: Boolean): Boolean {
-        val aktiveDriftsavvik = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
+        val aktiveDriftsavvik = driftsavvikRepository.hentAktiveDriftsavvik()
 
         if (aktiveDriftsavvik.isEmpty()) {
             return false
@@ -175,7 +175,7 @@ class PersistenceService(
         return true
     }
 
-    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> = driftsavvikRepository.findAllByTidspunktTilAfterOrTidspunktTilIsNull(LocalDateTime.now())
+    fun hentAlleAktiveDriftsavvik(): List<Driftsavvik> = driftsavvikRepository.hentAktiveDriftsavvik()
 
     fun hentFlereDriftsavvik(pageable: Pageable): List<Driftsavvik> = driftsavvikRepository.findAll(pageable).toList()
 
