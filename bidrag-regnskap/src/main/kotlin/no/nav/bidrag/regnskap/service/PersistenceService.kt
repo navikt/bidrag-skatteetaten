@@ -166,12 +166,8 @@ class PersistenceService(
     fun harAktivtDriftsavvik(erInnlesing: Boolean): Boolean {
         val aktiveDriftsavvik = driftsavvikRepository.hentAktiveDriftsavvik()
 
-        if (aktiveDriftsavvik.isEmpty()) {
-            return false
-        }
-        if (erInnlesing && aktiveDriftsavvik.all { !it.skalStoppeInnlesning }) {
-            return false
-        }
+        if (aktiveDriftsavvik.isEmpty()) return false
+        if (erInnlesing) return aktiveDriftsavvik.any { it.skalStoppeInnlesning }
         return true
     }
 
