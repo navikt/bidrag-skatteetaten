@@ -21,11 +21,10 @@ bucket:
   navn: bidrag-regnskap-prod
 maskinporten:
   url: https://maskinporten.no
-elin_subscription_key: bidrag-regnskap-elin-subscription-key-prod
 env:
   SPRING_PROFILES_ACTIVE: database-legacy
-  SKATT_URL: https://api.nav.no/bidrag/v1/bidragskrav
-  SKATT_HOST: api.nav.no
+  SKATT_URL: https://tolking2predator-proxy-ske-elin.elin.innkreving.skatteetaten.no/Tolkning2PredatorV2.RestApi
+  SKATT_HOST: tolking2predator-proxy-ske-elin.elin.innkreving.skatteetaten.no
   TOPIC_VEDTAK: bidrag.vedtak
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
   PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
@@ -41,7 +40,7 @@ env:
   BIDRAG_VEDTAK_URL: https://bidrag-vedtak.intern.nav.no
   BIDRAG_VEDTAK_SCOPE: prod-gcp.bidrag.bidrag-vedtak
   BIDRAG_VEDTAK_HOST: bidrag-vedtak.intern.nav.no
-  MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav"
+  MASKINPORTEN_SCOPES: "skatteetaten:barnebidragkrav"
   JAVA_OPTS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   KONTERINGER_FORELDET_DATO: 2006-04
   SEND_KRAV_CRON: "0 */10 * * * *" #Hvert 10. minutt
