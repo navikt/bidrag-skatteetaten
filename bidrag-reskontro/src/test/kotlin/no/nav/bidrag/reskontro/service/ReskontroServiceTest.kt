@@ -7,8 +7,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import java.math.BigDecimal
-import java.time.LocalDateTime
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.reskontro.consumer.SkattReskontroConsumer
@@ -20,6 +18,8 @@ import no.nav.bidrag.reskontro.dto.consumer.Retur
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
+import java.time.LocalDateTime
 
 @ExtendWith(
     MockKExtension::class,
