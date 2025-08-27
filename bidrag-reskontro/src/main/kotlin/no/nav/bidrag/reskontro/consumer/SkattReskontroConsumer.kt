@@ -7,6 +7,7 @@ import no.nav.bidrag.reskontro.combinedLogger
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
+import org.apache.coyote.http11.HeadersTooLargeException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -19,8 +20,8 @@ import java.net.URI
 
 @Service
 class SkattReskontroConsumer(
-    @Value("\${SKATT_URL}") private val skattUrl: String,
-    @Qualifier("maskinporten") private val restTemplate: RestOperations,
+    @param:Value("\${SKATT_URL}") private val skattUrl: String,
+    @param:Qualifier("maskinporten") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "bidrag-reskontro") {
     companion object {
         const val BIDRAGSSAK_PATH = "/BisysResk/bidragssak"
@@ -31,85 +32,121 @@ class SkattReskontroConsumer(
 
     fun hentInnkrevningssakerPåSak(saksnummer: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent bidragssak for sak: $saksnummer")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + BIDRAGSSAK_PATH),
-            ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Kaller hent bidragssak for sak: $saksnummer.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + BIDRAGSSAK_PATH),
+                ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Kaller hent bidragssak for sak: $saksnummer.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved kall på sak: $saksnummer. Innhold i headers: ${response?.headers}..")
+            throw e
+        }
     }
 
     fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent bidragssaker for person: ${person.verdi}")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + BIDRAGSSAK_PATH),
-            ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Kaller hent bidragssaker for person: ${person.verdi}.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + BIDRAGSSAK_PATH),
+                ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Kaller hent bidragssaker for person: ${person.verdi}.\nFra skatt: $response. \nHeaders: ${response.headers}.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved kall for person: ${person.verdi}. Innhold i headers: ${response?.headers}..")
+            throw e
+        }
     }
 
     fun hentTransaksjonerPåBidragssak(saksnummer: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for sak: $saksnummer")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + TRANSAKSJONER_PATH),
-            ReskontroConsumerInput(
-                aksjonskode = 3,
-                bidragssaksnummer = saksnummer,
-                datoFom = "1900-01-01T00:00:00.000Z",
-                datoTom = "9999-01-01T00:00:00.000Z",
-                maxAntallTransaksjoner = Int.MAX_VALUE,
-            ),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + TRANSAKSJONER_PATH),
+                ReskontroConsumerInput(
+                    aksjonskode = 3,
+                    bidragssaksnummer = saksnummer,
+                    datoFom = "1900-01-01T00:00:00.000Z",
+                    datoTom = "9999-01-01T00:00:00.000Z",
+                    maxAntallTransaksjoner = Int.MAX_VALUE,
+                ),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved kall på transaksjoner for sak: $saksnummer. Innhold i headers: ${response?.headers}..")
+            throw e
+        }
     }
 
     fun hentTransaksjonerPåPerson(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for person: ${person.verdi}")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + TRANSAKSJONER_PATH),
-            ReskontroConsumerInput(
-                aksjonskode = 4,
-                fodselsOrgnr = person.verdi,
-                datoFom = "1900-01-01T00:00:00.000Z",
-                datoTom = "9999-01-01T00:00:00.000Z",
-                maxAntallTransaksjoner = Int.MAX_VALUE,
-            ),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + TRANSAKSJONER_PATH),
+                ReskontroConsumerInput(
+                    aksjonskode = 4,
+                    fodselsOrgnr = person.verdi,
+                    datoFom = "1900-01-01T00:00:00.000Z",
+                    datoTom = "9999-01-01T00:00:00.000Z",
+                    maxAntallTransaksjoner = Int.MAX_VALUE,
+                ),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved kall på transaksjoner for person: ${person.verdi}. Innhold i headers: ${response?.headers}..")
+            throw e
+        }
     }
 
     fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + TRANSAKSJONER_PATH),
-            ReskontroConsumerInput(
-                aksjonskode = 5,
-                transaksjonsId = transaksjonsid,
-                datoFom = "1900-01-01T00:00:00.000Z",
-                datoTom = "9999-01-01T00:00:00.000Z",
-            ),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + TRANSAKSJONER_PATH),
+                ReskontroConsumerInput(
+                    aksjonskode = 5,
+                    transaksjonsId = transaksjonsid,
+                    datoFom = "1900-01-01T00:00:00.000Z",
+                    datoTom = "9999-01-01T00:00:00.000Z",
+                ),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved hent transaksjoner for transaksjonsId $transaksjonsid. Innhold i headers: ${response?.headers}.")
+            throw e
+        }
     }
 
     fun hentInformasjonOmInnkrevingssaken(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hentInformasjonOmInnkrevingssaken for person: ${person.verdi}")
-        val response = restTemplate.postForEntity(
-            URI.create(skattUrl + INNKREVINGSSAK_PATH),
-            ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
-            ReskontroConsumerOutput::class.java,
-        )
-        combinedLogger.info("Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nFra skatt: $response.")
-        return validerOutput(response)
+        var response: ResponseEntity<ReskontroConsumerOutput>? = null
+        try {
+            response = restTemplate.postForEntity(
+                URI.create(skattUrl + INNKREVINGSSAK_PATH),
+                ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
+                ReskontroConsumerOutput::class.java,
+            )
+            combinedLogger.info("Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            return validerOutput(response)
+        } catch (e: HeadersTooLargeException) {
+            combinedLogger.error("Response fra skatt kastet $e ved hentInformasjonOmInnkrevingssaken for person ${person.verdi}. Innhold i headers: ${response?.headers}.")
+            throw e
+        }
     }
 
     fun endreRmForSak(saksnummer: Long, barn: Personident, nyRm: Personident): ReskontroConsumerOutput {
