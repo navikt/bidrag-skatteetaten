@@ -28,16 +28,15 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
 
     fun hentInnkrevingssakPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? {
         val innkrevingssak = skattReskontroConsumer.hentInnkrevningssakerPåSak(saksnummerRequest.saksnummer.verdi.toLong())
-
-        val sak = innkrevingssak.bidragssaker?.first { it.bidragssaksnummer.toString() == saksnummerRequest.saksnummer.verdi }
+        val sak = innkrevingssak.bidragssaker?.firstOrNull { it.bidragssaksnummer == saksnummerRequest.saksnummer.verdi.toLong() } ?: error("Response fra Elin: $innkrevingssak mangler sak ${saksnummerRequest.saksnummer.verdi}")
 
         return BidragssakDto(
-            saksnummer = Saksnummer(sak?.bidragssaksnummer.toString()),
-            bmGjeldFastsettelsesgebyr = sak?.bmGjeldFastsettelsesgebyr,
-            bpGjeldFastsettelsesgebyr = sak?.bpGjeldFastsettelsesgebyr,
-            bmGjeldRest = sak?.bmGjeldRest,
+            saksnummer = Saksnummer(sak.bidragssaksnummer.toString()),
+            bmGjeldFastsettelsesgebyr = sak.bmGjeldFastsettelsesgebyr,
+            bpGjeldFastsettelsesgebyr = sak.bpGjeldFastsettelsesgebyr,
+            bmGjeldRest = sak.bmGjeldRest,
             barn =
-            sak?.perBarnISak?.map { it ->
+            sak.perBarnISak?.map { it ->
                 SaksinformasjonBarnDto(
                     personident = it.fodselsnummer?.let { Personident(it) },
                     restGjeldOffentlig = it.restGjeldOffentlig,
