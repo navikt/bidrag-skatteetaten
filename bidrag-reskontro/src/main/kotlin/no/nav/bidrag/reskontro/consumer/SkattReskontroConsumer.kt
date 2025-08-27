@@ -79,7 +79,7 @@ class SkattReskontroConsumer(
                 ),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.")
+            combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.\nHeaders: ${response.headers}.")
             return validerOutput(response)
         } catch (e: HeadersTooLargeException) {
             combinedLogger.error("Response fra skatt kastet $e ved kall på transaksjoner for sak: $saksnummer. Innhold i headers: ${response?.headers}..")
