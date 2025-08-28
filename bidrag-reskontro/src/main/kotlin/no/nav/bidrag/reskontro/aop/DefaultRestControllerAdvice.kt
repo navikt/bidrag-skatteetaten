@@ -76,7 +76,7 @@ class DefaultRestControllerAdvice {
         .build<Any>()
 
     @ResponseBody
-    @ExceptionHandler(MaskinportenClientException::class)
+    @ExceptionHandler(TimeoutFraSkattException::class)
     fun handleMaskinportenClientException(exception: TimeoutFraSkattException): ResponseEntity<*> = ResponseEntity
         .status(HttpStatus.BAD_GATEWAY)
         .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message}")
