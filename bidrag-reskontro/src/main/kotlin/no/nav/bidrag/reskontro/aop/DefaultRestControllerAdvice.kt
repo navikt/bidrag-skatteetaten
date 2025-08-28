@@ -2,6 +2,7 @@ package no.nav.bidrag.reskontro.aop
 
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
+import no.nav.bidrag.reskontro.exceptions.TimeoutFraSkattException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
@@ -72,5 +73,12 @@ class DefaultRestControllerAdvice {
     fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<*> = ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt: ${exception.message}")
+        .build<Any>()
+
+    @ResponseBody
+    @ExceptionHandler(MaskinportenClientException::class)
+    fun handleMaskinportenClientException(exception: TimeoutFraSkattException): ResponseEntity<*> = ResponseEntity
+        .status(HttpStatus.BAD_GATEWAY)
+        .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message}")
         .build<Any>()
 }
