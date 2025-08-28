@@ -34,23 +34,27 @@ class SkattReskontroConsumer(
 
     fun hentInnkrevningssakerPåSak(saksnummer: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent bidragssak for sak: $saksnummer")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + BIDRAGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent bidragssak for sak: $saksnummer.\nFra skatt: $response.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Kaller hent bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen bidragssak for sak: $saksnummer. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen bidragssak for sak: $saksnummer")
+                combinedLogger.info("Fant ingen bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.")
                 throw e
             }
         }
@@ -58,23 +62,27 @@ class SkattReskontroConsumer(
 
     fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent bidragssaker for person: ${person.verdi}")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + BIDRAGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent bidragssaker for person: ${person.verdi}.\nFra skatt: $response.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Kaller hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response. ")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen bidragssaker for person: ${person.verdi}. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen bidragssaker for person: ${person.verdi}")
+                combinedLogger.info("Fant ingen bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
                 throw e
             }
         }
@@ -82,6 +90,7 @@ class SkattReskontroConsumer(
 
     fun hentTransaksjonerPåBidragssak(saksnummer: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for sak: $saksnummer")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
@@ -94,17 +103,20 @@ class SkattReskontroConsumer(
                 ),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nFra skatt: $response.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Kaller hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjoner for sak: $saksnummer. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen transaksjoner for sak: $saksnummer")
+                combinedLogger.info("Fant ingen transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
                 throw e
             }
         }
@@ -112,6 +124,7 @@ class SkattReskontroConsumer(
 
     fun hentTransaksjonerPåPerson(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for person: ${person.verdi}")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
@@ -124,17 +137,20 @@ class SkattReskontroConsumer(
                 ),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nFra skatt: $response.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjoner for person: ${person.verdi}. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen transaksjoner for person: ${person.verdi}")
+                combinedLogger.info("Fant ingen transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
                 throw e
             }
         }
@@ -142,6 +158,7 @@ class SkattReskontroConsumer(
 
     fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
@@ -153,17 +170,20 @@ class SkattReskontroConsumer(
                 ),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjon for transaksjonsId: $transaksjonsid. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid")
+                combinedLogger.info("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
                 throw e
             }
         }
@@ -171,23 +191,27 @@ class SkattReskontroConsumer(
 
     fun hentInformasjonOmInnkrevingssaken(person: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller hentInformasjonOmInnkrevingssaken for person: ${person.verdi}")
+        val startTime = System.currentTimeMillis()
         try {
             val response = restTemplate.postForEntity(
                 URI.create(skattUrl + INNKREVINGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
                 ReskontroConsumerOutput::class.java,
             )
-            combinedLogger.info("Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nFra skatt: $response.\nHeaders: ${response.headers}.")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.info("Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
+            val elapsed = System.currentTimeMillis() - startTime
+            combinedLogger.error("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            throw TimeoutFraSkattException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. Returnerer tom respons.")
-                throw IngenDataFraSkattException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}")
+                combinedLogger.info("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                throw IngenDataFraSkattException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
+                combinedLogger.error("Feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
                 throw e
             }
         }
@@ -195,6 +219,7 @@ class SkattReskontroConsumer(
 
     fun endreRmForSak(saksnummer: Long, barn: Personident, nyRm: Personident): ReskontroConsumerOutput {
         combinedLogger.debug("Kaller endre RM for sak. NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}")
+        val startTime = System.currentTimeMillis()
         val response = restTemplate.exchange(
             URI.create(skattUrl + ENDRE_RM_PATH),
             HttpMethod.PATCH,
@@ -208,7 +233,8 @@ class SkattReskontroConsumer(
             ),
             ReskontroConsumerOutput::class.java,
         )
-        combinedLogger.info("Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nFra skatt: $response.")
+        val elapsed = System.currentTimeMillis() - startTime
+        combinedLogger.info("Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response.")
         return validerOutput(response)
     }
 
