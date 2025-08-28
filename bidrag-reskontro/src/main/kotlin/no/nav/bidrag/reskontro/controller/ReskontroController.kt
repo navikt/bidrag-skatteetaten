@@ -31,7 +31,6 @@ class ReskontroController(
     private val reskontroLegacyService: ReskontroLegacyService,
     @Value("#{new Boolean('\${RESKONTRO_LEGACY_ENABLED}')}") private val reskontroLegacyEnabled: Boolean,
 ) {
-
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
         description = "Henter saksinformasjon om bidragssaken",
@@ -40,8 +39,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet saksinformasjon om bidragssaken"),
+            ApiResponse(responseCode = "204", description = "Fant ingen bidragssak på saksnummeret.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen bidragssak på saksnummeret.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> {
@@ -65,8 +65,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet saksinformasjon om bidragssaker på personen"),
+            ApiResponse(responseCode = "204", description = "Fant ingen bidragssak på identen.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen bidragssak på identen.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
 
         ],
     )
@@ -91,8 +92,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet transaksjoner for bidragssaken"),
+            ApiResponse(responseCode = "204", description = "Fant ingen transaksjoner på saksnummeret.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen transaksjoner på saksnummeret.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> {
@@ -116,8 +118,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet transaksjoner for person"),
+            ApiResponse(responseCode = "201", description = "Fant ingen transaksjoner på identen.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen transaksjoner på identen.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> {
@@ -141,8 +144,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet transaksjoner på transaksjonsid"),
+            ApiResponse(responseCode = "204", description = "Fant ingen transaksjoner for transaksjonsid.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen transaksjoner for transaksjonsid.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
@@ -166,8 +170,9 @@ class ReskontroController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Hentet informasjon om innkrevingssaken knyttet til person"),
+            ApiResponse(responseCode = "204", description = "Fant ingen informasjon om innkrevingssaken på identen.", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
-            ApiResponse(responseCode = "404", description = "Fant ingen informasjon om innkrevingssaken på identen.", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> {
@@ -193,6 +198,7 @@ class ReskontroController(
         value = [
             ApiResponse(responseCode = "200", description = "Endret rm for sak"),
             ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
+            ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
     fun endreRmForSak(@RequestBody endreRmForSak: EndreRmForSakRequest) {

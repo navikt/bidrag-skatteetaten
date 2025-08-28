@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -44,6 +45,14 @@ class SkattReskontroConsumer(
         } catch (e: ResourceAccessException) {
             combinedLogger.error("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen bidragssak for sak: $saksnummer. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen bidragssak for sak: $saksnummer")
+            } else {
+                combinedLogger.error("Feil ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}")
+                throw e
+            }
         }
     }
 
@@ -60,6 +69,14 @@ class SkattReskontroConsumer(
         } catch (e: ResourceAccessException) {
             combinedLogger.error("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen bidragssaker for person: ${person.verdi}. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen bidragssaker for person: ${person.verdi}")
+            } else {
+                combinedLogger.error("Feil ved kall på hent bidragssaker for person: ${person.verdi}.\n${e.message}")
+                throw e
+            }
         }
     }
 
@@ -82,6 +99,14 @@ class SkattReskontroConsumer(
         } catch (e: ResourceAccessException) {
             combinedLogger.error("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen transaksjoner for sak: $saksnummer. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen transaksjoner for sak: $saksnummer")
+            } else {
+                combinedLogger.error("Feil ved kall på hent transaksjoner for sak: $saksnummer.\n${e.message}")
+                throw e
+            }
         }
     }
 
@@ -102,8 +127,16 @@ class SkattReskontroConsumer(
             combinedLogger.info("Kaller hent transaksjoner for person: ${person.verdi}.\nFra skatt: $response.")
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            combinedLogger.error("Timeout ved kall på hent transaksjonerfor person: ${person.verdi}.\n${e.message}")
+            combinedLogger.error("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen transaksjoner for person: ${person.verdi}. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen transaksjoner for person: ${person.verdi}")
+            } else {
+                combinedLogger.error("Feil ved kall på hent transaksjoner for person: ${person.verdi}.\n${e.message}")
+                throw e
+            }
         }
     }
 
@@ -125,6 +158,14 @@ class SkattReskontroConsumer(
         } catch (e: ResourceAccessException) {
             combinedLogger.error("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen transaksjon for transaksjonsId: $transaksjonsid. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid")
+            } else {
+                combinedLogger.error("Feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\n${e.message}")
+                throw e
+            }
         }
     }
 
@@ -141,6 +182,14 @@ class SkattReskontroConsumer(
         } catch (e: ResourceAccessException) {
             combinedLogger.error("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
             throw TimeoutFraSkattException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.NOT_FOUND) {
+                combinedLogger.info("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. Returnerer tom respons.")
+                throw IngenDataFraSkattException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}")
+            } else {
+                combinedLogger.error("Feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\n${e.message}")
+                throw e
+            }
         }
     }
 
