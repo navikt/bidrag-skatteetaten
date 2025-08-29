@@ -22,7 +22,7 @@ class PersonHendelseListener(
         @Header(KafkaHeaders.RECEIVED_PARTITION) partition: Int,
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
     ) {
-        LOGGER.info { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
+        LOGGER.debug { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
         personHendelseService.behandleHendelse(hendelse)
     }
 }

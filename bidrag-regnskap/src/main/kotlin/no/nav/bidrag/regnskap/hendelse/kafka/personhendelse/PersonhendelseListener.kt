@@ -31,7 +31,7 @@ class PersonhendelseListener(
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
         acknowledgment: Acknowledgment,
     ) {
-        LOGGER.info { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
+        LOGGER.debug { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
 
         val endringsmelding = mapEndringsmelding(hendelse)
         hendelseService.behandlePersonhendelse(endringsmelding)

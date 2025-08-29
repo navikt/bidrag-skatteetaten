@@ -17,7 +17,10 @@ import java.net.URI
 private val LOGGER = KotlinLogging.logger {}
 
 @Service
-class PersonConsumer(@Value("\${PERSON_URL}") val url: URI, @Qualifier("azure") private val restTemplate: RestOperations) : AbstractRestClient(restTemplate, "bidrag-aktoerregister-aktoerregister") {
+class PersonConsumer(
+    @param:Value("\${PERSON_URL}") val url: URI,
+    @param:Qualifier("azure") private val restTemplate: RestOperations,
+) : AbstractRestClient(restTemplate, "bidrag-aktoerregister-aktoerregister") {
 
     companion object {
         private const val PERSON_PATH = "/informasjon/detaljer"
@@ -29,8 +32,7 @@ class PersonConsumer(@Value("\${PERSON_URL}") val url: URI, @Qualifier("azure") 
                 UriComponentsBuilder.fromUri(url).path(PERSON_PATH).build().toUri(),
                 PersonRequest(Personident(personIdent.verdi)),
             )
-            LOGGER.debug { "Hentet person fra bidrag-person." }
-            SECURE_LOGGER.info("Hentet person med id: ${personIdent.verdi} fra bidrag-person: $response")
+            SECURE_LOGGER.debug("Hentet person med id: {} fra bidrag-person: {}", personIdent.verdi, response)
             return response
         } catch (e: Exception) {
             SECURE_LOGGER.error(
