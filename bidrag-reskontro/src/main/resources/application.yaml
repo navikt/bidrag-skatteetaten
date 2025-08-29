@@ -22,13 +22,7 @@ maskinporten:
 management.metrics.distribution.percentiles-histogram.http.server.requests: true
 management.metrics.distribution.percentiles-histogram.http.client.requests: true
 
-spring:
-  http:
-    client:
-      read-timeout: 30000
-  config:
-    activate:
-      on-profile: nais,lokal-nais
+spring.config.activate.on-profile: nais,lokal-nais
 
 no.nav.security.jwt:
   client:
