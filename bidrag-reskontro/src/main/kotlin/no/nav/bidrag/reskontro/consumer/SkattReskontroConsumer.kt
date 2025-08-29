@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -46,18 +47,47 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.")
-                throw e
+                loggOgKastException("Feil ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.", e)
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hent bidragssaker for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
+    }
+
+    private fun loggOgKastSkattTimeoutException(
+        melding: String,
+    ): Nothing {
+        combinedLogger.error(melding)
+        throw TimeoutFraSkattException(melding)
+    }
+
+    private fun loggOgKastSkattIngenDataException(
+        melding: String,
+    ): Nothing {
+        combinedLogger.info(melding)
+        throw IngenDataFraSkattException(melding)
+    }
+
+    private fun loggOgKastException(
+        melding: String,
+        e: Exception,
+    ): Nothing {
+        combinedLogger.error(melding)
+        throw e
     }
 
     fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {
@@ -74,16 +104,23 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-                throw e
+                loggOgKastException("Feil ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.", e)
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
     }
@@ -108,16 +145,23 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-                throw e
+                loggOgKastException("Feil ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.", e)
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
     }
@@ -142,16 +186,23 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-                throw e
+                loggOgKastException("Feil ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.", e)
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
     }
@@ -175,16 +226,26 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-                throw e
+                loggOgKastException(
+                    "Feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
     }
@@ -203,16 +264,23 @@ class SkattReskontroConsumer(
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
-            combinedLogger.error("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-            throw TimeoutFraSkattException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
         } catch (e: HttpClientErrorException) {
             val elapsed = System.currentTimeMillis() - startTime
             if (e.statusCode == HttpStatus.NOT_FOUND) {
-                combinedLogger.info("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
-                throw IngenDataFraSkattException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
+                loggOgKastSkattIngenDataException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.")
             } else {
-                combinedLogger.error("Feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
-                throw e
+                loggOgKastException("Feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.", e)
+            }
+        } catch (e: HttpServerErrorException) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}")
+            } else {
+                loggOgKastException(
+                    "Ukjent server-feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\n${e.message}.",
+                    e,
+                )
             }
         }
     }
