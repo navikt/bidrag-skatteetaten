@@ -31,7 +31,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
         val sak = innkrevingssak.bidragssaker?.firstOrNull { it.bidragssaksnummer == saksnummerRequest.saksnummer.verdi.toLong() } ?: error("Response fra Elin: $innkrevingssak mangler sak ${saksnummerRequest.saksnummer.verdi}")
 
         return BidragssakDto(
-            saksnummer = Saksnummer(sak.bidragssaksnummer.toString()),
+            saksnummer = saksnummerLongTilString(sak.bidragssaksnummer),
             bmGjeldFastsettelsesgebyr = sak.bmGjeldFastsettelsesgebyr,
             bpGjeldFastsettelsesgebyr = sak.bpGjeldFastsettelsesgebyr,
             bmGjeldRest = sak.bmGjeldRest,
@@ -68,7 +68,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             ),
             bidragssaker = innkrevingssak.bidragssaker?.map { it ->
                 BidragssakDto(
-                    saksnummer = Saksnummer(it.bidragssaksnummer.toString()),
+                    saksnummer = saksnummerLongTilString(it.bidragssaksnummer),
                     bmGjeldFastsettelsesgebyr = it.bmGjeldFastsettelsesgebyr,
                     bpGjeldFastsettelsesgebyr = it.bpGjeldFastsettelsesgebyr,
                     bmGjeldRest = it.bmGjeldRest,
@@ -163,7 +163,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
                 restBeløp = it.restBeloep,
                 beløpIOpprinneligValuta = it.valutaOpprinneligBeloep,
                 valutakode = it.valutakode,
-                saksnummer = Saksnummer(it.bidragssaksnummer.toString()),
+                saksnummer = saksnummerLongTilString(it.bidragssaksnummer),
                 periode = it.periodeSisteDatoFom?.let { fom ->
                     Datoperiode(
                         LocalDateTime.parse(fom).toLocalDate(),
@@ -176,4 +176,12 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
         } ?: emptyList(),
     )
+
+    private fun saksnummerLongTilString(saksnummer: Long?): Saksnummer? {
+        if (saksnummer == null) {
+            return null
+        }
+        val saksnummerString = saksnummer.toString().padStart(7, '0')
+        return Saksnummer(saksnummerString)
+    }
 }
