@@ -22,6 +22,7 @@ private val LOGGER = KotlinLogging.logger { }
 class ResendingAvKravScheduler(
     private val persistenceService: PersistenceService,
     private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
+    private val kravSchedulerUtils: KravSchedulerUtils,
 ) {
 
     @Scheduled(cron = "\${scheduler.resendkrav.cron}")
@@ -30,6 +31,14 @@ class ResendingAvKravScheduler(
     fun skedulertResendingAvKrav() {
         LockAssert.assertLocked()
         LOGGER.info { "Starter schedulert resending av alle krav som ikke har fått behandlingsstatus ok." }
+
+        if (kravSchedulerUtils.harAktivtDriftsavvik()) {
+            LOGGER.warn { "Det finnes aktive driftsavvik. Starter derfor ikke resending av alle krav." }
+            return
+        } else if (kravSchedulerUtils.erVedlikeholdsmodusPåslått()) {
+            LOGGER.warn { "Vedlikeholdsmodus er påslått! Starter derfor ikke resending av alle krav." }
+            return
+        }
 
         // Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
         // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.

@@ -26,6 +26,9 @@ class ResendingAvKravSchedulerTest {
     @MockK(relaxed = true)
     private lateinit var scheduler: SjekkAvBehandlingsstatusScheduler
 
+    @MockK(relaxed = true)
+    private lateinit var kravSchedulerUtils: KravSchedulerUtils
+
     @InjectMockKs
     private lateinit var resendingAvKravScheduler: ResendingAvKravScheduler
 
@@ -33,6 +36,8 @@ class ResendingAvKravSchedulerTest {
     fun setup() {
         mockkStatic(LockAssert::class)
         every { LockAssert.assertLocked() } just Runs
+        every { kravSchedulerUtils.harAktivtDriftsavvik() } returns false
+        every { kravSchedulerUtils.erVedlikeholdsmodusPåslått() } returns false
     }
 
     @Test
