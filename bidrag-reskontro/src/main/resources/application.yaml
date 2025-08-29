@@ -21,7 +21,7 @@ maskinporten:
 
 management.metrics.distribution.percentiles-histogram.http.server.requests: true
 management.metrics.distribution.percentiles-histogram.http.client.requests: true
-bidrag.rest.connect.timeout.seconds: 5
+bidrag.rest.connect.timeout.seconds: 30
 
 spring.config.activate.on-profile: nais,lokal-nais
 
