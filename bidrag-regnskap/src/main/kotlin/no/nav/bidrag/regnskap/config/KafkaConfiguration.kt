@@ -14,29 +14,32 @@ private val LOGGER = LoggerFactory.getLogger(KafkaConfiguration::class.java)
 @Configuration
 class KafkaConfiguration {
 
+    companion object {
+        private const val BACKOFF_MULTIPLIER = 1.2
+        private const val MAX_INTERVAL_MS = 300000L // 5 mins
+    }
+
     @Bean
-    fun defaultErrorHandler(@Value("\${KAFKA_MAX_RETRY:-1}") maxRetry: Int): DefaultErrorHandler {
-        // Max retry should not be set in production
-        val backoffPolicy = if (maxRetry == -1) ExponentialBackOff() else ExponentialBackOffWithMaxRetries(maxRetry)
-        backoffPolicy.multiplier = 1.2
-        backoffPolicy.maxInterval = 300000L // 5 mins
-        LOGGER.info(
-            "Initializing Kafka errorhandler with backoffpolicy {}, maxRetry={}",
-            backoffPolicy,
-            maxRetry,
-        )
-        val errorHandler = DefaultErrorHandler({ rec, e ->
-            val key = rec.key()
-            val value = rec.value()
-            val offset = rec.offset()
-            val topic = rec.topic()
-            val partition = rec.partition()
-            SECURE_LOGGER.error(
-                "Kafka melding med nøkkel $key, partition $partition og topic $topic feilet på offset $offset. Melding som feilet: $value",
-                e,
-            )
-        }, backoffPolicy)
+    fun defaultErrorHandler(): DefaultErrorHandler {
+        val errorHandler = opprettErrorHandler()
         errorHandler.setRetryListeners(KafkaRetryListener())
         return errorHandler
+    }
+
+    private fun opprettErrorHandler(): DefaultErrorHandler = DefaultErrorHandler({ rec, e ->
+        val key = rec.key()
+        val value = rec.value()
+        val offset = rec.offset()
+        val topic = rec.topic()
+        val partition = rec.partition()
+        SECURE_LOGGER.error(
+            "Kafka melding med nøkkel $key, partition $partition og topic $topic feilet på offset $offset. Melding som feilet: $value",
+            e,
+        )
+    }, opprettBackoffPolicy())
+
+    private fun opprettBackoffPolicy(): ExponentialBackOff = ExponentialBackOff().apply {
+        multiplier = BACKOFF_MULTIPLIER
+        maxInterval = MAX_INTERVAL_MS
     }
 }
