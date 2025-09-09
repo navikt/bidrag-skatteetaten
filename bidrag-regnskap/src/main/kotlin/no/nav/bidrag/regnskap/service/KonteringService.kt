@@ -84,7 +84,7 @@ class KonteringService {
                     overføringsperiode = kontering.overføringsperiode,
                     transaksjonskode = korreksjonskode,
                     type = Type.ENDRING.name,
-                    søknadType = kontering.søknadType,
+                    søknadType = Søknadstype.EN.name,
                     vedtakId = hendelse.vedtakId,
                 )
 
