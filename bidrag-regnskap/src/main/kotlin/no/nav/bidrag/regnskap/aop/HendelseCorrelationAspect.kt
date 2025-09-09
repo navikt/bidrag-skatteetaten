@@ -14,17 +14,27 @@ import java.util.*
 @Aspect
 class HendelseCorrelationAspect {
 
-    @Before(value = "execution(* no.nav.bidrag.regnskap.hendelse.kafka.*.*.*(..))")
-    fun leggTilHendelseSporingId(joinPoint: JoinPoint) {
-        if (MDC.get(CORRELATION_ID_HEADER) != null) return
-
-        // Fjern norske bokstaver fra metodenavn
-        val methodName = joinPoint.signature.name.replace("[^A-Za-z0-9 ]".toRegex(), "")
-        MDC.put(CORRELATION_ID_HEADER, CorrelationId.existing("${UUID.randomUUID().toString().subSequence(0, 8)}_$methodName").get())
+    companion object {
+        private const val HENDELSE_KAFKA_POINTCUT = "execution(* no.nav.bidrag.regnskap.hendelse.kafka.*.*.*(..))"
+        private const val FJERN_NORSKE_BOKSTAVER_REGEX = "[^A-Za-z0-9 ]"
     }
 
-    @After(value = "execution(* no.nav.bidrag.regnskap.hendelse.kafka.*.*.*(..))")
-    fun fjernHendelseSporingId(joinPoint: JoinPoint) {
+    @Before(value = HENDELSE_KAFKA_POINTCUT)
+    fun opprettCorrelationId(joinPoint: JoinPoint) {
+        if (MDC.get(CORRELATION_ID_HEADER) != null) return
+
+        val correlationId = lagCorrelationIdFraMetodenavn(joinPoint.signature.name)
+        MDC.put(CORRELATION_ID_HEADER, correlationId)
+    }
+
+    @After(value = HENDELSE_KAFKA_POINTCUT)
+    fun fjernCorrelationId(joinPoint: JoinPoint) {
         MDC.clear()
+    }
+
+    private fun lagCorrelationIdFraMetodenavn(metodenavn: String): String {
+        val rensetMetodenavn = metodenavn.replace(FJERN_NORSKE_BOKSTAVER_REGEX.toRegex(), "")
+        val uuidPrefix = UUID.randomUUID().toString().substring(0, 8)
+        return CorrelationId.existing("${uuidPrefix}_$rensetMetodenavn").get()
     }
 }
