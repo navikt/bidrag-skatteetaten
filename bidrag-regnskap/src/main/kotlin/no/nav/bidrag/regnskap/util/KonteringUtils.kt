@@ -33,11 +33,20 @@ object KonteringUtils {
     }
 
     fun vurderType(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth): String {
-        if (finnesKonteringForPeriode(oppdragsperioder, periode)) {
+        if (manglerKonteringForPeriode(oppdragsperioder, periode)) {
             return Type.NY.name
         }
         return Type.ENDRING.name
     }
 
-    private fun finnesKonteringForPeriode(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth) = oppdragsperioder.none { it.konteringer.any { kontering -> kontering.overføringsperiode == periode.toString() } }
+    private fun manglerKonteringForPeriode(oppdragsperioder: List<Oppdragsperiode>, periode: YearMonth): Boolean {
+        val periodeString = periode.toString()
+
+        return oppdragsperioder.none { oppdragsperiode ->
+            val harKonteringForPeriode = oppdragsperiode.konteringer.any { kontering ->
+                kontering.overføringsperiode == periodeString
+            }
+            harKonteringForPeriode
+        }
+    }
 }
