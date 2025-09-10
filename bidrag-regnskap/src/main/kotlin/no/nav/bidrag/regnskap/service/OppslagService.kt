@@ -52,43 +52,51 @@ class OppslagService(
     @Transactional
     fun hentUtsatteOgFeiledeVedtakForSak(saksnummer: Saksnummer): UtsatteOgFeiledeVedtak {
         val oppdrag = persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi)
-        val now = LocalDate.now()
 
-        // Alle vedtak som har satt utsatt til dato etter dagens dato
-        val utsatteVedtak = oppdrag
+        val utsatteVedtak = hentUtsatteVedtak(oppdrag)
+        val ikkeOversendteVedtak = hentIkkeOversendteVedtak(oppdrag)
+        val feiledeVedtak = hentFeiledeVedtak(oppdrag)
+
+        return UtsatteOgFeiledeVedtak(utsatteVedtak, ikkeOversendteVedtak, feiledeVedtak)
+    }
+
+    private fun hentUtsatteVedtak(oppdrag: List<Oppdrag>): List<UtsatteVedtak> {
+        val now = LocalDate.now()
+        return oppdrag
             .filter { it.utsattTilDato != null && it.utsattTilDato!!.isAfter(now) }
             .flatMap { it.oppdragsperioder }
             .distinctBy { it.vedtakId }
             .map { UtsatteVedtak(it.vedtakId, it.oppdrag!!.utsattTilDato!!) }
+    }
 
-        // Alle vedtak som ikke har satt overføringstidspunkt, som vil si at det ikke har blitt sendt til oppdrag
-        val ikkeOversendteVedtak = oppdrag
+    private fun hentIkkeOversendteVedtak(oppdrag: List<Oppdrag>): List<IkkeOversendteVedtak> {
+        return oppdrag
             .flatMap { it.oppdragsperioder }
             .flatMap { it.konteringer }
             .filter { it.overføringstidspunkt == null }
             .map { it.oppdragsperiode!! }
             .distinctBy { it.vedtakId }
             .map { IkkeOversendteVedtak(it.vedtakId) }
+    }
 
-        // Alle vedtak som ikke har fått behandlingsstatus ok fra skatt. Her kalles skatt en gang for å sjekke om det kan godkjennes umiddelbart
-        val feiledeVedtak = oppdrag
+    private fun hentFeiledeVedtak(oppdrag: List<Oppdrag>): List<FeiledeVedtak> {
+        return oppdrag
             .flatMap { it.oppdragsperioder }
             .filter { oppdragsperiode -> oppdragsperiode.konteringer.any { it.behandlingsstatusOkTidspunkt == null } }
             .flatMap { it.konteringer }
             .filter { it.sisteReferansekode != null }
             .distinctBy { it.sisteReferansekode }
-            .map {
-                val sjekkAvBehandlingsstatusResponse = skattConsumer.sjekkBehandlingsstatus(it.sisteReferansekode!!).body
+            .map { kontering ->
+                val sjekkAvBehandlingsstatusResponse =
+                    skattConsumer.sjekkBehandlingsstatus(kontering.sisteReferansekode!!).body
                 var feilmelding: String? = null
                 if (sjekkAvBehandlingsstatusResponse?.batchStatus == Batchstatus.Done) {
-                    it.behandlingsstatusOkTidspunkt = LocalDateTime.now()
+                    kontering.behandlingsstatusOkTidspunkt = LocalDateTime.now()
                 } else {
                     feilmelding = sjekkAvBehandlingsstatusResponse?.konteringFeil?.firstOrNull()?.feilmelding
                 }
-                FeiledeVedtak(it.oppdragsperiode!!.vedtakId, feilmelding)
+                FeiledeVedtak(kontering.oppdragsperiode!!.vedtakId, feilmelding)
             }.filter { it.feilmelding != null }
-
-        return UtsatteOgFeiledeVedtak(utsatteVedtak, ikkeOversendteVedtak, feiledeVedtak)
     }
 
     fun hentOppdragResponse(oppdrag: Oppdrag): OppdragResponse = OppdragResponse(
@@ -145,21 +153,27 @@ class OppslagService(
     fun hentAlleUtsatteOppdrag(): UtsatteOppdragResponse {
         val alleUtsatteOppdrag = persistenceService.hentAlleUtsatteOppdrag()
 
+        fun evaluerStønadstype(oppdrag: Oppdrag): Stønadstype? = if (EnumUtils.erAvEnumType<Stønadstype>(oppdrag.stønadType)) Stønadstype.valueOf(oppdrag.stønadType) else null
+
+        fun evaluerEngangsbeløptype(oppdrag: Oppdrag): Engangsbeløptype? = if (EnumUtils.erAvEnumType<Engangsbeløptype>(oppdrag.stønadType)) Engangsbeløptype.valueOf(oppdrag.stønadType) else null
+
+        fun opprettVedtak(oppdrag: Oppdrag): List<Vedtak> = oppdrag.oppdragsperioder.map { oppdragsperiode ->
+            Vedtak(
+                oppdragsperiode.vedtakId,
+                oppdragsperiode.vedtaksdato,
+                oppdragsperiode.enhetsnummer,
+            )
+        }
+
         return UtsatteOppdragResponse(
             alleUtsatteOppdrag.map { oppdrag ->
                 UtsatteOppdrag(
-                    oppdrag.oppdragId,
-                    Saksnummer(oppdrag.sakId),
-                    if (EnumUtils.erAvEnumType<Stønadstype>(oppdrag.stønadType)) Stønadstype.valueOf(oppdrag.stønadType) else null,
-                    if (EnumUtils.erAvEnumType<Engangsbeløptype>(oppdrag.stønadType)) Engangsbeløptype.valueOf(oppdrag.stønadType) else null,
-                    oppdrag.utsattTilDato!!,
-                    oppdrag.oppdragsperioder.map { oppdragsperiode ->
-                        Vedtak(
-                            oppdragsperiode.vedtakId,
-                            oppdragsperiode.vedtaksdato,
-                            oppdragsperiode.enhetsnummer,
-                        )
-                    },
+                    oppdragsid = oppdrag.oppdragId,
+                    saksnummer = Saksnummer(oppdrag.sakId),
+                    stønadstype = evaluerStønadstype(oppdrag),
+                    engangsbeløptype = evaluerEngangsbeløptype(oppdrag),
+                    utsattTilDato = oppdrag.utsattTilDato!!,
+                    vedtak = opprettVedtak(oppdrag),
                 )
             },
         )
