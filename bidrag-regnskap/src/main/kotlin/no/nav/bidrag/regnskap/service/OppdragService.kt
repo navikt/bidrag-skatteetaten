@@ -1,29 +1,30 @@
 package no.nav.bidrag.regnskap.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.commons.util.SjekkForNyIdent
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
-import no.nav.bidrag.regnskap.consumer.SakConsumer
+import no.nav.bidrag.regnskap.consumer.BidragSakConsumer
 import no.nav.bidrag.regnskap.dto.patch.OppdaterUtsattTilDatoRequest
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.time.YearMonth
 
-private val LOGGER = LoggerFactory.getLogger(OppdragService::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class OppdragService(
     private val persistenceService: PersistenceService,
     private val oppdragsperiodeService: OppdragsperiodeService,
     private val konteringService: KonteringService,
-    private val sakConsumer: SakConsumer,
+    private val bidragSakConsumer: BidragSakConsumer,
 ) {
 
     @Transactional
@@ -36,7 +37,7 @@ class OppdragService(
     fun lagreEllerOppdaterOppdrag(hentetOppdrag: Oppdrag?, hendelse: Hendelse, erEngangsbeløp: Boolean): Int? {
         // Dette er en edge case hvor vedtak som inneholder gebyrfritak, eller andre stønadstyper som kun blir sendt inn med avslag, kommer med beløp null og ikke eksisterer fra før av. Disse skal ikke opprettes.
         if (hentetOppdrag == null && hendelse.periodeListe.all { it.beløp == null || it.beløp.compareTo(BigDecimal.ZERO) == 0 }) { //
-            LOGGER.info("Hendelse for vedtak: ${hendelse.vedtakId} har fått fritak for ${hendelse.type}")
+            LOGGER.info { "Hendelse for vedtak: ${hendelse.vedtakId} har fått fritak for ${hendelse.type}" }
             return null
         }
 
@@ -49,8 +50,25 @@ class OppdragService(
             settNyPeriodeFraOgTilDatoForOppdateringPåEngangsbeløp(hendelse, hentetOppdrag)
         }
 
+        behandlePerioder(hendelse, oppdrag, erOppdatering, sisteOverførtePeriode)
+
+        oppdatererVerdierPåOppdrag(hendelse, oppdrag)
+        val oppdragId = persistenceService.lagreOppdrag(oppdrag)
+
+        LOGGER.debug { "Oppdrag med ID: $oppdragId er ${if (erOppdatering) "oppdatert." else "opprettet."}" }
+
+        return oppdragId
+    }
+
+    private fun behandlePerioder(
+        hendelse: Hendelse,
+        oppdrag: Oppdrag,
+        erOppdatering: Boolean,
+        sisteOverførtePeriode: YearMonth,
+    ) {
         hendelse.periodeListe.forEach { periode ->
             val oppdragsperiode = oppdragsperiodeService.opprettNyOppdragsperiode(hendelse, periode, oppdrag)
+
             if (erOppdatering) {
                 konteringService.opprettKorreksjonskonteringer(oppdrag, oppdragsperiode, sisteOverførtePeriode, hendelse)
                 konteringService.opprettManglendeKonteringerVedOppstartAvOpphørtOppdragsperiode(
@@ -68,13 +86,6 @@ class OppdragService(
                 sisteOverførtePeriode,
             )
         }
-
-        oppdatererVerdierPåOppdrag(hendelse, oppdrag)
-        val oppdragId = persistenceService.lagreOppdrag(oppdrag)
-
-        LOGGER.debug("Oppdrag med ID: $oppdragId er ${if (erOppdatering) "oppdatert." else "opprettet."}")
-
-        return oppdragId
     }
 
     private fun settNyPeriodeFraOgTilDatoForOppdateringPåEngangsbeløp(hendelse: Hendelse, hentetOppdrag: Oppdrag?) {
@@ -99,13 +110,13 @@ class OppdragService(
     }
 
     private fun opprettOppdrag(hendelse: Hendelse): Oppdrag {
-        LOGGER.debug("Fant ikke eksisterende oppdrag for vedtakID: ${hendelse.vedtakId}. Opprettet nytt oppdrag..")
+        LOGGER.debug { "Fant ikke eksisterende oppdrag for vedtakID: ${hendelse.vedtakId}. Opprettet nytt oppdrag.." }
         return Oppdrag(
             stønadType = hendelse.type,
             sakId = hendelse.sakId,
             kravhaverIdent = hendelse.kravhaverIdent,
             skyldnerIdent = hendelse.skyldnerIdent,
-            gjelderIdent = sakConsumer.hentBmFraSak(hendelse.sakId),
+            gjelderIdent = bidragSakConsumer.hentBmFraSak(hendelse.sakId),
             mottakerIdent = hendelse.mottakerIdent,
             utsattTilDato = hendelse.utsattTilDato,
         )
@@ -150,9 +161,11 @@ class OppdragService(
                 in stønadstyperSomSkalOppdatereMedBmEllerRm -> {
                     oppdrag.mottakerIdent = mottaker.verdi
                 }
+
                 in stønaderSomSkalOppdatereTilNavIdent -> {
                     oppdrag.mottakerIdent = IdentUtils.NAV_TSS_IDENT
                 }
+
                 Stønadstype.EKTEFELLEBIDRAG.name -> {
                     oppdrag.mottakerIdent = oppdrag.kravhaverIdent ?: ""
                 }
