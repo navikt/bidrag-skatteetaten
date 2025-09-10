@@ -78,7 +78,7 @@ class OppdragService(
                     hendelse,
                 )
             }
-            oppdragsperiodeService.settAktivTilDatoPåEksisterendeOppdragsperioder(oppdrag, oppdragsperiode.periodeFra)
+            oppdragsperiodeService.oppdaterAktivTilDato(oppdrag, oppdragsperiode.periodeFra)
             oppdrag.oppdragsperioder = oppdrag.oppdragsperioder.plus(oppdragsperiode)
             konteringService.opprettNyeKonteringerPåOppdragsperiode(
                 oppdragsperiode,

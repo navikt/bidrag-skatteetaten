@@ -81,7 +81,7 @@ class OppdragsperiodeServiceTest {
 
         @Test
         fun `Skal sette aktivTil dato til periodeTil om periodeTil er satt og nye oppdragsperiodens periodeFra er etter periodeTil`() {
-            oppdragsperiodeService.settAktivTilDatoPåEksisterendeOppdragsperioder(
+            oppdragsperiodeService.oppdaterAktivTilDato(
                 oppdrag,
                 LocalDate.now().plusMonths(3),
             )
@@ -92,7 +92,7 @@ class OppdragsperiodeServiceTest {
         @Test
         fun `Skal sette aktivTil dato til nye oppdragsperiodens periodeFra om periodens periodeFra er før nye oppdragsperiodens periodeFra`() {
             val nyOppdragsperiodePeriodeFra = LocalDate.now().minusMonths(1)
-            oppdragsperiodeService.settAktivTilDatoPåEksisterendeOppdragsperioder(oppdrag, nyOppdragsperiodePeriodeFra)
+            oppdragsperiodeService.oppdaterAktivTilDato(oppdrag, nyOppdragsperiodePeriodeFra)
 
             oppdrag.oppdragsperioder.first().aktivTil shouldBe nyOppdragsperiodePeriodeFra
         }
@@ -101,7 +101,7 @@ class OppdragsperiodeServiceTest {
         fun `Skal sette aktivTil dato til nye oppdragsperiodens periodeFra om nye oppdragsperiodens periodeFra er midt i perioden`() {
             val nyOppdragsperiodePeriodeFra = LocalDate.now().plusMonths(1)
 
-            oppdragsperiodeService.settAktivTilDatoPåEksisterendeOppdragsperioder(oppdrag, nyOppdragsperiodePeriodeFra)
+            oppdragsperiodeService.oppdaterAktivTilDato(oppdrag, nyOppdragsperiodePeriodeFra)
 
             oppdrag.oppdragsperioder.first().aktivTil shouldBe nyOppdragsperiodePeriodeFra
         }
@@ -111,7 +111,7 @@ class OppdragsperiodeServiceTest {
             val now = LocalDate.now()
             oppdrag.oppdragsperioder.first().aktivTil = now
 
-            oppdragsperiodeService.settAktivTilDatoPåEksisterendeOppdragsperioder(
+            oppdragsperiodeService.oppdaterAktivTilDato(
                 oppdrag,
                 LocalDate.now().plusMonths(1),
             )
