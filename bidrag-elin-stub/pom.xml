@@ -108,11 +108,6 @@
           <artifactId>logstash-logback-encoder</artifactId>
           <version>${logback-encoder.version}</version>
       </dependency>
-      <dependency>
-          <groupId>io.micrometer</groupId>
-          <artifactId>micrometer-registry-prometheus</artifactId>
-          <scope>runtime</scope>
-      </dependency>
 
       <!--SpringDoc-->
       <dependency>
