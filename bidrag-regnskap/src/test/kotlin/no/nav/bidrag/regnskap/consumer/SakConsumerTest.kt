@@ -35,13 +35,13 @@ internal class SakConsumerTest {
     private lateinit var restTemplate: RestTemplate
 
     @InjectMockKs
-    private lateinit var sakConsumer: SakConsumer
+    private lateinit var bidragSakConsumer: BidragSakConsumer
 
     private val sakUrl = "localhost:8080"
 
     @BeforeEach
     fun setup() {
-        ReflectionTestUtils.setField(sakConsumer, "sakUrl", sakUrl)
+        ReflectionTestUtils.setField(bidragSakConsumer, "sakUrl", sakUrl)
     }
 
     @Test
@@ -50,7 +50,7 @@ internal class SakConsumerTest {
             opprettBidragSak(Rolletype.BIDRAGSMOTTAKER),
         )
 
-        val fødelsnummer = sakConsumer.hentBmFraSak("123")
+        val fødelsnummer = bidragSakConsumer.hentBmFraSak("123")
 
         fødelsnummer shouldNotBe DUMMY_NUMMER
     }
@@ -61,7 +61,7 @@ internal class SakConsumerTest {
             opprettBidragSak(Rolletype.BIDRAGSPLIKTIG),
         )
 
-        val fødelsnummer = sakConsumer.hentBmFraSak("123")
+        val fødelsnummer = bidragSakConsumer.hentBmFraSak("123")
 
         fødelsnummer shouldBe DUMMY_NUMMER
     }
