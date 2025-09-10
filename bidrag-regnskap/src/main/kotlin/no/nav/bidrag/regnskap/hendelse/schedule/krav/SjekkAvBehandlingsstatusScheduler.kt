@@ -52,7 +52,7 @@ class SjekkAvBehandlingsstatusScheduler(
             return
         }
 
-        val feiledeOverføringer: HashMap<String, String> =
+        val feiledeOverføringer: Map<String, String> =
             behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
 
         LOGGER.info {
