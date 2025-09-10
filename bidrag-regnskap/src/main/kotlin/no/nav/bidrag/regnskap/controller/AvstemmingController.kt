@@ -57,8 +57,8 @@ class AvstemmingController(
     @Parameters(
         value = [
             Parameter(name = "dato", example = "2022-01-01"),
-            Parameter(name = "fomTidspunkt", example = "2022-01-01T10:00:00"),
-            Parameter(name = "tomTidspunkt", example = "2022-01-01T11:00:00"),
+            Parameter(name = "fomTidspunkt", description = "Settes om man ønsker å starte fra ett spesifikt tidspunkt. Er avhengig av tomTidspunkt.", example = "2022-01-01T10:00:00"),
+            Parameter(name = "tomTidspunkt", description = "Settes om man ønsker å slutte på ett spesifikt tidspunkt. Er avhengig av fomTidspunkt.", example = "2022-01-01T11:00:00"),
         ],
     )
     fun startAvstemmingsgenerering(
@@ -76,11 +76,7 @@ class AvstemmingController(
             return ResponseEntity.badRequest().build()
         }
         GlobalScope.launch {
-            if (fomTidspunkt != null && tomTidspunkt != null) {
-                avstemmingService.startAvstemming(dato, fomTidspunkt, tomTidspunkt)
-            } else {
-                avstemmingService.startAvstemming(dato)
-            }
+            avstemmingService.startAvstemming(dato, fomTidspunkt, tomTidspunkt)
         }
         return ResponseEntity.ok().build()
     }
@@ -111,7 +107,7 @@ class AvstemmingController(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         dato: LocalDate,
     ): ResponseEntity<Any> {
-        avstemmingService.startManuellOverføringAvsteming(dato)
+        avstemmingService.startManuellOverføringAvstemingTilSftpFraGcpBucket(dato)
         return ResponseEntity.ok().build()
     }
 
