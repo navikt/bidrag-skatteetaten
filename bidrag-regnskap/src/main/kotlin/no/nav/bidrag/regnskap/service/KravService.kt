@@ -57,7 +57,7 @@ class KravService(
         // Om det finnes ikke godkjente overføringer som er forsøkt overført tidligere så skal det forsøkes å overføres en gang til og om det feiler avbrytes oversending
         oppdragListe.forEach { oppdrag ->
             if (harOppdragFeiledeOverføringer(oppdrag)) {
-                val feiledeOverføringer: HashMap<String, String>
+                val feiledeOverføringer: Map<String, String>
                 try {
                     feiledeOverføringer =
                         behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringerForReferansekode(
