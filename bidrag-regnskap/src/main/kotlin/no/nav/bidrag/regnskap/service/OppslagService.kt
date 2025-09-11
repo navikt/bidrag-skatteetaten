@@ -69,35 +69,31 @@ class OppslagService(
             .map { UtsatteVedtak(it.vedtakId, it.oppdrag!!.utsattTilDato!!) }
     }
 
-    private fun hentIkkeOversendteVedtak(oppdrag: List<Oppdrag>): List<IkkeOversendteVedtak> {
-        return oppdrag
-            .flatMap { it.oppdragsperioder }
-            .flatMap { it.konteringer }
-            .filter { it.overføringstidspunkt == null }
-            .map { it.oppdragsperiode!! }
-            .distinctBy { it.vedtakId }
-            .map { IkkeOversendteVedtak(it.vedtakId) }
-    }
+    private fun hentIkkeOversendteVedtak(oppdrag: List<Oppdrag>): List<IkkeOversendteVedtak> = oppdrag
+        .flatMap { it.oppdragsperioder }
+        .flatMap { it.konteringer }
+        .filter { it.overføringstidspunkt == null }
+        .map { it.oppdragsperiode!! }
+        .distinctBy { it.vedtakId }
+        .map { IkkeOversendteVedtak(it.vedtakId) }
 
-    private fun hentFeiledeVedtak(oppdrag: List<Oppdrag>): List<FeiledeVedtak> {
-        return oppdrag
-            .flatMap { it.oppdragsperioder }
-            .filter { oppdragsperiode -> oppdragsperiode.konteringer.any { it.behandlingsstatusOkTidspunkt == null } }
-            .flatMap { it.konteringer }
-            .filter { it.sisteReferansekode != null }
-            .distinctBy { it.sisteReferansekode }
-            .map { kontering ->
-                val sjekkAvBehandlingsstatusResponse =
-                    skattConsumer.sjekkBehandlingsstatus(kontering.sisteReferansekode!!).body
-                var feilmelding: String? = null
-                if (sjekkAvBehandlingsstatusResponse?.batchStatus == Batchstatus.Done) {
-                    kontering.behandlingsstatusOkTidspunkt = LocalDateTime.now()
-                } else {
-                    feilmelding = sjekkAvBehandlingsstatusResponse?.konteringFeil?.firstOrNull()?.feilmelding
-                }
-                FeiledeVedtak(kontering.oppdragsperiode!!.vedtakId, feilmelding)
-            }.filter { it.feilmelding != null }
-    }
+    private fun hentFeiledeVedtak(oppdrag: List<Oppdrag>): List<FeiledeVedtak> = oppdrag
+        .flatMap { it.oppdragsperioder }
+        .filter { oppdragsperiode -> oppdragsperiode.konteringer.any { it.behandlingsstatusOkTidspunkt == null } }
+        .flatMap { it.konteringer }
+        .filter { it.sisteReferansekode != null }
+        .distinctBy { it.sisteReferansekode }
+        .map { kontering ->
+            val sjekkAvBehandlingsstatusResponse =
+                skattConsumer.sjekkBehandlingsstatus(kontering.sisteReferansekode!!).body
+            var feilmelding: String? = null
+            if (sjekkAvBehandlingsstatusResponse?.batchStatus == Batchstatus.Done) {
+                kontering.behandlingsstatusOkTidspunkt = LocalDateTime.now()
+            } else {
+                feilmelding = sjekkAvBehandlingsstatusResponse?.konteringFeil?.firstOrNull()?.feilmelding
+            }
+            FeiledeVedtak(kontering.oppdragsperiode!!.vedtakId, feilmelding)
+        }.filter { it.feilmelding != null }
 
     fun hentOppdragResponse(oppdrag: Oppdrag): OppdragResponse = OppdragResponse(
         oppdragId = oppdrag.oppdragId,

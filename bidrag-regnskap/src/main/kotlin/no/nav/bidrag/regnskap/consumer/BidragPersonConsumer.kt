@@ -12,7 +12,6 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
-
 @Service
 class BidragPersonConsumer(
     @param:Value("\${PERSON_URL}") val url: URI,
