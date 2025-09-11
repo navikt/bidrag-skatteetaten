@@ -1,10 +1,9 @@
 package no.nav.bidrag.regnskap.service
 
 import com.google.common.collect.Lists
-import io.micrometer.core.instrument.LongTaskTimer
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Metrics
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.regnskap.Årsakskode
+import no.nav.bidrag.regnskap.config.CacheConfig
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.fil.påløp.PåløpsfilGenerator
@@ -14,17 +13,15 @@ import no.nav.bidrag.regnskap.persistence.entity.Driftsavvik
 import no.nav.bidrag.regnskap.persistence.entity.Påløp
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.function.Consumer
 
-private val LOGGER = LoggerFactory.getLogger(PåløpskjøringService::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 private const val PARTISJONSSTØRRELSE = 1000
 
@@ -36,62 +33,33 @@ class PåløpskjøringService(
     private val gcpFilBucket: GcpFilBucket,
     private val filoverføringTilElinKlient: FiloverføringTilElinKlient,
     private val skattConsumer: SkattConsumer,
-    private val meterRegistry: MeterRegistry,
     private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
-    @Autowired(required = false) private val lyttere: List<PåløpskjøringLytter> = emptyList(),
+    private val cacheConfig: CacheConfig,
+    @param:Autowired(required = false) private val lyttere: List<PåløpskjøringLytter> = emptyList(),
 ) {
 
     @Transactional
     fun hentPåløp() = persistenceService.hentIkkeKjørtePåløp().minByOrNull { it.forPeriode }
 
-    fun startPåløpskjøringManuelt(påløp: Påløp, genererFil: Boolean, overførFil: Boolean, duration: Duration) {
-        startPåløpskjøring(påløp, false, genererFil, overførFil, duration)
+    fun startPåløpskjøringManuelt(påløp: Påløp, genererFil: Boolean, overførFil: Boolean) {
+        startPåløpskjøring(påløp, false, genererFil, overførFil)
     }
 
     fun startPåløpskjøringMaskinelt(påløp: Påløp) {
         startPåløpskjøring(påløp, true, påløp.genererFil, påløp.overførFil)
     }
 
-    private fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean, duration: Duration = Duration.ofMinutes(1)) {
+    private fun startPåløpskjøring(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean) {
         if (påløp.startetTidspunkt != null) {
-            LOGGER.warn("Påløpskjøring har satt startet tidspunkt! Dette kan være grunnet allerede kjørende påløp. Starter derfor ikke nytt påløp.")
+            LOGGER.warn { "Påløpskjøring har satt startet tidspunkt! Dette kan være grunnet allerede kjørende påløp. Starter derfor ikke nytt påløp." }
             return
         }
 
         medLyttere { it.påløpStartet(påløp, schedulertKjøring, genererFil, overførFil) }
         try {
-            // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
-            sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
-
-            validerDriftsavvik(påløp, schedulertKjøring)
-            // Sleep 1 minutt for å sikre at driftsavvik_cache er utløpt på begge noder og ingen nye vedtak blir lest inn før vi starter påløpet.
-            medLyttere { it.driftsavvikCache(påløp, "Venter på at driftsavvik-cache utløper (1 minutt)...") }
-            Thread.sleep(duration)
-            medLyttere { it.driftsavvikCache(påløp, "Driftsavvik-cache utløpt. Fortsetter påløpet.") }
-
-            val longTaskTimer = LongTaskTimer.builder("palop-kjoretid").register(meterRegistry).start()
-            persistenceService.registrerPåløpStartet(påløp.påløpId!!, LocalDateTime.now())
-
-            if (genererFil && overførFil) {
-                endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_GENERERES, "Påløp for ${påløp.forPeriode} genereres hos NAV.")
-            }
-
-            val utsatteEllerFeiledeOppdragsperioder = opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp, overførFil)
-
-            if (genererFil) {
-                genererPåløpsfil(påløp, overførFil)
-            }
-
-            opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
-            avsluttDriftsavvik(påløp)
-            fullførPåløp(påløp)
-
-            if (genererFil && overførFil) {
-                endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_LEVERT, "Påløp for ${påløp.forPeriode} er ferdig generert fra NAV.")
-            }
-
-            medLyttere { it.påløpFullført(påløp) }
-            Metrics.timer("palop-kjoretid-ferdig").record<Long> { longTaskTimer.stop() }
+            forberedPåløpskjøring(påløp, schedulertKjøring, genererFil, overførFil)
+            kjørPåløpsprosess(påløp, overførFil, genererFil)
+            avsluttPåløpskjøring(påløp, genererFil, overførFil)
         } catch (e: Error) {
             medLyttere { it.påløpFeilet(påløp, e.toString()) }
             throw e
@@ -101,10 +69,63 @@ class PåløpskjøringService(
         }
     }
 
+    private fun avsluttPåløpskjøring(
+        påløp: Påløp,
+        genererFil: Boolean,
+        overførFil: Boolean,
+    ) {
+        avsluttDriftsavvik(påløp)
+        fullførPåløp(påløp)
+
+        if (genererFil && overførFil) {
+            endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_LEVERT, "Påløp for ${påløp.forPeriode} er ferdig generert fra NAV.")
+        }
+
+        medLyttere { it.påløpFullført(påløp) }
+    }
+
+    private fun kjørPåløpsprosess(
+        påløp: Påløp,
+        overførFil: Boolean,
+        genererFil: Boolean,
+    ) {
+        val utsatteEllerFeiledeOppdragsperioder = opprettKonteringerForAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer(påløp, overførFil)
+
+        if (genererFil) {
+            genererPåløpsfil(påløp, overførFil)
+        }
+
+        opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
+    }
+
+    private fun forberedPåløpskjøring(
+        påløp: Påløp,
+        schedulertKjøring: Boolean,
+        genererFil: Boolean,
+        overførFil: Boolean,
+    ) {
+        // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
+        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        validerDriftsavvik(påløp, schedulertKjøring)
+        ventPåDriftsavvikCacheUtløp(påløp)
+        persistenceService.registrerPåløpStartet(påløp.påløpId!!, LocalDateTime.now())
+
+        if (genererFil && overførFil) {
+            endreElinVedlikeholdsmodus(Årsakskode.PAALOEP_GENERERES, "Påløp for ${påløp.forPeriode} genereres hos NAV.")
+        }
+    }
+
+    private fun ventPåDriftsavvikCacheUtløp(påløp: Påløp) {
+        // Sleep 1 minutt for å sikre at driftsavvik_cache er utløpt på begge noder og ingen nye vedtak blir lest inn før vi starter påløpet.
+        medLyttere { it.driftsavvikCache(påløp, "Venter på at driftsavvik-cache utløper (1 minutt)...") }
+        Thread.sleep(cacheConfig.duration)
+        medLyttere { it.driftsavvikCache(påløp, "Driftsavvik-cache utløpt. Fortsetter påløpet.") }
+    }
+
     fun validerDriftsavvik(påløp: Påløp, schedulertKjøring: Boolean) {
         val driftsavvikListe = persistenceService.hentAlleAktiveDriftsavvik()
         if (driftsavvikListe.any { it.påløpId != påløp.påløpId }) {
-            LOGGER.error("Det finnes aktive driftsavvik som ikke er knyttet til påløpet! Kan derfor ikke starte påløpskjøring!")
+            LOGGER.error { "Det finnes aktive driftsavvik som ikke er knyttet til påløpet! Kan derfor ikke starte påløpskjøring!" }
             throw IllegalStateException("Det finnes aktive driftsavvik som ikke er knyttet til påløpet! Kan derfor ikke starte påløpskjøring!")
         }
         if (driftsavvikListe.isEmpty()) {
@@ -140,9 +161,7 @@ class PåløpskjøringService(
             )
             antallBehandlet += oppdragsperiodeIds.size
             medLyttere { it.rapporterOppdragsperioderBehandlet(påløp, antallBehandlet, oppdragsperioder.size) }
-            LOGGER.info(
-                "Opprettet konteringer for $antallBehandlet av ${oppdragsperioder.size} oppdragsperioder i påløpskjøring for periode: ${påløp.forPeriode}",
-            )
+            LOGGER.info { "Opprettet konteringer for $antallBehandlet av ${oppdragsperioder.size} oppdragsperioder i påløpskjøring for periode: ${påløp.forPeriode}" }
         }
 
         medLyttere { it.oppdragsperioderBehandletFerdig(påløp, oppdragsperioder.size) }
@@ -162,10 +181,10 @@ class PåløpskjøringService(
     }
 
     fun genererPåløpsfil(påløp: Påløp, overførFil: Boolean) {
-        LOGGER.info("Starter generering av påløpsfil...")
+        LOGGER.info { "Starter generering av påløpsfil..." }
         medLyttere { it.generererFil(påløp) }
         skrivPåløpsfilOgLastOppPåFilsluse(påløp, overførFil)
-        LOGGER.info("Påløpsfil er ferdig skrevet for periode ${påløp.forPeriode} og lastet opp til filsluse.")
+        LOGGER.info { "Påløpsfil er ferdig skrevet for periode ${påløp.forPeriode} og lastet opp til filsluse." }
     }
 
     private fun skrivPåløpsfilOgLastOppPåFilsluse(påløp: Påløp, overførFil: Boolean) {

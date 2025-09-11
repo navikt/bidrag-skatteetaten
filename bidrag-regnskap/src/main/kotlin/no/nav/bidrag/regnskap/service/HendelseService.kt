@@ -3,7 +3,7 @@ package no.nav.bidrag.regnskap.service
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.regnskap.SECURE_LOGGER
-import no.nav.bidrag.regnskap.consumer.PersonConsumer
+import no.nav.bidrag.regnskap.consumer.BidragPersonConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
 import no.nav.bidrag.transport.person.hendelse.Endringsmelding
 import org.springframework.stereotype.Service
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class HendelseService(
     private val persistenceService: PersistenceService,
-    private val personConsumer: PersonConsumer,
+    private val bidragPersonConsumer: BidragPersonConsumer,
 ) {
 
     @Transactional
     fun behandlePersonhendelse(endringsmelding: Endringsmelding) {
         for (endring in endringsmelding.endringer) {
             if (endring.identendring != null && endring.identendring!!.identifikasjonsnummer != null) {
-                val person = personConsumer.hentPerson(Ident(endring.identendring!!.identifikasjonsnummer!!))!!.person.ident
+                val person = bidragPersonConsumer.hentPerson(Ident(endring.identendring!!.identifikasjonsnummer!!))!!.person.ident
 
                 endringsmelding.personidenter.forEach {
                     persistenceService.hentAlleMottakereMedIdent(it)
@@ -30,21 +30,21 @@ class HendelseService(
                         }
 
                     persistenceService.hentAlleKravhavereMedIdent(it)
-                        .filter { kravhaver -> kravhaver.mottakerIdent != person.verdi }
+                        .filter { kravhaver -> kravhaver.kravhaverIdent != person.verdi }
                         .forEach { kravhaver ->
                             kravhaver.kravhaverIdent = person.verdi
                             logIdentendring(it, person, kravhaver)
                         }
 
                     persistenceService.hentAlleSkyldnereMedIdent(it)
-                        .filter { skyldner -> skyldner.mottakerIdent != person.verdi }
+                        .filter { skyldner -> skyldner.skyldnerIdent != person.verdi }
                         .forEach { skyldner ->
                             skyldner.skyldnerIdent = person.verdi
                             logIdentendring(it, person, skyldner)
                         }
 
                     persistenceService.hentAlleGjelderMedIdent(it)
-                        .filter { gjelder -> gjelder.mottakerIdent != person.verdi }
+                        .filter { gjelder -> gjelder.gjelderIdent != person.verdi }
                         .forEach { gjelder ->
                             gjelder.gjelderIdent = person.verdi
                             logIdentendring(it, person, gjelder)

@@ -17,7 +17,6 @@ class PersonhendelseListener(
     private val hendelseService: HendelseService,
     private val objectMapper: ObjectMapper,
 ) {
-
     @KafkaListener(
         groupId = "\${PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE}",
         topics = ["\${TOPIC_PERSONHENDELSE}"],
@@ -31,12 +30,16 @@ class PersonhendelseListener(
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
         acknowledgment: Acknowledgment,
     ) {
-        LOGGER.debug { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
+        logKafkaMetadata(topic, offset, partition, groupId)
 
-        val endringsmelding = mapEndringsmelding(hendelse)
+        val endringsmelding = deserialiserEndringsmelding(hendelse)
         hendelseService.behandlePersonhendelse(endringsmelding)
         acknowledgment.acknowledge()
     }
 
-    private fun mapEndringsmelding(hendelse: String): Endringsmelding = objectMapper.readValue(hendelse, Endringsmelding::class.java)
+    private fun logKafkaMetadata(topic: String, offset: Long, partition: Int, groupId: String) {
+        LOGGER.debug { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
+    }
+
+    private fun deserialiserEndringsmelding(hendelse: String): Endringsmelding = objectMapper.readValue(hendelse, Endringsmelding::class.java)
 }

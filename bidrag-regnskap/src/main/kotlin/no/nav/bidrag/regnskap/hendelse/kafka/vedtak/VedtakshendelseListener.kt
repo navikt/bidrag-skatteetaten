@@ -1,7 +1,7 @@
 package no.nav.bidrag.regnskap.hendelse.kafka.vedtak
 
 import com.fasterxml.jackson.core.JacksonException
-import no.nav.bidrag.regnskap.SECURE_LOGGER
+import no.nav.bidrag.regnskap.controller.KafkaOffsettController
 import no.nav.bidrag.regnskap.service.VedtakshendelseService
 import org.apache.kafka.common.TopicPartition
 import org.slf4j.LoggerFactory
@@ -15,19 +15,15 @@ import org.springframework.stereotype.Component
 private val LOGGER = LoggerFactory.getLogger(VedtakshendelseListener::class.java)
 
 @Component
-class VedtakshendelseListener(private val vedtakshendelseService: VedtakshendelseService) : AbstractConsumerSeekAware() {
-
-    companion object {
-        var hoppOverNesteMelding = false
-        var settOffsett = false
-        var nyOffsett = -1L
-        var sisteOffset: Long = -1
-    }
+class VedtakshendelseListener(
+    private val vedtakshendelseService: VedtakshendelseService,
+    private val kafkaOffsettController: KafkaOffsettController,
+) : AbstractConsumerSeekAware() {
 
     @KafkaListener(
         groupId = "bidrag-regnskap",
-        topics = ["\${TOPIC_VEDTAK}"],
-        properties = ["auto.offset.reset=\${KAFKA_AUTO_OFFSET_RESET:earliest}"],
+        topics = [$$"${TOPIC_VEDTAK}"],
+        properties = [$$"auto.offset.reset=${KAFKA_AUTO_OFFSET_RESET:earliest}"],
     )
     fun lesHendelse(
         hendelse: String,
@@ -37,61 +33,47 @@ class VedtakshendelseListener(private val vedtakshendelseService: Vedtakshendels
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
         acknowledgment: Acknowledgment,
     ) {
-        sisteOffset = offset
         try {
             LOGGER.info("Starter behandling av vedtakhendelse med offset: $offset")
 
-            if (hoppOverNesteMelding) {
-                LOGGER.info("Hopper over behandling av vedtakhendelse med offset: $offset")
-                acknowledgment.acknowledge() // Acknowledge meldingen for å gå videre til neste offset
-                hoppOverNesteMelding = false // Nullstill variabelen for å unngå hopping på påfølgende meldinger
+            if (kafkaOffsettController.skalHoppeOverNesteMelding()) {
+                hoppOverHendele(offset, acknowledgment)
                 return
             }
 
-            if (settOffsett) {
-                LOGGER.warn("Setter ny offsett til: $nyOffsett!")
-                this.getSeekCallbacksFor(TopicPartition(topic, partition))?.forEach { it -> it.seek(topic, partition, nyOffsett) }
-                settOffsett = false
+            if (kafkaOffsettController.skalSetteNyOffset()) {
+                settNyOffsett(topic, partition)
                 return
             }
 
             val opprettedeOppdrag = vedtakshendelseService.behandleHendelse(hendelse)
 
             try {
-                LOGGER.info("Starter oversending av oppdrag: $opprettedeOppdrag for vedtakhendelse med offset: $offset.")
                 vedtakshendelseService.sendKrav(opprettedeOppdrag)
-                LOGGER.info("Ferdig med behandling av vedtakshendelse med offset: $offset")
             } catch (e: Exception) {
                 LOGGER.error("Oversending av krav feilet for oppdrag: $opprettedeOppdrag med offset: $offset! Feilmelding: ${e.stackTraceToString()}")
             } finally {
-                // Markerer vedtaket som opprettet for Kafka slik at om oversending feiler vil neste vedtak leses inn og prosesseres
                 acknowledgment.acknowledge()
             }
         } catch (e: JacksonException) {
             LOGGER.error(
-                "Mapping av hendelse feilet for kafkamelding med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId!" +
-                    "\nSe secure log for mer informasjon.",
-            )
-            SECURE_LOGGER.error(
-                "Mapping av hendelse feilet for kafkamelding med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId!! " +
+                "Mapping av hendelse feilet for kafkamelding med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId " +
                     "\nFeil: $e \n\nHendelse: $hendelse",
             )
             throw e
         }
     }
 
-    fun hoppOverNesteMelding() {
-        hoppOverNesteMelding = true
+    private fun settNyOffsett(topic: String, partition: Int) {
+        val nyOffsett = kafkaOffsettController.hentNyOffset()
+        LOGGER.warn("Setter ny offsett til: $nyOffsett!")
+        this.getSeekCallbacksFor(TopicPartition(topic, partition))?.forEach { it.seek(topic, partition, nyOffsett) }
+        kafkaOffsettController.tilbakestillOffsettEndring()
     }
 
-    fun hoppOverAlleMeldinger() {
-        this.seekToEnd()
-    }
-
-    fun hentSisteLesteHendelse(): Long = sisteOffset
-
-    fun settNyOffsett(offsett: Long) {
-        settOffsett = true
-        nyOffsett = offsett
+    private fun hoppOverHendele(offset: Long, acknowledgment: Acknowledgment) {
+        LOGGER.info("Hopper over behandling av vedtakhendelse med offset: $offset")
+        acknowledgment.acknowledge()
+        kafkaOffsettController.tilbakestillHoppOverNesteMelding()
     }
 }

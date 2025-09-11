@@ -40,6 +40,9 @@ env:
   BIDRAG_VEDTAK_URL: https://bidrag-vedtak.intern.nav.no
   BIDRAG_VEDTAK_SCOPE: prod-gcp.bidrag.bidrag-vedtak
   BIDRAG_VEDTAK_HOST: bidrag-vedtak.intern.nav.no
+  BIDRAG_RESKONTRO_URL: https://bidrag-reskontro.intern.nav.no
+  BIDRAG_RESKONTRO_SCOPE: prod-gcp.bidrag.bidrag-reskontro
+  BIDRAG_RESKONTRO_HOST: bidrag-reskontro.intern.nav.no
   MASKINPORTEN_SCOPES: "skatteetaten:barnebidragkrav"
   JAVA_OPTS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   KONTERINGER_FORELDET_DATO: 2006-04

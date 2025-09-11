@@ -52,7 +52,7 @@ class PåløpskjøringController(
         @RequestParam(required = true) overførFil: Boolean,
     ): ResponseEntity<Int> {
         val påløp = påløpskjøringService.hentPåløp()?.copy(startetTidspunkt = null) ?: return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil, Duration.ofMinutes(1))
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil, overførFil)
         return ResponseEntity.status(HttpStatus.CREATED).body(påløp.påløpId)
     }
 

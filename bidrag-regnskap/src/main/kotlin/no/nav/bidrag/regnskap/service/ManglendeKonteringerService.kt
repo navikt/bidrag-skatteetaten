@@ -24,15 +24,13 @@ private val LOGGER = KotlinLogging.logger { }
 class ManglendeKonteringerService(
     private val oppdragsperiodeRepo: OppdragsperiodeRepository,
     private val persistenceService: PersistenceService,
-    @Value("\${KONTERINGER_FORELDET_DATO}") private val konteringerForeldetDato: String,
+    @param:Value($$"${KONTERINGER_FORELDET_DATO}") private val konteringerForeldetDato: String,
 ) {
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun opprettKonteringerForOppdragsperiode(påløp: Påløp, oppdragsperiodeIder: List<Int>, overførFil: Boolean): List<Int> {
         val timestamp = LocalDateTime.now()
         val påløpsPeriode = LocalDate.parse(påløp.forPeriode + "-01")
         val påløpKjøredato = påløp.kjøredato.toLocalDate()
-
         val oppdragsperioder = oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(oppdragsperiodeIder)
 
         // Tar ut utsatte eller feilede oppdragsperioder slik at det ikke opprettes
@@ -41,57 +39,64 @@ class ManglendeKonteringerService(
                 harOppdragetFeiledeKonteringer(oppdragsperiode)
         }
 
-        oppdragsperioderSomSkalBehandles.forEach { oppdragsperiode ->
-
-            if (oppdragsperiode.aktivTil == null && erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.periodeTil, påløpsPeriode)) {
-                oppdragsperiode.aktivTil = oppdragsperiode.periodeTil
-            }
-
-            opprettManglendeKonteringerForOppdragsperiode(
-                oppdragsperiode,
-                YearMonth.from(påløpsPeriode),
-                timestamp,
-                settOverføringstidspunkt = overførFil,
-                settBehandlingsstatusOkTidspunkt = overførFil,
-            )
-
-            if (erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, påløpsPeriode)) {
-                oppdragsperiode.konteringerFullførtOpprettet = true
-            }
-        }
+        behandleOppdragsperioder(
+            oppdragsperioder = oppdragsperioderSomSkalBehandles,
+            påløpsPeriode = påløpsPeriode,
+            timestamp = timestamp,
+            settPåløpsperiode = true,
+            settOverføringstidspunkt = overførFil,
+            settBehandlingsstatusOkTidspunkt = overførFil,
+        )
 
         persistenceService.lagreOppdragsperioder(oppdragsperioder)
-
         return utsatteEllerFeiledeOppdragsperioder.map { it.oppdragsperiodeId!! }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun opprettKonteringerForUtsatteOgFeiledeOppdragsperiode(påløp: Påløp, oppdragsperiodeIder: List<Int>) {
         val påløpsPeriode = LocalDate.parse(påløp.forPeriode + "-01")
-
         val oppdragsperioder = oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(oppdragsperiodeIder)
 
-        oppdragsperioder.forEach { oppdragsperiode ->
+        behandleOppdragsperioder(
+            oppdragsperioder = oppdragsperioder,
+            påløpsPeriode = påløpsPeriode,
+            timestamp = null,
+            settPåløpsperiode = false,
+            settOverføringstidspunkt = false,
+            settBehandlingsstatusOkTidspunkt = false,
+        )
 
+        persistenceService.lagreOppdragsperioder(oppdragsperioder)
+    }
+
+    private fun behandleOppdragsperioder(
+        oppdragsperioder: List<Oppdragsperiode>,
+        påløpsPeriode: LocalDate,
+        timestamp: LocalDateTime?,
+        settPåløpsperiode: Boolean,
+        settOverføringstidspunkt: Boolean,
+        settBehandlingsstatusOkTidspunkt: Boolean,
+    ) {
+        val påløpsYearMonth = YearMonth.from(påløpsPeriode)
+
+        oppdragsperioder.forEach { oppdragsperiode ->
             if (oppdragsperiode.aktivTil == null && erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.periodeTil, påløpsPeriode)) {
                 oppdragsperiode.aktivTil = oppdragsperiode.periodeTil
             }
 
             opprettManglendeKonteringerForOppdragsperiode(
-                oppdragsperiode,
-                YearMonth.from(påløpsPeriode),
-                null,
-                settPåløpsperiode = false,
-                settOverføringstidspunkt = false,
-                settBehandlingsstatusOkTidspunkt = false,
+                oppdragsperiode = oppdragsperiode,
+                påløpsPeriode = påløpsYearMonth,
+                timestamp = timestamp,
+                settPåløpsperiode = settPåløpsperiode,
+                settOverføringstidspunkt = settOverføringstidspunkt,
+                settBehandlingsstatusOkTidspunkt = settBehandlingsstatusOkTidspunkt,
             )
 
             if (erFørsteDatoSammeSomEllerTidligereEnnAndreDato(oppdragsperiode.aktivTil, påløpsPeriode)) {
                 oppdragsperiode.konteringerFullførtOpprettet = true
             }
         }
-
-        persistenceService.lagreOppdragsperioder(oppdragsperioder)
     }
 
     fun opprettManglendeKonteringerForOppdragsperiode(
@@ -114,19 +119,18 @@ class ManglendeKonteringerService(
             if (oppdragsperiode.konteringer.any { it.overføringsperiode == periode.toString() }) {
                 LOGGER.debug { "Kontering for periode: $periode i oppdragsperiode: ${oppdragsperiode.oppdragsperiodeId} er allerede opprettet." }
             } else if (harIkkePassertAktivTilDato(oppdragsperiode, periode)) {
-                oppdragsperiode.konteringer = oppdragsperiode.konteringer.plus(
-                    Kontering(
-                        transaksjonskode = transaksjonskode,
-                        overføringsperiode = periode.toString(),
-                        type = vurderType(alleOppdragsperioderPåOppdrag, periode),
-                        søknadType = vurderSøknadType(vedtakType, stønadType, periodeIndex, settPåløpsperiode),
-                        oppdragsperiode = oppdragsperiode,
-                        sendtIPåløpsperiode = if (settPåløpsperiode) påløpsPeriode.toString() else null,
-                        vedtakId = vedtakId,
-                        overføringstidspunkt = if (settOverføringstidspunkt) timestamp else null,
-                        behandlingsstatusOkTidspunkt = if (settBehandlingsstatusOkTidspunkt) timestamp else null,
-                    ),
+                val nyKontering = Kontering(
+                    transaksjonskode = transaksjonskode,
+                    overføringsperiode = periode.toString(),
+                    type = vurderType(alleOppdragsperioderPåOppdrag, periode),
+                    søknadType = vurderSøknadType(vedtakType, stønadType, periodeIndex, settPåløpsperiode),
+                    oppdragsperiode = oppdragsperiode,
+                    sendtIPåløpsperiode = if (settPåløpsperiode) påløpsPeriode.toString() else null,
+                    vedtakId = vedtakId,
+                    overføringstidspunkt = if (settOverføringstidspunkt) timestamp else null,
+                    behandlingsstatusOkTidspunkt = if (settBehandlingsstatusOkTidspunkt) timestamp else null,
                 )
+                oppdragsperiode.konteringer = oppdragsperiode.konteringer.plus(nyKontering)
             }
         }
     }

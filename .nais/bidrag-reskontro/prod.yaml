@@ -30,3 +30,6 @@ azure:
       - application: bidrag-dokument-bestilling
         namespace: bidrag
         cluster: prod-gcp
+      - application: bidrag-regnskap
+        namespace: bidrag
+        cluster: prod-gcp

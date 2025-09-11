@@ -12,7 +12,7 @@ import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
-import no.nav.bidrag.regnskap.consumer.SakConsumer
+import no.nav.bidrag.regnskap.consumer.BidragSakConsumer
 import no.nav.bidrag.regnskap.utils.TestData
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -33,7 +33,7 @@ class OppdragServiceTest {
     private lateinit var konteringService: KonteringService
 
     @MockK(relaxed = true)
-    private lateinit var sakConsumer: SakConsumer
+    private lateinit var bidragSakConsumer: BidragSakConsumer
 
     @InjectMockKs
     private lateinit var oppdragService: OppdragService

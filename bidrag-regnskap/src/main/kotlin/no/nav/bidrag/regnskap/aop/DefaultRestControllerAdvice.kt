@@ -17,6 +17,14 @@ private val LOGGER = KotlinLogging.logger {}
 @RestControllerAdvice
 class DefaultRestControllerAdvice {
 
+    companion object {
+        private const val UNAUTHORIZED_MESSAGE = "Ugyldig eller manglende sikkerhetstoken"
+        private const val UNKNOWN_ERROR_MESSAGE = "Det skjedde en ukjent feil"
+        private const val MASKINPORTEN_ERROR_MESSAGE = "Noe gikk galt ved kall til maskinporten"
+        private const val PÅLØP_ERROR_MESSAGE = "Ble stoppet grunnet påløp"
+        private const val EXTERNAL_SERVICE_ERROR_PREFIX = "Det skjedde en feil ved kall mot ekstern tjeneste: "
+    }
+
     @ResponseBody
     @ExceptionHandler(HttpStatusCodeException::class)
     fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<*> {
@@ -27,22 +35,41 @@ class DefaultRestControllerAdvice {
 
     @ResponseBody
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException?): ResponseEntity<*> {
-        LOGGER.warn(exception) { "Ugyldig eller manglende sikkerhetstoken" }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build<Any>()
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<*> {
+        LOGGER.warn(exception) { UNAUTHORIZED_MESSAGE }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, UNAUTHORIZED_MESSAGE)
+            .build<Any>()
     }
 
     @ResponseBody
     @ExceptionHandler(Exception::class)
     fun handleException(exception: Exception): ResponseEntity<*> {
-        LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
+        LOGGER.warn(exception) { UNKNOWN_ERROR_MESSAGE }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: " + exception.message).build<Any>()
+            .header(HttpHeaders.WARNING, "$UNKNOWN_ERROR_MESSAGE: ${exception.message}").build<Any>()
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MaskinportenClientException::class)
+    fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<*> {
+        LOGGER.error(exception) { "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message}" }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .header(HttpHeaders.WARNING, "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message}")
+            .build<Any>()
+    }
+
+    @ResponseBody
+    @ExceptionHandler(PåløpException::class)
+    fun handlePåløpException(exception: PåløpException): ResponseEntity<*> {
+        LOGGER.error(exception) { "$PÅLØP_ERROR_MESSAGE: ${exception.message}" }
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            .header(HttpHeaders.WARNING, "$PÅLØP_ERROR_MESSAGE: ${exception.message}")
+            .build<Any>()
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {
         val errorMessage = StringBuilder()
-        errorMessage.append("Det skjedde en feil ved kall mot ekstern tjeneste: ")
+        errorMessage.append(EXTERNAL_SERVICE_ERROR_PREFIX)
         exception.responseHeaders?.get(HttpHeaders.WARNING)?.firstOrNull()?.let { errorMessage.append(it) }
         if (exception.statusText.isNotEmpty()) {
             errorMessage.append(exception.statusText)
@@ -51,21 +78,5 @@ class DefaultRestControllerAdvice {
             errorMessage.append(exception.message)
         }
         return errorMessage.toString()
-    }
-
-    @ResponseBody
-    @ExceptionHandler(MaskinportenClientException::class)
-    fun handleMaskinportenClientExcpetion(exception: MaskinportenClientException): ResponseEntity<*> {
-        LOGGER.error(exception) { "Noe gikk galt ved kall til maskinporten: ${exception.message}}" }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(exception.message)
-    }
-
-    @ResponseBody
-    @ExceptionHandler(PåløpException::class)
-    fun handlePåløpException(exception: PåløpException): ResponseEntity<*> {
-        LOGGER.error(exception) { "Ble stoppet grunnet påløp: ${exception.message}}" }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .body(exception.message)
     }
 }
