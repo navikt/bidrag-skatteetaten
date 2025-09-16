@@ -20,7 +20,8 @@ class HendelseService(
     @Transactional
     fun behandlePersonhendelse(endringsmelding: Endringsmelding) {
         endringsmelding.endringer.forEach { endring ->
-            val identifikasjonsnummer = endring.identendring?.identifikasjonsnummer
+            val identendring = endring.identendring ?: return@forEach
+            val identifikasjonsnummer = identendring.identifikasjonsnummer
             if (identifikasjonsnummer == null) {
                 LOGGER.warn { "Mangler identifikasjonsnummer i endring fra personhendelse. Endring: $endring" }
                 return@forEach
