@@ -23,8 +23,8 @@ maskinporten:
   url: https://test.maskinporten.no
 env:
   SPRING_PROFILES_ACTIVE: database-new
-  SKATT_URL: https://api-preprod.nav.no/bidrag/v1/bidragskrav
-  SKATT_HOST: api-preprod.nav.no
+  SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/bidrag/v1/bidragskrav
+  SKATT_HOST: bidrag-elin-stub.intern.dev.nav.no
   TOPIC_VEDTAK: bidrag.vedtak-q1
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
   PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
