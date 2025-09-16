@@ -47,7 +47,7 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Det skjedde en ukjent feil: ${exception.message} ${exception.stackTraceToString()}", exception)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message} Stacktrace: ${exception.stackTraceToString()}\")")
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message}")
             .build<Any>()
     }
 
