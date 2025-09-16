@@ -5,6 +5,7 @@ import net.javacrumbs.shedlock.core.LockAssert
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.regnskap.service.BehandlingsstatusService
+import no.nav.bidrag.regnskap.service.ReskontroService
 import no.nav.bidrag.regnskap.slack.SlackService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
@@ -22,10 +23,11 @@ class SjekkAvBehandlingsstatusScheduler(
     private val behandlingsstatusService: BehandlingsstatusService,
     private val kravSchedulerUtils: KravSchedulerUtils,
     private val slackService: SlackService,
-    @param:Value("\${NAIS_CLIENT_ID}") private val clientId: String,
+    private val reskontroService: ReskontroService,
+    @param:Value($$"${NAIS_CLIENT_ID}") private val clientId: String,
 ) {
 
-    @Scheduled(cron = "\${scheduler.behandlingsstatus.cron}")
+    @Scheduled(cron = $$"${scheduler.behandlingsstatus.cron}")
     @SchedulerLock(name = "skedulertSjekkAvBehandlingsstatus")
     @Transactional
     fun skedulertSjekkAvBehandlingsstatus() {
@@ -57,7 +59,10 @@ class SjekkAvBehandlingsstatusScheduler(
             })"
         }
         if (feiledeOverføringer.isNotEmpty()) {
-            val feilmeldingSammenslått = feiledeOverføringer.entries.joinToString("\n") { it.value }
+            val feilmeldingerReskontro =
+                reskontroService.sammenlignOversendteKonteringerMedReskontro(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
+
+            val feilmeldingSammenslått = utledFeilmelding(feiledeOverføringer, feilmeldingerReskontro)
 
             if (erInnenforDagligSlackTidsvindu()) {
                 slackService.sendMelding(
@@ -66,6 +71,21 @@ class SjekkAvBehandlingsstatusScheduler(
             }
             LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
         }
+    }
+
+    private fun utledFeilmelding(
+        feiledeOverføringer: Map<String, String>,
+        feilmeldingerReskontro: HashMap<String, String>,
+    ): String {
+        var feilmeldingSammenslått1 = ""
+        feiledeOverføringer.forEach { (batchUid, feilmelding) ->
+            feilmeldingSammenslått1 += if (feilmeldingerReskontro.containsKey(batchUid)) {
+                "$feilmelding\n${feilmeldingerReskontro[batchUid]}\n"
+            } else {
+                "$feilmelding\nAlle konteringer for denne batchUiden finnes i reskontro!\n"
+            }
+        }
+        return feilmeldingSammenslått1
     }
 
     // Sørger for at slack melding på behandlingsstatus kun blir sendt en gang om dagen
