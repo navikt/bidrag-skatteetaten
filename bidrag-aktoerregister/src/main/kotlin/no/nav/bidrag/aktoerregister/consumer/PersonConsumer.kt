@@ -1,7 +1,6 @@
 package no.nav.bidrag.aktoerregister.consumer
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Personident
@@ -32,12 +31,10 @@ class PersonConsumer(
                 UriComponentsBuilder.fromUri(url).path(PERSON_PATH).build().toUri(),
                 PersonRequest(Personident(personIdent.verdi)),
             )
-            SECURE_LOGGER.debug("Hentet person med id: {} fra bidrag-person: {}", personIdent.verdi, response)
+            LOGGER.debug { "${"Hentet person med id: {} fra bidrag-person: {}"} ${personIdent.verdi} $response" }
             return response
         } catch (e: Exception) {
-            SECURE_LOGGER.error(
-                "Noe gikk galt i kallet mot bidrag-person for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}",
-            )
+            LOGGER.error(e) { "Noe gikk galt i kallet mot bidrag-person for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}" }
             throw e
         }
     }

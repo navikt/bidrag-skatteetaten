@@ -1,15 +1,12 @@
 package no.nav.bidrag.regnskap.config
 
-import no.nav.bidrag.regnskap.SECURE_LOGGER
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.listener.DefaultErrorHandler
-import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries
 import org.springframework.util.backoff.ExponentialBackOff
 
-private val LOGGER = LoggerFactory.getLogger(KafkaConfiguration::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Configuration
 class KafkaConfiguration {
@@ -32,10 +29,9 @@ class KafkaConfiguration {
         val offset = rec.offset()
         val topic = rec.topic()
         val partition = rec.partition()
-        SECURE_LOGGER.error(
-            "Kafka melding med nøkkel $key, partition $partition og topic $topic feilet på offset $offset. Melding som feilet: $value",
-            e,
-        )
+        LOGGER.error(e) {
+            "Kafka melding med nøkkel $key, partition $partition og topic $topic feilet på offset $offset. Melding som feilet: $value"
+        }
     }, opprettBackoffPolicy())
 
     private fun opprettBackoffPolicy(): ExponentialBackOff = ExponentialBackOff().apply {

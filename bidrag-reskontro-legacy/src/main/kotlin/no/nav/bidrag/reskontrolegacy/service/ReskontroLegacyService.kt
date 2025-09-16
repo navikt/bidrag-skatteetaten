@@ -1,11 +1,11 @@
 package no.nav.bidrag.reskontrolegacy.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Organisasjonsnummer
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.domene.tid.Datoperiode
-import no.nav.bidrag.reskontrolegacy.SECURE_LOGGER
 import no.nav.bidrag.reskontrolegacy.generated.CResknObjectHolder
 import no.nav.bidrag.reskontrolegacy.generated.Cretur
 import no.nav.bidrag.reskontrolegacy.reskws.ReskWsClient
@@ -25,6 +25,8 @@ import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
+private val LOGGER = KotlinLogging.logger {}
+
 @Service
 class ReskontroLegacyService(
     private val reskWSSoapProxy: ReskWsClient,
@@ -39,7 +41,7 @@ class ReskontroLegacyService(
         val bidragSak = respons?.utParameter?.colCbidragSak?.cbidragSak?.getOrNull(0)
 
         if (bidragSak == null) {
-            SECURE_LOGGER.info("Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn")
+            LOGGER.info { "Fant ingen bidragssak på hentInnkrevingssakPåSak: ${saksnummerRequest.saksnummer.verdi} for rohPrSakPrBarn" }
             return null
         }
 
@@ -224,7 +226,7 @@ class ReskontroLegacyService(
         val transaksjoner = respons?.utParameter?.colCtransaksjon?.ctransaksjon
 
         if (transaksjoner.isNullOrEmpty()) {
-            SECURE_LOGGER.info("Fant ingen transaksjoner på $metodenavn: $søkeparameter for $elinKallNavn")
+            LOGGER.info { "Fant ingen transaksjoner på $metodenavn: $søkeparameter for $elinKallNavn" }
             return null
         }
 
