@@ -6,7 +6,6 @@ import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
@@ -21,13 +20,13 @@ class BidragReskontroConsumer(
         get() = UriComponentsBuilder.fromUri(uri)
 
     fun hentTransasksjonerForSak(saksnummer: String): TransaksjonerDto? {
-        val postForEntity = postForEntity<ResponseEntity<TransaksjonerDto>>(
+        val postForEntity = postForEntity<TransaksjonerDto>(
             bidragReskontroUri
                 .pathSegment("transaksjoner/bidragssak")
                 .build()
                 .toUri(),
             SaksnummerRequest(Saksnummer(saksnummer)),
         )
-        return postForEntity?.body
+        return postForEntity
     }
 }
