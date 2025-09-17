@@ -80,9 +80,9 @@ class SjekkAvBehandlingsstatusScheduler(
         var feilmeldingSammenslått1 = ""
         feiledeOverføringer.forEach { (batchUid, feilmelding) ->
             feilmeldingSammenslått1 += if (feilmeldingerReskontro.containsKey(batchUid)) {
-                "$feilmelding\n${feilmeldingerReskontro[batchUid]}\n"
+                "$feilmelding\n${feilmeldingerReskontro[batchUid]}\n\n"
             } else {
-                "$feilmelding\nAlle konteringer for denne batchUiden finnes i reskontro!\n"
+                "$feilmelding\nAlle konteringer for denne batchUiden finnes i reskontro!\n\n\n"
             }
         }
         return feilmeldingSammenslått1
