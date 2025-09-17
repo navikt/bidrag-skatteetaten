@@ -23,7 +23,7 @@ class BidragReskontroConsumer(
     fun hentTransasksjonerForSak(saksnummer: String): TransaksjonerDto? {
         val postForEntity = postForEntity<ResponseEntity<TransaksjonerDto>>(
             bidragReskontroUri
-                .pathSegment("bidragssak")
+                .pathSegment("/transaksjoner/bidragssak")
                 .build()
                 .toUri(),
             SaksnummerRequest(Saksnummer(saksnummer)),
