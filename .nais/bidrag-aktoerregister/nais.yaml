@@ -10,16 +10,9 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
-    logging:
-      destinations:
-        - id: loki
-        - id: elastic
-        - id: secure_logs
   azure:
     application:
       enabled: true
-  secureLogs:
-    enabled: true
   image: {{ image }}
   gcp:
     sqlInstances:
@@ -39,14 +32,14 @@ spec:
             value: "on"
   liveness:
     path: /actuator/health/liveness
-    initialDelay: 120
-    timeout: 10
+    initialDelay: 30
+    timeout: 5
     periodSeconds: 5
     failureThreshold: 10
   readiness:
     path: /actuator/health/readiness
-    initialDelay: 120
-    timeout: 10
+    initialDelay: 30
+    timeout: 5
     periodSeconds: 5
     failureThreshold: 10
   resources:

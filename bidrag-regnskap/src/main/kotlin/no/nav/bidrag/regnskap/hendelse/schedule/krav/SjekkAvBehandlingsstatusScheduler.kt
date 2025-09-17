@@ -1,12 +1,11 @@
 package no.nav.bidrag.regnskap.hendelse.schedule.krav
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.Gauge
-import io.micrometer.core.instrument.MeterRegistry
 import net.javacrumbs.shedlock.core.LockAssert
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.regnskap.service.BehandlingsstatusService
+import no.nav.bidrag.regnskap.service.ReskontroService
 import no.nav.bidrag.regnskap.slack.SlackService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
@@ -24,11 +23,11 @@ class SjekkAvBehandlingsstatusScheduler(
     private val behandlingsstatusService: BehandlingsstatusService,
     private val kravSchedulerUtils: KravSchedulerUtils,
     private val slackService: SlackService,
-    private val meterRegistry: MeterRegistry,
-    @Value("\${NAIS_CLIENT_ID}") private val clientId: String,
+    private val reskontroService: ReskontroService,
+    @param:Value($$"${NAIS_CLIENT_ID}") private val clientId: String,
 ) {
 
-    @Scheduled(cron = "\${scheduler.behandlingsstatus.cron}")
+    @Scheduled(cron = $$"${scheduler.behandlingsstatus.cron}")
     @SchedulerLock(name = "skedulertSjekkAvBehandlingsstatus")
     @Transactional
     fun skedulertSjekkAvBehandlingsstatus() {
@@ -36,11 +35,9 @@ class SjekkAvBehandlingsstatusScheduler(
         LOGGER.info { "Starter schedulert sjekk av behandlingsstatus for allerede overførte konteringer." }
         if (kravSchedulerUtils.harAktivtDriftsavvik()) {
             LOGGER.warn { "Det finnes aktive driftsavvik. Starter derfor ikke sjekk av behandlingsstatus." }
-            Gauge.builder("behandlingsstatus-feilet-for-antall") { -1 }.strongReference(true).register(meterRegistry)
             return
         } else if (kravSchedulerUtils.erVedlikeholdsmodusPåslått()) {
             LOGGER.warn { "Vedlikeholdsmodus er påslått! Starter derfor ikke sjekk av behandlingsstatus." }
-            Gauge.builder("behandlingsstatus-feilet-for-antall") { -1 }.strongReference(true).register(meterRegistry)
             return
         }
 
@@ -48,11 +45,10 @@ class SjekkAvBehandlingsstatusScheduler(
 
         if (konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.isEmpty()) {
             LOGGER.info { "Det finnes ingen konteringer som ikke har sjekket behandlingsstatus." }
-            Gauge.builder("behandlingsstatus-feilet-for-antall") { 0 }.strongReference(true).register(meterRegistry)
             return
         }
 
-        val feiledeOverføringer: HashMap<String, String> =
+        val feiledeOverføringer: Map<String, String> =
             behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
 
         LOGGER.info {
@@ -63,22 +59,37 @@ class SjekkAvBehandlingsstatusScheduler(
             })"
         }
         if (feiledeOverføringer.isNotEmpty()) {
-            val feilmeldingSammenslått = feiledeOverføringer.entries.joinToString("\n") { it.value }
+            val feilmeldingerReskontro =
+                reskontroService.sammenlignOversendteKonteringerMedReskontro(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
 
-            if (skalSendeDagligSlack()) {
+            val feilmeldingSammenslått = utledFeilmelding(feiledeOverføringer, feilmeldingerReskontro)
+
+            if (erInnenforDagligSlackTidsvindu()) {
                 slackService.sendMelding(
                     ":ohno: Sjekk av behandlingsstatus feilet! Miljø: $clientId\n\nFølgende batchUider feilet:\n$feilmeldingSammenslått",
                 )
             }
             LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
-            Gauge.builder("behandlingsstatus-feilet-for-antall") { feiledeOverføringer.size }.strongReference(true).register(meterRegistry)
-        } else {
-            Gauge.builder("behandlingsstatus-feilet-for-antall") { 0 }.strongReference(true).register(meterRegistry)
         }
     }
 
+    private fun utledFeilmelding(
+        feiledeOverføringer: Map<String, String>,
+        feilmeldingerReskontro: HashMap<String, String>,
+    ): String {
+        var feilmeldingSammenslått1 = ""
+        feiledeOverføringer.forEach { (batchUid, feilmelding) ->
+            feilmeldingSammenslått1 += if (feilmeldingerReskontro.containsKey(batchUid)) {
+                "$feilmelding\n${feilmeldingerReskontro[batchUid]}\n\n"
+            } else {
+                "$feilmelding\nAlle konteringer for denne batchUiden finnes i reskontro!\n\n\n"
+            }
+        }
+        return feilmeldingSammenslått1
+    }
+
     // Sørger for at slack melding på behandlingsstatus kun blir sendt en gang om dagen
-    private fun skalSendeDagligSlack(): Boolean {
+    private fun erInnenforDagligSlackTidsvindu(): Boolean {
         val now = LocalTime.now()
         val tidFra = LocalTime.parse("07:00:00")
         val tidTil = LocalTime.parse("08:00:00")

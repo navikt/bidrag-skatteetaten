@@ -31,11 +31,13 @@ class OppdragsperiodeService(
         opphørendeOppdragsperiode = periode.beløp == null,
     )
 
-    fun settAktivTilDatoPåEksisterendeOppdragsperioder(oppdrag: Oppdrag, nyOppdragsperiodePeriodeFra: LocalDate) {
+    fun oppdaterAktivTilDato(oppdrag: Oppdrag, nyOppdragsperiodePeriodeFra: LocalDate) {
         oppdrag.oppdragsperioder.forEach {
             if (it.aktivTil != null && it.aktivTil!!.isBefore(nyOppdragsperiodePeriodeFra)) {
                 return@forEach
-            } else if (it.periodeTil != null && nyOppdragsperiodePeriodeFra.isAfter(it.periodeTil)) {
+            }
+
+            if (it.periodeTil != null && nyOppdragsperiodePeriodeFra.isAfter(it.periodeTil)) {
                 it.aktivTil = it.periodeTil
             } else {
                 it.aktivTil = nyOppdragsperiodePeriodeFra

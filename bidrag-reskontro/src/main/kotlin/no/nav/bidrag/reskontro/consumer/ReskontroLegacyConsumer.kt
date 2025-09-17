@@ -1,7 +1,7 @@
 package no.nav.bidrag.reskontro.consumer
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.web.client.AbstractRestClient
-import no.nav.bidrag.reskontro.SECURE_LOGGER
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
@@ -16,14 +16,16 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.client.getForEntity
 import java.net.URI
 
+private val LOGGER = KotlinLogging.logger { }
+
 @Service
 class ReskontroLegacyConsumer(
-    @Value("\${RESKONTRO_LEGACY_URL}") private val reskontroLegacyUrl: String,
-    @Qualifier("azure") private val restTemplate: RestOperations,
+    @param:Value("\${RESKONTRO_LEGACY_URL}") private val reskontroLegacyUrl: String,
+    @param:Qualifier("azure") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "bidrag-reskontro-legacy") {
 
     fun hentInnkrevningssakerPåSak(saksnummerRequest: SaksnummerRequest): BidragssakDto? {
-        SECURE_LOGGER.info("Kaller hent bidragssak for sak: ${saksnummerRequest.saksnummer.verdi} mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent bidragssak for sak: ${saksnummerRequest.saksnummer.verdi} mot reskontro-legacy." }
         return restTemplate.postForEntity(
             URI.create("$reskontroLegacyUrl/innkrevningssak/bidragssak"),
             saksnummerRequest,
@@ -32,7 +34,7 @@ class ReskontroLegacyConsumer(
     }
 
     fun hentInnkrevningssakerPåPerson(personRequest: PersonRequest): BidragssakMedSkyldnerDto? {
-        SECURE_LOGGER.info("Kaller hent bidragssaker for person: ${personRequest.ident.verdi} mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent bidragssaker for person: ${personRequest.ident.verdi} mot reskontro-legacy." }
         return restTemplate.postForEntity(
             URI.create("$reskontroLegacyUrl/innkrevningssak/person"),
             personRequest,
@@ -41,7 +43,7 @@ class ReskontroLegacyConsumer(
     }
 
     fun hentTransaksjonerPåBidragssak(saksnummerRequest: SaksnummerRequest): TransaksjonerDto? {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for sak: ${saksnummerRequest.saksnummer.verdi} mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent transaksjoner for sak: ${saksnummerRequest.saksnummer.verdi} mot reskontro-legacy." }
         return restTemplate.postForEntity(
             URI.create("$reskontroLegacyUrl/transaksjoner/bidragssak"),
             saksnummerRequest,
@@ -50,7 +52,7 @@ class ReskontroLegacyConsumer(
     }
 
     fun hentTransaksjonerPåPerson(personRequest: PersonRequest): TransaksjonerDto? {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for person: ${personRequest.ident.verdi} mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent transaksjoner for person: ${personRequest.ident.verdi} mot reskontro-legacy." }
         return restTemplate.postForEntity(
             URI.create("$reskontroLegacyUrl/transaksjoner/person"),
             personRequest,
@@ -59,14 +61,14 @@ class ReskontroLegacyConsumer(
     }
 
     fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): TransaksjonerDto? {
-        SECURE_LOGGER.info("Kaller hent transaksjoner for transaksjonsId: $transaksjonsid mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent transaksjoner for transaksjonsId: $transaksjonsid mot reskontro-legacy." }
         return restTemplate.getForEntity<TransaksjonerDto>(
             "$reskontroLegacyUrl/transaksjoner/transaksjonsid?transaksjonsid=$transaksjonsid",
         ).body
     }
 
     fun hentInformasjonOmInnkrevingssaken(personRequest: PersonRequest): InnkrevingssaksinformasjonDto? {
-        SECURE_LOGGER.info("Kaller hent informasjonOmInnkrevingssaken for person: ${personRequest.ident.verdi} mot reskontro-legacy.")
+        LOGGER.info { "Kaller hent informasjonOmInnkrevingssaken for person: ${personRequest.ident.verdi} mot reskontro-legacy." }
         return restTemplate.postForEntity(
             URI.create("$reskontroLegacyUrl/innkrevingsinformasjon"),
             personRequest,
@@ -75,9 +77,7 @@ class ReskontroLegacyConsumer(
     }
 
     fun endreRmForSak(endreRmForSakRequest: EndreRmForSakRequest) {
-        SECURE_LOGGER.info(
-            "Kaller endre RM for sak. NyRM: ${endreRmForSakRequest.nyttFødselsnummer.verdi} i sak ${endreRmForSakRequest.saksnummer.verdi} med barn: ${endreRmForSakRequest.barn.verdi} mot reskontro-legacy.",
-        )
+        LOGGER.info { "Kaller endre RM for sak. NyRM: ${endreRmForSakRequest.nyttFødselsnummer.verdi} i sak ${endreRmForSakRequest.saksnummer.verdi} med barn: ${endreRmForSakRequest.barn.verdi} mot reskontro-legacy." }
         restTemplate.patchForObject(
             URI.create("$reskontroLegacyUrl/endreRmForSak"),
             endreRmForSakRequest,

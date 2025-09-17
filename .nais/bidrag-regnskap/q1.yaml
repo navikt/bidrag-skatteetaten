@@ -23,8 +23,8 @@ maskinporten:
   url: https://test.maskinporten.no
 env:
   SPRING_PROFILES_ACTIVE: database-new
-  SKATT_URL: https://api-preprod.nav.no/bidrag/v1/bidragskrav
-  SKATT_HOST: api-preprod.nav.no
+  SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no/bidrag/v1/bidragskrav
+  SKATT_HOST: bidrag-elin-stub.intern.dev.nav.no
   TOPIC_VEDTAK: bidrag.vedtak-q1
   TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
   PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
@@ -40,6 +40,9 @@ env:
   BIDRAG_VEDTAK_URL: https://bidrag-vedtak-q1.intern.dev.nav.no
   BIDRAG_VEDTAK_SCOPE: dev-gcp.bidrag.bidrag-vedtak-q1
   BIDRAG_VEDTAK_HOST: bidrag-vedtak-q1.intern.dev.nav.no
+  BIDRAG_RESKONTRO_URL: https://bidrag-reskontro-q1.intern.dev.nav.no
+  BIDRAG_RESKONTRO_SCOPE: dev-gcp.bidrag.bidrag-reskontro-q1
+  BIDRAG_RESKONTRO_HOST: bidrag-reskontro-q1.intern.dev.nav.no
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
   MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav"
   KONTERINGER_FORELDET_DATO: 2006-04

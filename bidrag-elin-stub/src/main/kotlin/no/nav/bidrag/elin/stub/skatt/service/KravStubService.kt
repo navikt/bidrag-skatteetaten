@@ -1,25 +1,25 @@
 package no.nav.bidrag.elin.stub.skatt.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
 import no.nav.bidrag.domene.enums.regnskap.Årsakskode
-import no.nav.bidrag.elin.stub.SECURE_LOGGER
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.Feilmelding
 import no.nav.bidrag.transport.regnskap.krav.KravResponse
 import no.nav.bidrag.transport.regnskap.krav.Kravliste
 import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.util.UUID
 
+private val LOGGER = KotlinLogging.logger {}
+
 @Service
 class KravStubService(private val objectMapper: ObjectMapper) {
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(KravStubService::class.java)
 
         @Volatile
         private var vedlikeholdsmodusState: Vedlikeholdsmodus = Vedlikeholdsmodus(false, Årsakskode.PAALOEP_BEHANDLET, "Default state.")
@@ -33,10 +33,10 @@ class KravStubService(private val objectMapper: ObjectMapper) {
 
     fun lagreKrav(kravliste: Kravliste): ResponseEntity<Any> {
         if (vedlikeholdsmodusState.aktiv) {
-            LOGGER.info(
+            LOGGER.info {
                 "Vedlikeholdsmodus er på! Krav blir derfor ikke lagret. " +
-                    "\nÅrsakskode: ${vedlikeholdsmodusState.aarsakKode.name}, kommentar: ${vedlikeholdsmodusState.kommentar}",
-            )
+                    "\nÅrsakskode: ${vedlikeholdsmodusState.aarsakKode.name}, kommentar: ${vedlikeholdsmodusState.kommentar}"
+            }
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build()
         }
 
@@ -45,7 +45,7 @@ class KravStubService(private val objectMapper: ObjectMapper) {
                 .body("Feil ved overføring av krav via STUB. Dette er en forventet feil og kan endres ved å kalle bidrag-elin-stub endepunkt.")
         }
 
-        SECURE_LOGGER.info(objectMapper.writeValueAsString(kravliste))
+        LOGGER.info { objectMapper.writeValueAsString(kravliste) }
         return ResponseEntity.accepted().body(KravResponse(opprettBatchUid()))
     }
 

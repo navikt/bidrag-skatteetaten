@@ -80,7 +80,6 @@ class PåløpskjøringServiceIT {
                 påløp!!,
                 genererFil = false,
                 overførFil = false,
-                Duration.ofSeconds(1),
             )
         }
 

@@ -149,7 +149,7 @@ Tokenet har en varighet til 120 sekunder og blir derfor cached for å unngå un�
 Bidrag-regnskap kaller ELINs KravAPI for å sende over konteringer og endre status på vedlikeholdsmodus. Se [SkattConsumer.kt](src/main/kotlin/no/nav/bidrag/regnskap/consumer/SkattConsumer.kt).
 
 ### Bidrag-sak
-Bidrag-regnskap har en integrasjon mot bidrag-sak for å hente ut ident til BM i saken. Se [SakConsumer.kt](src/main/kotlin/no/nav/bidrag/regnskap/consumer/SakConsumer.kt).
+Bidrag-regnskap har en integrasjon mot bidrag-sak for å hente ut ident til BM i saken. Se [SakConsumer.kt](src/main/kotlin/no/nav/bidrag/regnskap/consumer/BidragSakConsumer.kt).
 
 ### Bidrag-person
 Bidrag-regnskap benytter seg av @SjekkForNyIdent annotasjon for å søke etter nye identer på vedtak som mottas fra bidrag-vedtak.

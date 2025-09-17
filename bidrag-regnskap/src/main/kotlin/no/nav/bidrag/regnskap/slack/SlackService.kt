@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class SlackService(
-    @Value("\${BIDRAG_BOT_SLACK_OAUTH_TOKEN}") private val oauthToken: String,
-    @Value("\${SLACK_CHANNEL_ID}") private val channel: String,
+    @param:Value("\${BIDRAG_BOT_SLACK_OAUTH_TOKEN}") private val oauthToken: String,
+    @param:Value("\${SLACK_CHANNEL_ID}") private val channel: String,
 ) {
 
     companion object {

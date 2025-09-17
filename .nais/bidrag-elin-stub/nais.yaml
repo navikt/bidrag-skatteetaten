@@ -10,11 +10,10 @@ spec:
     application:
       enabled: true
   observability:
-    logging:
-      destinations:
-        - id: loki
-        - id: elastic
-        - id: secure_logs
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+
   image: {{ image }}
   liveness:
     path: /actuator/health

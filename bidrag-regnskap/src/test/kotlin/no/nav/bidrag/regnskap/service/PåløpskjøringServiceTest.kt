@@ -5,13 +5,13 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import io.micrometer.core.instrument.MeterRegistry
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Type
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
+import no.nav.bidrag.regnskap.config.CacheConfig
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
@@ -19,9 +19,9 @@ import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.regnskap.util.PeriodeUtils.hentAllePerioderMellomDato
 import no.nav.bidrag.regnskap.utils.TestData
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -33,8 +33,8 @@ class PåløpskjøringServiceTest {
     private val gcpFilBucket = mockk<GcpFilBucket>(relaxed = true)
     private val filoverføringTilElinKlient = mockk<FiloverføringTilElinKlient>(relaxed = true)
     private val skattConsumer = mockk<SkattConsumer>(relaxed = true)
-    private val meterRegistry = mockk<MeterRegistry>(relaxed = true)
     private val sjekkAvBehandlingsstatusScheduler = mockk<SjekkAvBehandlingsstatusScheduler>(relaxed = true)
+    private val cacheConfig = mockk<CacheConfig>(relaxed = true)
 
     private val påløpskjøringService =
         PåløpskjøringService(
@@ -44,9 +44,14 @@ class PåløpskjøringServiceTest {
             gcpFilBucket,
             filoverføringTilElinKlient,
             skattConsumer,
-            meterRegistry,
             sjekkAvBehandlingsstatusScheduler,
+            cacheConfig,
         )
+
+    @BeforeEach
+    fun setup() {
+        every { cacheConfig.duration } returns 1L
+    }
 
     @Test
     fun `Skal ved påløpskjøring kun starte eldste ikke kjørte påløpsperiode`() {
@@ -83,7 +88,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, genererFil = true, overførFil = true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,
@@ -138,7 +143,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns oppdragsperioder
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer1.periodeFra,
@@ -187,7 +192,7 @@ class PåløpskjøringServiceTest {
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderSomIkkeHarOpprettetAlleKonteringer() } returns oppdragsperiodeIder
         every { oppdragsperiodeRepo.hentAlleOppdragsperioderForListe(any()) } returns listOf(oppdragsperiodeMedManglendeKonteringer)
 
-        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true, Duration.ofMillis(1))
+        påløpskjøringService.startPåløpskjøringManuelt(påløp, true, true)
 
         val perioderMellomDato = hentAllePerioderMellomDato(
             oppdragsperiodeMedManglendeKonteringer.periodeFra,

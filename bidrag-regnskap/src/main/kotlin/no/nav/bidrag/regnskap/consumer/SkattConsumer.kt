@@ -2,9 +2,7 @@ package no.nav.bidrag.regnskap.consumer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClient
-import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.bidrag.transport.regnskap.krav.Kravliste
 import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
@@ -31,84 +29,70 @@ class SkattConsumer(
     @param:Qualifier("regnskap") private val restTemplate: RestTemplate,
     private val maskinportenClient: MaskinportenClient,
     private val objectMapper: ObjectMapper,
-    private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         const val KRAV_PATH = "/api/krav"
         const val LIVENESS_PATH = "/api/liveness"
         const val VEDLIKEHOLDSMODUS_PATH = "/api/vedlikeholdsmodus"
+        private const val VEDLIKEHOLDSMODUS_CACHE_NAME = "vedlikeholdsmodus_cache"
     }
 
     fun sendKrav(kravliste: Kravliste): ResponseEntity<String> {
-        SECURE_LOGGER.info("Overfører krav til skatt:\n${objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(kravliste)}")
-        metrikkerForAntallOversendteKonteringer(kravliste)
-        return try {
-            restTemplate.exchange(
-                opprettSkattUrl(KRAV_PATH),
-                HttpMethod.POST,
-                HttpEntity<Kravliste>(kravliste, opprettHttpHeaders()),
-                String::class.java,
-            )
-        } catch (e: HttpStatusCodeException) {
-            ResponseEntity.status(e.statusCode).body(e.responseBodyAsString)
-        }
+        LOGGER.info { "Overfører krav til skatt:\n${objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(kravliste)}" }
+
+        return utførHttpKall(
+            url = opprettSkattUrl(KRAV_PATH),
+            method = HttpMethod.POST,
+            requestBody = kravliste,
+            responseType = String::class.java,
+        )
     }
 
-    private fun metrikkerForAntallOversendteKonteringer(kravliste: Kravliste) {
-        kravliste.krav.forEach { krav ->
-            krav.konteringer.forEach { kontering ->
-                meterRegistry.counter("krav-antall-overfort-grensesnitt", "transaksjonskode", kontering.transaksjonskode.name).increment()
-            }
-        }
-    }
-
-    @CacheEvict(value = ["vedlikeholdsmodus_cache"], allEntries = true)
+    @CacheEvict(value = [VEDLIKEHOLDSMODUS_CACHE_NAME], allEntries = true)
     fun oppdaterVedlikeholdsmodus(vedlikeholdsmodus: Vedlikeholdsmodus): ResponseEntity<Any> {
-        LOGGER.info { "Oppdaterer vedlikeholdsmodud til følgende: $vedlikeholdsmodus" }
-        return restTemplate.exchange(
-            opprettSkattUrl(VEDLIKEHOLDSMODUS_PATH),
-            HttpMethod.POST,
-            HttpEntity<Vedlikeholdsmodus>(vedlikeholdsmodus, opprettHttpHeaders()),
-            Any::class.java,
+        LOGGER.info { "Oppdaterer vedlikeholdsmodus til: $vedlikeholdsmodus" }
+
+        return utførHttpKall(
+            url = opprettSkattUrl(VEDLIKEHOLDSMODUS_PATH),
+            method = HttpMethod.POST,
+            requestBody = vedlikeholdsmodus,
+            responseType = Any::class.java,
         )
     }
 
-    @Cacheable(value = ["vedlikeholdsmodus_cache"], key = "#root.methodName")
-    fun hentStatusPåVedlikeholdsmodus(): ResponseEntity<Any> {
-        LOGGER.debug { "Henter status på vedlikeholdsmodus." }
-        return try {
-            val response = restTemplate.exchange(
-                opprettSkattUrl(LIVENESS_PATH),
-                HttpMethod.GET,
-                HttpEntity<String>(opprettHttpHeaders()),
-                Any::class.java,
-            )
-            ResponseEntity.status(response.statusCode).body(response.body)
-        } catch (e: HttpStatusCodeException) {
-            ResponseEntity.status(e.statusCode).body(e.responseBodyAsString)
-        }
-    }
+    @Cacheable(value = [VEDLIKEHOLDSMODUS_CACHE_NAME], key = "#root.methodName")
+    fun hentStatusPåVedlikeholdsmodus(): ResponseEntity<Any> = utførHttpKall(
+        url = opprettSkattUrl(LIVENESS_PATH),
+        method = HttpMethod.GET,
+        requestBody = null,
+        responseType = Any::class.java,
+    )
 
-    fun sjekkBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> {
-        LOGGER.debug { "Henter behandlingsstatus for batchUid: $batchUid" }
-        val response = restTemplate.exchange(
-            opprettSkattUrl("$KRAV_PATH/$batchUid"),
-            HttpMethod.GET,
-            HttpEntity<String>(opprettHttpHeaders()),
-            BehandlingsstatusResponse::class.java,
-        )
-        return ResponseEntity.status(response.statusCode).body(response.body)
-    }
+    fun sjekkBehandlingsstatus(batchUid: String): ResponseEntity<BehandlingsstatusResponse> = utførHttpKall(
+        url = opprettSkattUrl("$KRAV_PATH/$batchUid"),
+        method = HttpMethod.GET,
+        requestBody = null,
+        responseType = BehandlingsstatusResponse::class.java,
+    )
+
+    private fun <T, R> utførHttpKall(
+        url: URI,
+        method: HttpMethod,
+        requestBody: T?,
+        responseType: Class<R>,
+    ): ResponseEntity<R> = restTemplate.exchange(
+        url,
+        method,
+        HttpEntity(requestBody, opprettHttpHeaders()),
+        responseType,
+    )
 
     private fun opprettSkattUrl(path: String): URI = URI.create(skattUrl + path)
 
-    private fun opprettHttpHeaders(): HttpHeaders {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        httpHeaders.set("Accept", MediaType.APPLICATION_JSON_VALUE)
-        httpHeaders.set("Authorization", "Bearer " + hentJwtToken())
-        return httpHeaders
+    private fun opprettHttpHeaders(): HttpHeaders = HttpHeaders().apply {
+        set("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        set("Accept", MediaType.APPLICATION_JSON_VALUE)
+        set("Authorization", "Bearer " + hentJwtToken())
     }
 
     private fun hentJwtToken(): String = maskinportenClient.hentMaskinportenToken(scope).parsedString

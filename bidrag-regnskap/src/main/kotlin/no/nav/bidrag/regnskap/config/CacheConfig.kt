@@ -11,8 +11,10 @@ import java.util.concurrent.TimeUnit
 @EnableCaching
 class CacheConfig {
 
+    val duration = 60L
+
     @Bean
     fun caffeineConfig() = CaffeineCacheManager().apply {
-        setCaffeine(Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS))
+        setCaffeine(Caffeine.newBuilder().expireAfterWrite(duration, TimeUnit.SECONDS))
     }
 }

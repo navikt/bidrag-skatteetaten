@@ -27,47 +27,60 @@ class KonteringService {
 
         perioderForOppdragsperiode.forEachIndexed { indexPeriode, periode ->
 
-            // Om det opprettes et opphør og det ikke finnes eksisterende korrigerte konteringer for perioden skal det ikke opprettes ny kontering.
-            if (oppdragsperiode.opphørendeOppdragsperiode &&
-                oppdragsperiode.beløp == BigDecimal.ZERO &&
-                !finnesKorrigerendeKonteringerForMåned(
-                    periode,
-                    oppdragsperiode,
-                )
-            ) {
+            if (skalIkkeOppretteKonteringerForOpphør(oppdragsperiode, periode)) {
                 return@forEachIndexed
             }
 
-            oppdragsperiode.konteringer = oppdragsperiode.konteringer.plus(
-                Kontering(
-                    transaksjonskode = transaksjonskode,
-                    overføringsperiode = periode.toString(),
-                    type = vurderType(alleOppdragsperioderForOppdrag, periode),
-                    søknadType = vurderSøknadType(hendelse, indexPeriode),
-                    oppdragsperiode = oppdragsperiode,
-                    vedtakId = vedtakId,
-                ),
+            val nyKontering = Kontering(
+                transaksjonskode = transaksjonskode,
+                overføringsperiode = periode.toString(),
+                type = vurderType(alleOppdragsperioderForOppdrag, periode),
+                søknadType = vurderSøknadType(hendelse, indexPeriode),
+                oppdragsperiode = oppdragsperiode,
+                vedtakId = vedtakId,
             )
+            oppdragsperiode.konteringer = oppdragsperiode.konteringer.plus(nyKontering)
         }
     }
 
-    private fun finnesKorrigerendeKonteringerForMåned(periode: YearMonth, oppdragsperiode: Oppdragsperiode): Boolean = oppdragsperiode.oppdrag!!.oppdragsperioder.flatMap {
-        it.konteringer
-    }.any {
-        YearMonth.parse(it.overføringsperiode) == periode && Transaksjonskode.valueOf(it.transaksjonskode).korreksjonskode == null
+    // Om det opprettes et opphør og det ikke finnes eksisterende korrigerte konteringer for perioden skal det ikke opprettes ny kontering.
+    private fun skalIkkeOppretteKonteringerForOpphør(
+        oppdragsperiode: Oppdragsperiode,
+        periode: YearMonth,
+    ): Boolean {
+        val opphørendeOppdragsperiode = oppdragsperiode.opphørendeOppdragsperiode
+        val beløpErZero = oppdragsperiode.beløp == BigDecimal.ZERO
+        return opphørendeOppdragsperiode &&
+            beløpErZero &&
+            !finnesKorrigerendeKonteringerForMåned(periode, oppdragsperiode)
+    }
+
+    @Suppress("IDENTITY_SENSITIVE_OPERATIONS_WITH_VALUE_TYPE")
+    private fun finnesKorrigerendeKonteringerForMåned(periode: YearMonth, oppdragsperiode: Oppdragsperiode): Boolean {
+        val oppdragsperioder = oppdragsperiode.oppdrag!!.oppdragsperioder
+        return oppdragsperioder
+            .flatMap { it.konteringer }
+            .any {
+                YearMonth.parse(it.overføringsperiode) == periode &&
+                    Transaksjonskode.valueOf(it.transaksjonskode).korreksjonskode == null
+            }
     }
 
     fun opprettKorreksjonskonteringer(oppdrag: Oppdrag, oppdragsperiode: Oppdragsperiode, sisteOverførtePeriode: YearMonth, hendelse: Hendelse) {
         val overførteKonteringerListe = hentAlleKonteringerForOppdrag(oppdrag)
-
-        opprettKorreksjonskonteringForAlleredeOversendteKonteringer(
-            PeriodeUtils.hentAllePerioderMellomDato(oppdragsperiode.periodeFra, oppdragsperiode.periodeTil, sisteOverførtePeriode),
+        val perioderForOppdragsperiode = PeriodeUtils.hentAllePerioderMellomDato(
+            oppdragsperiode.periodeFra,
+            oppdragsperiode.periodeTil,
+            sisteOverførtePeriode,
+        )
+        opprettKorreksjonskonteringForOverførteKonteringer(
+            perioderForOppdragsperiode,
             overførteKonteringerListe,
             hendelse,
         )
     }
 
-    private fun opprettKorreksjonskonteringForAlleredeOversendteKonteringer(
+    private fun opprettKorreksjonskonteringForOverførteKonteringer(
         perioderForOppdragsperiode: List<YearMonth>,
         overførteKonteringerListe: List<Kontering>,
         hendelse: Hendelse,
@@ -75,24 +88,29 @@ class KonteringService {
         overførteKonteringerListe.forEach { kontering ->
             val korreksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode).korreksjonskode
 
-            if (korreksjonskode != null &&
-                !erOverførtKonteringAlleredeKorrigert(kontering, overførteKonteringerListe) &&
-                erPeriodeOverlappendeSlutterFørOverførteKonteringsperiodeEllerGebyr(perioderForOppdragsperiode, kontering)
-            ) {
+            if (skalOppretteKorreksjonskontering(korreksjonskode, kontering, overførteKonteringerListe, perioderForOppdragsperiode)) {
                 val nyKorreksjonskontering = Kontering(
                     oppdragsperiode = kontering.oppdragsperiode,
                     overføringsperiode = kontering.overføringsperiode,
-                    transaksjonskode = korreksjonskode,
+                    transaksjonskode = korreksjonskode!!,
                     type = Type.ENDRING.name,
-                    søknadType = kontering.søknadType,
+                    søknadType = Søknadstype.EN.name,
                     vedtakId = hendelse.vedtakId,
                 )
 
-                kontering.oppdragsperiode?.konteringer = kontering.oppdragsperiode?.konteringer?.plus(nyKorreksjonskontering)
-                    ?: error("Noe gikk galt ved opprettelse av korrekterende kontering for konteringId: ${kontering.konteringId}")
+                kontering.oppdragsperiode?.konteringer = kontering.oppdragsperiode.konteringer.plus(nyKorreksjonskontering)
             }
         }
     }
+
+    private fun skalOppretteKorreksjonskontering(
+        korreksjonskode: String?,
+        kontering: Kontering,
+        overførteKonteringerListe: List<Kontering>,
+        perioderForOppdragsperiode: List<YearMonth>,
+    ): Boolean = korreksjonskode != null &&
+        !erOverførtKonteringAlleredeKorrigert(kontering, overførteKonteringerListe) &&
+        erPeriodeOverlappendeSlutterFørOverførteKonteringsperiodeEllerGebyr(perioderForOppdragsperiode, kontering)
 
     private fun erPeriodeOverlappendeSlutterFørOverførteKonteringsperiodeEllerGebyr(
         perioderForOppdragsperiode: List<YearMonth>,
@@ -144,16 +162,15 @@ class KonteringService {
                     sisteOverførtePeriode,
                 )
                 perioder.forEach { periode ->
-                    it.konteringer = it.konteringer.plus(
-                        Kontering(
-                            oppdragsperiode = kontering.oppdragsperiode,
-                            overføringsperiode = periode.toString(),
-                            transaksjonskode = kontering.transaksjonskode,
-                            type = Type.NY.name,
-                            søknadType = kontering.søknadType,
-                            vedtakId = hendelse.vedtakId,
-                        ),
+                    val nyKontering = Kontering(
+                        oppdragsperiode = kontering.oppdragsperiode,
+                        overføringsperiode = periode.toString(),
+                        transaksjonskode = kontering.transaksjonskode,
+                        type = Type.NY.name,
+                        søknadType = kontering.søknadType,
+                        vedtakId = hendelse.vedtakId,
                     )
+                    it.konteringer = it.konteringer.plus(nyKontering)
                 }
             }
     }

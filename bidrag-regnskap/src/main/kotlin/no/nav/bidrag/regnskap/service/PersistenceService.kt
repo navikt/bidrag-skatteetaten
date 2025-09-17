@@ -1,9 +1,9 @@
 package no.nav.bidrag.regnskap.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
-import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.regnskap.persistence.entity.Driftsavvik
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
@@ -15,7 +15,6 @@ import no.nav.bidrag.regnskap.persistence.repository.OppdragRepository
 import no.nav.bidrag.regnskap.persistence.repository.OppdragsperiodeRepository
 import no.nav.bidrag.regnskap.persistence.repository.PåløpRepository
 import no.nav.bidrag.transport.regnskap.avstemning.SumPrSak
-import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.EmptyResultDataAccessException
@@ -28,7 +27,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class PersistenceService(
@@ -40,19 +39,17 @@ class PersistenceService(
 ) {
 
     fun hentOppdrag(oppdragId: Int): Oppdrag? {
-        LOGGER.debug("Henter oppdrag med ID: $oppdragId")
+        LOGGER.debug { "Henter oppdrag med ID: $oppdragId" }
         return oppdragRepository.findByIdOrNull(oppdragId)
     }
 
     fun hentAlleOppdragPåSakId(sakId: String): List<Oppdrag> {
-        LOGGER.debug("Henter alle oppdrag med sakId: $sakId")
+        LOGGER.debug { "Henter alle oppdrag med sakId: $sakId" }
         return oppdragRepository.findAllBySakIdIs(sakId)
     }
 
     fun hentOppdragPaUnikeIdentifikatorer(stønadType: String, kravhaverIdent: String?, skyldnerIdent: String, sakId: String): Oppdrag? {
-        SECURE_LOGGER.debug(
-            "Henter oppdrag med stønadType: $stønadType, kravhaverIdent: $kravhaverIdent, skyldnerIdent: $skyldnerIdent, sakId: $sakId",
-        )
+        LOGGER.debug { "Henter oppdrag med stønadType: $stønadType, kravhaverIdent: $kravhaverIdent, skyldnerIdent: $skyldnerIdent, sakId: $sakId" }
         return oppdragRepository.finnOppdragMedStønadTypeKravhanderSkylderOgSaksnummer(
             stønadType,
             kravhaverIdent,
@@ -62,10 +59,9 @@ class PersistenceService(
     }
 
     fun hentOppdragPåReferanseOgOmgjørVedtakId(referanse: String, omgjørVedtakId: Int): Oppdrag? {
-        LOGGER.debug("Henter oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId")
+        LOGGER.debug { "Henter oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId" }
         val oppdrag = oppdragsperiodeRepository.hentOppdragPåReferanseOgVedtakId(referanse, omgjørVedtakId)
         if (oppdrag.size > 1) {
-            SECURE_LOGGER.error("Fant flere oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId. Følgende oppdrag ble funnet: $oppdrag")
             throw IllegalStateException("Fant flere oppdrag på referanse: $referanse og omgjørVedtakId: $omgjørVedtakId. Følgende oppdrag ble funnet: $oppdrag")
         }
         return oppdrag.firstOrNull()?.oppdrag
@@ -73,13 +69,13 @@ class PersistenceService(
 
     fun lagreOppdrag(oppdrag: Oppdrag): Int {
         val lagretOppdrag = oppdragRepository.save(oppdrag)
-        LOGGER.debug("Lagret oppdrag med ID: ${lagretOppdrag.oppdragId}")
+        LOGGER.debug { "Lagret oppdrag med ID: ${lagretOppdrag.oppdragId}" }
         return lagretOppdrag.oppdragId!!
     }
 
     fun lagreOppdrag(oppdrag: List<Oppdrag>): List<Int> {
         val lagredeOppdrag = oppdragRepository.saveAll(oppdrag)
-        LOGGER.debug("Lagret alle oppdrag med ID: {}", lagredeOppdrag.map { it.oppdragId })
+        LOGGER.debug { "${"Lagret alle oppdrag med ID: {}"} ${lagredeOppdrag.map { it.oppdragId }}" }
         return lagredeOppdrag.map { it.oppdragId!! }
     }
 
@@ -102,24 +98,24 @@ class PersistenceService(
 
     fun lagrePåløp(påløp: Påløp): Int {
         val lagretPåløp = påløpRepository.save(påløp)
-        LOGGER.debug("Lagret påløp med ID: ${lagretPåløp.påløpId}")
+        LOGGER.debug { "Lagret påløp med ID: ${lagretPåløp.påløpId}" }
         return lagretPåløp.påløpId!!
     }
 
     fun hentIkkeKjørtePåløp(): List<Påløp> {
-        LOGGER.debug("Henter alle ikke kjørte påløp.")
+        LOGGER.debug { "Henter alle ikke kjørte påløp." }
         return påløpRepository.findAllByFullførtTidspunktIsNull()
     }
 
     @Cacheable(value = ["siste_overforte_periode_cache"])
     fun finnSisteOverførtePeriode(): YearMonth {
-        LOGGER.debug("Henter siste overførte periode.")
+        LOGGER.debug { "Henter siste overførte periode." }
         try {
             val sisteOverførtePeriode = YearMonth.parse(påløpRepository.finnSisteOverførtePeriodeForPåløp() ?: "1001-01")
-            LOGGER.debug("Siste overførte periode var: {}.", sisteOverførtePeriode)
+            LOGGER.debug { "${"Siste overførte periode var: {}."} $sisteOverførtePeriode" }
             return sisteOverførtePeriode
         } catch (e: EmptyResultDataAccessException) {
-            LOGGER.error("Det finnes ingen overførte påløp. Minst et påløp må være opprettet og overført før REST kan tas i bruk.")
+            LOGGER.error { "Det finnes ingen overførte påløp. Minst et påløp må være opprettet og overført før REST kan tas i bruk." }
             throw e
         }
     }
@@ -142,7 +138,7 @@ class PersistenceService(
 
     fun lagreKontering(kontering: Kontering): Int {
         val lagretKontering = konteringRepository.save(kontering)
-        LOGGER.debug("Lagret kontering med ID: ${lagretKontering.konteringId}")
+        LOGGER.debug { "Lagret kontering med ID: ${lagretKontering.konteringId}" }
         return lagretKontering.konteringId!!
     }
 
@@ -151,7 +147,7 @@ class PersistenceService(
         try {
             return oppdragsperiodeRepository.save(oppdragsperiode).oppdragsperiodeId!!
         } finally {
-            LOGGER.debug("TIDSBRUK lagreOppdragsperiode: {}ms", System.currentTimeMillis() - startTime)
+            LOGGER.debug { "${"TIDSBRUK lagreOppdragsperiode: {}ms"} ${System.currentTimeMillis() - startTime}" }
         }
     }
 

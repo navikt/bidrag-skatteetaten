@@ -2,7 +2,6 @@ package no.nav.bidrag.aktoerregister.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.EntityManager
-import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.consumer.PersonConsumer
 import no.nav.bidrag.aktoerregister.consumer.SamhandlerConsumer
 import no.nav.bidrag.aktoerregister.dto.AktoerDTO
@@ -128,11 +127,11 @@ class AktørService(
             settNyeTidligereIdenter(aktør)
             settDødsbo(aktør)
             hendelseService.opprettHendelserPåAktør(aktør, originalIdent, oppdaterteFelterPåAktør)
-            SECURE_LOGGER.info("Lagrer aktør: ${aktør.aktørIdent}")
+            LOGGER.info { "Lagrer aktør: ${aktør.aktørIdent}" }
             aktørRepository.save(aktør)
             return null
         } catch (e: Exception) {
-            SECURE_LOGGER.error("Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.stackTraceToString()}")
+            LOGGER.error(e) { "Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. \nFeil: ${e.message} \nStacktrace: ${e.stackTraceToString()}" }
             throw e
         }
     }
@@ -151,11 +150,9 @@ class AktørService(
         var slettetAktørIdent: String? = null
 
         aktørRepository.findByAktørIdent(nyAktør.aktørIdent)?.let {
-            LOGGER.info { "Sletter aktør grunnet duplikat. Se secure logs." }
-            SECURE_LOGGER.info(
-                "Sletter aktør grunnet duplikat. " +
-                    "Original ident: $originalIdent, ny aktør ident: ${nyAktør.aktørIdent}, gammel ident: ${it.aktørIdent}",
-            )
+            LOGGER.info {
+                "Sletter aktør grunnet duplikat. Original ident: $originalIdent, ny aktør ident: ${nyAktør.aktørIdent}, gammel ident: ${it.aktørIdent}"
+            }
             slettetAktørIdent = it.aktørIdent
             it.hendelser.forEach { hendelse ->
                 hendelseRepository.delete(hendelse)
@@ -175,7 +172,7 @@ class AktørService(
         settNyeTidligereIdenter(oppdatertAktør)
         settDødsbo(oppdatertAktør)
         hendelseService.opprettHendelserPåAktør(oppdatertAktør, originalIdent, oppdaterteFelterPåAktør)
-        SECURE_LOGGER.info("Lagrer oppdatert aktør etter sletting av duplikat: ${oppdatertAktør.aktørIdent}")
+        LOGGER.info { "Lagrer oppdatert aktør etter sletting av duplikat: ${oppdatertAktør.aktørIdent}" }
         aktørRepository.save(oppdatertAktør)
         return slettetAktørIdent
     }
@@ -187,7 +184,7 @@ class AktørService(
             settDødsbo(aktør)
             hendelseService.opprettHendelserPåAktør(aktør, null, finnFelterPåNyAktør(aktør))
         } catch (e: DataIntegrityViolationException) {
-            SECURE_LOGGER.error("DataIntegrityViolationException for ident: ${aktør.aktørIdent}. \nFeil: $e ")
+            LOGGER.error(e) { "DataIntegrityViolationException for ident: ${aktør.aktørIdent}. \nFeil: $e " }
             throw e
         }
     }

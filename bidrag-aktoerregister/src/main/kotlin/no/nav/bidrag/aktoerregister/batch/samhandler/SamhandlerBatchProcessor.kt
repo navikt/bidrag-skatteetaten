@@ -1,7 +1,6 @@
 package no.nav.bidrag.aktoerregister.batch.samhandler
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.batch.AktørBatchProcessorResult
 import no.nav.bidrag.aktoerregister.batch.AktørStatus
 import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
@@ -25,12 +24,10 @@ class SamhandlerBatchProcessor(
                 AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED)
             }
     } catch (e: AktørNotFoundException) {
-        SECURE_LOGGER.warn("Samhandler: ${aktør.aktørIdent} finnes ikke. Feilmelding: ${e.message}")
-        LOGGER.warn(e) { e.message }
+        LOGGER.warn(e) { "Samhandler: ${aktør.aktørIdent} finnes ikke. Feilmelding: ${e.message}" }
         null
     } catch (e: Exception) {
-        SECURE_LOGGER.error("Samhandler: ${aktør.aktørIdent} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}")
-        LOGGER.error(e) { e.message }
+        LOGGER.error(e) { "Samhandler: ${aktør.aktørIdent} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}" }
         null
     }
 }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import no.nav.bidrag.aktoerregister.SECURE_LOGGER
 import no.nav.bidrag.aktoerregister.dto.AktoerDTO
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
 import no.nav.bidrag.aktoerregister.dto.HendelseDTO
@@ -47,7 +46,7 @@ class AktoerregisterController(
     )
     @PostMapping(path = ["/aktoer"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> = try {
-        SECURE_LOGGER.info("Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}")
+        LOGGER.info { "Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}" }
         val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
         ResponseEntity.ok(aktoer)
     } catch (e: AktørNotFoundException) {
@@ -55,7 +54,6 @@ class AktoerregisterController(
         throw ResponseStatusException(HttpStatus.NOT_FOUND, "Finner ingen aktør med oppgitt ident", e)
     } catch (e: Exception) {
         LOGGER.error(e) { "Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}" }
-        SECURE_LOGGER.error("Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}")
         throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Feil ved henting av aktør. Prøv igjen senere.", e)
     }
 
@@ -93,7 +91,7 @@ class AktoerregisterController(
     fun avmeldAktør(@RequestBody request: AktoerIdDTO): ResponseEntity<Any> = try {
         aktørService.slettAktoer(request)
         ResponseEntity.ok().build()
-    } catch (e: AktørNotFoundException) {
+    } catch (_: AktørNotFoundException) {
         ResponseEntity.notFound().build()
     }
 

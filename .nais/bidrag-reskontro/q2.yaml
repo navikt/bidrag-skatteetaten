@@ -29,3 +29,6 @@ azure:
       - application: bidrag-dokument-bestilling
         namespace: bidrag
         cluster: dev-gcp
+      - application: bidrag-regnskap-q2
+        namespace: bidrag
+        cluster: dev-gcp

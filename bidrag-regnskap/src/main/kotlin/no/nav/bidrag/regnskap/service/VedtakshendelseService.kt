@@ -4,21 +4,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.domene.enums.vedtak.Beslutningstype
 import no.nav.bidrag.domene.enums.vedtak.Innkrevingstype
-import no.nav.bidrag.regnskap.SECURE_LOGGER
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.dto.vedtak.Periode
 import no.nav.bidrag.regnskap.util.PåløpException
 import no.nav.bidrag.transport.behandling.vedtak.Engangsbeløp
 import no.nav.bidrag.transport.behandling.vedtak.Stønadsendring
 import no.nav.bidrag.transport.behandling.vedtak.VedtakHendelse
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
-private val LOGGER = LoggerFactory.getLogger(VedtakshendelseService::class.java)
+private val LOGGER = KotlinLogging.logger {}
 private val objectMapper =
     ObjectMapper().registerModule(KotlinModule.Builder().build()).registerModule(JavaTimeModule())
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -39,8 +38,7 @@ class VedtakshendelseService(
 
         val vedtakHendelse = mapVedtakHendelse(hendelse)
 
-        LOGGER.info("Behandler vedakHendelse for vedtakid: ${vedtakHendelse.id}")
-        SECURE_LOGGER.info("Behandler vedtakHendelse: $vedtakHendelse\nVedtakhendelse som json string: $hendelse")
+        LOGGER.info { "Behandler vedakHendelse for vedtakid: ${vedtakHendelse.id}" }
 
         val opprettedeOppdrag = mutableListOf<Int>()
 
@@ -62,11 +60,11 @@ class VedtakshendelseService(
     fun mapVedtakHendelse(hendelse: String): VedtakHendelse = try {
         objectMapper.readValue(hendelse, VedtakHendelse::class.java)
     } finally {
-        SECURE_LOGGER.debug("Leser hendelse: {}", hendelse)
+        LOGGER.debug { "${"Leser hendelse: {}"} $hendelse" }
     }
 
     private fun opprettOppdragForStønadsending(vedtakHendelse: VedtakHendelse, stønadsendring: Stønadsendring): Int? {
-        LOGGER.debug("Oppretter oppdrag for stønadendring.")
+        LOGGER.debug { "Oppretter oppdrag for stønadendring." }
 
         if (erInnkrevingOgEndring(stønadsendring.innkreving, stønadsendring.beslutning)) {
             val hendelse = Hendelse(
@@ -103,7 +101,7 @@ class VedtakshendelseService(
     }
 
     private fun opprettOppdragForEngangsbeløp(vedtakHendelse: VedtakHendelse, engangsbeløp: Engangsbeløp): Int? {
-        LOGGER.debug("Oppretter oppdrag for engangsbeløp.")
+        LOGGER.debug { "Oppretter oppdrag for engangsbeløp." }
 
         if (erInnkrevingOgEndring(engangsbeløp.innkreving, engangsbeløp.beslutning)) {
             val betaltBeløp = engangsbeløp.betaltBeløp ?: BigDecimal.ZERO
@@ -141,10 +139,10 @@ class VedtakshendelseService(
 
     fun sendKrav(oppdragIdListe: List<Int>) {
         if (harAktiveDriftAvvik()) {
-            LOGGER.info("Det finnes aktive driftsavvik. Starter derfor ikke overføring av konteringer for oppdrag: $oppdragIdListe.")
+            LOGGER.info { "Det finnes aktive driftsavvik. Starter derfor ikke overføring av konteringer for oppdrag: $oppdragIdListe." }
             return
         } else if (erVedlikeholdsmodusPåslått()) {
-            LOGGER.info("Vedlikeholdsmodus er påslått! Starter derfor ikke overføring av kontering for oppdrag: $oppdragIdListe.")
+            LOGGER.info { "Vedlikeholdsmodus er påslått! Starter derfor ikke overføring av kontering for oppdrag: $oppdragIdListe." }
             return
         }
         kravService.sendKrav(oppdragIdListe)
