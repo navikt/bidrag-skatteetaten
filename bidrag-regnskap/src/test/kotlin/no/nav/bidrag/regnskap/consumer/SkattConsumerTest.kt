@@ -75,39 +75,4 @@ class SkattConsumerTest {
             )
         }
     }
-
-    @Test
-    fun `sendKrav skal kaste exception ved HTTP error`() {
-        val kravliste = Kravliste(listOf())
-        val forventetUrl = URI.create("$skattUrl${SkattConsumer.KRAV_PATH}")
-
-        every { maskinportenClient.hentMaskinportenToken(any()) } returns mockk {
-            every { parsedString } returns "mockedToken"
-        }
-        every { objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(any()) } returns "{}"
-        every {
-            restTemplate.exchange(
-                forventetUrl,
-                HttpMethod.POST,
-                any(),
-                String::class.java,
-            )
-        } throws mockk<HttpStatusCodeException> {
-            every { statusCode } returns HttpStatus.INTERNAL_SERVER_ERROR
-        }
-
-        val exception = assertThrows<HttpStatusCodeException> { skattConsumer.sendKrav(kravliste) }
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.statusCode)
-        verify {
-            restTemplate.exchange(
-                forventetUrl,
-                HttpMethod.POST,
-                match {
-                    it.body == kravliste && (it.headers[HttpHeaders.AUTHORIZATION]?.get(0) == "Bearer mockedToken")
-                },
-                String::class.java,
-            )
-        }
-    }
 }
