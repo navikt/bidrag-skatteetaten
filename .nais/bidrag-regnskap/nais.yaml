@@ -91,8 +91,8 @@ spec:
         - host: {{ env.PERSON_HOST }}
         - host: {{ env.BIDRAG_VEDTAK_HOST }}
         - host: {{ env.SKATT_HOST }}
-        - host: {{ env.SFTP_HOST }}
         - host: {{ env.BIDRAG_RESKONTRO_HOST }}
+        - host: {{ env.SFTP_HOST }}
           ports:
             - port: 22
         - host: slack.com
