@@ -15,6 +15,17 @@ import org.junit.jupiter.api.Test
 
 class BehandlingsstatusServiceTest {
 
+    private val skattConsumer: SkattConsumer = mockk()
+    private val persistenceService: PersistenceService = mockk()
+    private val reskontroService: ReskontroService = mockk()
+    private lateinit var behandlingsstatusService: BehandlingsstatusService
+
+    @BeforeEach
+    fun setUp() {
+        every { reskontroService.sammenlignOversendteKonteringerMedReskontro(any()) } returns hashMapOf()
+        behandlingsstatusService = BehandlingsstatusService(skattConsumer, persistenceService, reskontroService)
+    }
+
     @Test
     fun `skal hente konteringer med ikke godkjent behandlingsstatus`() {
         val referanse1 = "referanse1"
@@ -43,15 +54,6 @@ class BehandlingsstatusServiceTest {
         assertTrue(resultat.isEmpty())
 
         verify { persistenceService.hentAlleKonteringerUtenBehandlingsstatusOk() }
-    }
-
-    private val skattConsumer: SkattConsumer = mockk()
-    private val persistenceService: PersistenceService = mockk()
-    private lateinit var behandlingsstatusService: BehandlingsstatusService
-
-    @BeforeEach
-    fun setUp() {
-        behandlingsstatusService = BehandlingsstatusService(skattConsumer, persistenceService)
     }
 
     @Test

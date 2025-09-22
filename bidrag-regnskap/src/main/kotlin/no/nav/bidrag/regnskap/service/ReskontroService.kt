@@ -20,10 +20,10 @@ class ReskontroService(
      * Metoden tar deretter å oppretter en liste med feilmelding om det finnes avvik mellom oversending og reskontro.
      * Dette er ikke ment som en erstatning av sjekkAvBehandlingstatus, men heller som et suplement.
      */
-    fun sammenlignOversendteKonteringerMedReskontro(inputKonteringer: Map<String, Set<Kontering>> = emptyMap()): HashMap<String, String> {
+    fun sammenlignOversendteKonteringerMedReskontro(inputKonteringer: Map<String, Set<Kontering>> = emptyMap()): HashMap<String, MutableSet<String>> {
         val oversendteKonteringer = inputKonteringer.ifEmpty { behandlingsstatusService.hentKonteringerMedIkkeGodkjentBehandlingsstatus() }
 
-        val feilmeldinger: HashMap<String, String> = hashMapOf()
+        val feilmeldinger: HashMap<String, MutableSet<String>> = hashMapOf()
         oversendteKonteringer.forEach { (sisteReferansekode, konteringer) ->
             // Siden alle konteringer oversendt for en referansekode alltid er knyttet til samme sak og vedtak kan vi hente saksnummer fra første kontering
             val saksnummer = konteringer.first().oppdragsperiode!!.oppdrag!!.sakId
@@ -31,15 +31,16 @@ class ReskontroService(
             val transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
             if (transaksjoner == null || transaksjoner.transaksjoner.isEmpty()) {
                 LOGGER.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
-                feilmeldinger[sisteReferansekode] = "Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n"
+                feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
+                feilmeldinger[sisteReferansekode]?.add("Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
                 return@forEach
             }
 
             konteringer.forEach { kontering ->
                 val transaksjonSomMatcherKontering = finnMatcheneTransaksjon(transaksjoner, kontering)
                 if (transaksjonSomMatcherKontering == null) {
-                    feilmeldinger.putIfAbsent(sisteReferansekode, "") // Hvis det ikke finnes en feilmelding for referansekode må dette gjøres for å unngå en null-referanse når stringen appendes under.
-                    feilmeldinger[sisteReferansekode] += "Fant ikke transaksjon i reskontro for sak: $saksnummer, vedtak: ${kontering.vedtakId}, transaksjonskode: ${kontering.transaksjonskode}, periode: ${kontering.overføringsperiode} som matcher oversendt kontering: ${kontering.konteringId}.\n"
+                    feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
+                    feilmeldinger[sisteReferansekode]?.add("Fant ikke transaksjon i reskontro for sak: $saksnummer, vedtak: ${kontering.vedtakId}, transaksjonskode: ${kontering.transaksjonskode}, periode: ${kontering.overføringsperiode} som matcher oversendt kontering: ${kontering.konteringId}.\n")
                 }
             }
         }

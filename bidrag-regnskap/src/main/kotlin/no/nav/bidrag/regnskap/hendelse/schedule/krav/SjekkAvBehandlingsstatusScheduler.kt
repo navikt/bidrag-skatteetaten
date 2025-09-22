@@ -62,7 +62,21 @@ class SjekkAvBehandlingsstatusScheduler(
             val feilmeldingerReskontro =
                 reskontroService.sammenlignOversendteKonteringerMedReskontro(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
 
-            val feilmeldingSammenslått = utledFeilmelding(feiledeOverføringer, feilmeldingerReskontro)
+            var feilmeldingSammenslått = ""
+
+            feiledeOverføringer.forEach { (batchUid, feilmelding) ->
+
+                if (!feilmeldingerReskontro.containsKey(batchUid)) {
+                    LOGGER.warn { "BatchUId $batchUid har alle konteringer registert i reskontro. Makerer derfor batchUid som OK. Denne batchUid burde ha returnert DONE fra Skatt." }
+                    behandlingsstatusService.behandleVellykkedeKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]!!)
+                } else {
+                    feilmeldingSammenslått += "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede konteringer.\n\n"
+                }
+            }
+
+            if (feilmeldingSammenslått.isEmpty()) {
+                return
+            }
 
             if (erInnenforDagligSlackTidsvindu()) {
                 slackService.sendMelding(
@@ -71,21 +85,6 @@ class SjekkAvBehandlingsstatusScheduler(
             }
             LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
         }
-    }
-
-    private fun utledFeilmelding(
-        feiledeOverføringer: Map<String, String>,
-        feilmeldingerReskontro: HashMap<String, String>,
-    ): String {
-        var feilmeldingSammenslått1 = ""
-        feiledeOverføringer.forEach { (batchUid, feilmelding) ->
-            feilmeldingSammenslått1 += if (feilmeldingerReskontro.containsKey(batchUid)) {
-                "$feilmelding\n${feilmeldingerReskontro[batchUid]}\n\n"
-            } else {
-                "$feilmelding\nAlle konteringer for denne batchUiden finnes i reskontro!\n\n\n"
-            }
-        }
-        return feilmeldingSammenslått1
     }
 
     // Sørger for at slack melding på behandlingsstatus kun blir sendt en gang om dagen

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.UUID
-import kotlin.text.contains
 
 @ExtendWith(MockKExtension::class)
 class ReskontroServiceTest {
@@ -50,7 +49,7 @@ class ReskontroServiceTest {
         val result = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
         assertEquals(1, result.size)
-        assertTrue(result[referansekode]?.contains("Det finnes ingen transaksjoner i reskontro for sak: $sakId") == true)
+        assertTrue(result[referansekode]?.any { it.contains("Det finnes ingen transaksjoner i reskontro for sak: $sakId") } == true)
     }
 
     @Test
@@ -118,7 +117,7 @@ class ReskontroServiceTest {
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
         assertEquals(1, resultat.size)
-        assertTrue(resultat[referansekode]?.contains("Fant ikke transaksjon i reskontro for sak: $sakId") == true)
+        assertTrue(resultat[referansekode]?.any { it.contains("Fant ikke transaksjon i reskontro for sak: $sakId") } == true)
     }
 
     @Test
@@ -162,7 +161,7 @@ class ReskontroServiceTest {
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
         assertEquals(1, resultat.size)
-        assertTrue(resultat[referansekode]?.contains("Fant ikke transaksjon i reskontro for sak: $sakId") == true)
+        assertTrue(resultat[referansekode]?.any { it.contains("Fant ikke transaksjon i reskontro for sak: $sakId") } == true)
     }
 
     @Test
@@ -206,7 +205,7 @@ class ReskontroServiceTest {
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
         assertEquals(1, resultat.size)
-        assertTrue(resultat[referansekode]?.contains("Fant ikke transaksjon i reskontro for sak: $sakId") == true)
+        assertTrue(resultat[referansekode]?.any { it.contains("Fant ikke transaksjon i reskontro for sak: $sakId") } == true)
     }
 
     @Test

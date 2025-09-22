@@ -1,5 +1,6 @@
 package no.nav.bidrag.regnskap.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
@@ -7,10 +8,13 @@ import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusRespo
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
+private val LOGGER = KotlinLogging.logger { }
+
 @Service
 class BehandlingsstatusService(
     private val skattConsumer: SkattConsumer,
     private val persistenceService: PersistenceService,
+    private val reskontroService: ReskontroService,
 ) {
 
     fun hentKonteringerMedIkkeGodkjentBehandlingsstatus(sisteReferanser: List<String> = emptyList()): Map<String, Set<Kontering>> = hentKonteringer(sisteReferanser)
@@ -26,6 +30,10 @@ class BehandlingsstatusService(
                 val behandlingsstatusResponse = hentBehandlingsstatus(batchUid)
 
                 if (behandlingsstatusResponse.batchStatus == Batchstatus.Done) {
+                    val feilmeldingFraReskontro = reskontroService.sammenlignOversendteKonteringerMedReskontro(mapOf(batchUid to konteringer))
+                    if (feilmeldingFraReskontro.isNotEmpty()) {
+                        LOGGER.error { "Det finnes avvik mellom oversendte konteringer som har fått DONE status fra skatt og det som ligger i reskontro for batchUid $batchUid: $feilmeldingFraReskontro" }
+                    }
                     behandleVellykkedeKonteringer(konteringer)
                 } else {
                     behandleFeiledeKonteringer(
@@ -57,7 +65,7 @@ class BehandlingsstatusService(
         settFeiledeKonteringerForAlleOppdragKnyttetTilKonteringer(konteringer, true)
     }
 
-    private fun behandleVellykkedeKonteringer(
+    fun behandleVellykkedeKonteringer(
         konteringer: Set<Kontering>,
     ) {
         val now = LocalDateTime.now()
