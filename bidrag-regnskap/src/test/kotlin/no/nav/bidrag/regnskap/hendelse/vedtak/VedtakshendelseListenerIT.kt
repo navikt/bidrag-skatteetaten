@@ -19,6 +19,7 @@ import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.consumer.KravApiWireMock
 import no.nav.bidrag.regnskap.consumer.PersonApiWireMock
+import no.nav.bidrag.regnskap.consumer.ReskontroApiWireMock
 import no.nav.bidrag.regnskap.consumer.SakApiWireMock
 import no.nav.bidrag.regnskap.maskinporten.MaskinportenWireMock
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
@@ -74,6 +75,7 @@ internal class VedtakshendelseListenerIT {
         private var sakApiWireMock: SakApiWireMock = SakApiWireMock()
         private var maskinportenWireMock: MaskinportenWireMock = MaskinportenWireMock()
         private var personApiWireMock: PersonApiWireMock = PersonApiWireMock()
+        private val reskontroApiWireMock: ReskontroApiWireMock = ReskontroApiWireMock()
 
         private val maskinportenConfig = MaskinportenWireMock.createMaskinportenConfig()
 
@@ -136,6 +138,7 @@ internal class VedtakshendelseListenerIT {
         kravApiWireMock.livenessMedGyldigResponse()
         maskinportenWireMock.kravMedGyldigResponse()
         personApiWireMock.personidentMedNoBody()
+        reskontroApiWireMock.reskontroIngenResponse()
     }
 
     @AfterAll

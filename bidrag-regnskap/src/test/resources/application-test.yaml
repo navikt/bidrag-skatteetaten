@@ -2,6 +2,7 @@ SKATT_URL: http://localhost:8097
 SAK_URL: http://localhost:8098
 PERSON_URL: http://localhost:8099
 BIDRAG_VEDTAK_URL: http://localhost:8100
+BIDRAG_RESKONTRO_URL: http://localhost:8101
 AZURE_OPENID_CONFIG_ISSUER: http://localhost:${mock-oauth2-server.port}/aad
 TOPIC_VEDTAK: bidrag.vedtak-feature-test
 TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
