@@ -15,7 +15,7 @@
 	<name>bidrag-reskontro-legacy</name>
 
 	<properties>
-		<jaxb-maven-plugin.version>4.0.9</jaxb-maven-plugin.version>
+		<jaxb-maven-plugin.version>4.0.11</jaxb-maven-plugin.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 	</properties>
 
