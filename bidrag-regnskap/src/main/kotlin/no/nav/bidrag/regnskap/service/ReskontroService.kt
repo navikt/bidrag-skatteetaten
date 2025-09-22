@@ -12,7 +12,6 @@ private val LOGGER = KotlinLogging.logger { }
 @Service
 class ReskontroService(
     private val bidragReskontroConsumer: BidragReskontroConsumer,
-    private val behandlingsstatusService: BehandlingsstatusService,
 ) {
 
     /**
@@ -20,9 +19,7 @@ class ReskontroService(
      * Metoden tar deretter å oppretter en liste med feilmelding om det finnes avvik mellom oversending og reskontro.
      * Dette er ikke ment som en erstatning av sjekkAvBehandlingstatus, men heller som et suplement.
      */
-    fun sammenlignOversendteKonteringerMedReskontro(inputKonteringer: Map<String, Set<Kontering>> = emptyMap()): HashMap<String, MutableSet<String>> {
-        val oversendteKonteringer = inputKonteringer.ifEmpty { behandlingsstatusService.hentKonteringerMedIkkeGodkjentBehandlingsstatus() }
-
+    fun sammenlignOversendteKonteringerMedReskontro(oversendteKonteringer: Map<String, Set<Kontering>>): HashMap<String, MutableSet<String>> {
         val feilmeldinger: HashMap<String, MutableSet<String>> = hashMapOf()
         oversendteKonteringer.forEach { (sisteReferansekode, konteringer) ->
             // Siden alle konteringer oversendt for en referansekode alltid er knyttet til samme sak og vedtak kan vi hente saksnummer fra første kontering

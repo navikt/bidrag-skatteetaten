@@ -21,9 +21,6 @@ class ReskontroServiceTest {
     @MockK
     private lateinit var bidragReskontroConsumer: BidragReskontroConsumer
 
-    @MockK(relaxed = true)
-    private lateinit var behandlingsstatusService: BehandlingsstatusService
-
     @InjectMockKs
     private lateinit var reskontroService: ReskontroService
 
