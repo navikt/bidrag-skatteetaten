@@ -19,6 +19,7 @@ import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.consumer.KravApiWireMock
 import no.nav.bidrag.regnskap.consumer.PersonApiWireMock
+import no.nav.bidrag.regnskap.consumer.ReskontroApiWireMock
 import no.nav.bidrag.regnskap.consumer.SakApiWireMock
 import no.nav.bidrag.regnskap.maskinporten.MaskinportenWireMock
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
@@ -55,7 +56,6 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
-import no.nav.bidrag.regnskap.consumer.ReskontroApiWireMock
 
 @Transactional
 @ActiveProfiles("test")
