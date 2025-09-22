@@ -55,6 +55,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
+import no.nav.bidrag.regnskap.consumer.ReskontroApiWireMock
 
 @Transactional
 @ActiveProfiles("test")
@@ -74,6 +75,7 @@ internal class VedtakshendelseListenerIT {
         private var sakApiWireMock: SakApiWireMock = SakApiWireMock()
         private var maskinportenWireMock: MaskinportenWireMock = MaskinportenWireMock()
         private var personApiWireMock: PersonApiWireMock = PersonApiWireMock()
+        private val reskontroApiWireMock: ReskontroApiWireMock = ReskontroApiWireMock()
 
         private val maskinportenConfig = MaskinportenWireMock.createMaskinportenConfig()
 
@@ -136,6 +138,7 @@ internal class VedtakshendelseListenerIT {
         kravApiWireMock.livenessMedGyldigResponse()
         maskinportenWireMock.kravMedGyldigResponse()
         personApiWireMock.personidentMedNoBody()
+        reskontroApiWireMock.reskontroIngenResponse()
     }
 
     @AfterAll
