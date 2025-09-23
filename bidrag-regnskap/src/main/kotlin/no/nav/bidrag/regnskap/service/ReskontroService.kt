@@ -1,6 +1,7 @@
 package no.nav.bidrag.regnskap.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.regnskap.consumer.BidragReskontroConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonDto
@@ -27,12 +28,19 @@ class ReskontroService(
 
             val transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
             if (transaksjoner == null || transaksjoner.transaksjoner.isEmpty()) {
-                LOGGER.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
-                feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
-                feilmeldinger[sisteReferansekode]?.add("Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
+                if (erAlleForskudd(konteringer)) {
+                    LOGGER.info { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer, men alle er forskudd som ikke finnes i reskontro før om en uke." }
+                } else {
+                    LOGGER.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
+                    feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
+                    feilmeldinger[sisteReferansekode]?.add("Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
+                }
             }
 
             konteringer.forEach { kontering ->
+                if (erAlleForskudd(setOf(kontering))) {
+                    return@forEach
+                }
                 val transaksjonSomMatcherKontering = finnMatcheneTransaksjon(transaksjoner, kontering)
                 if (transaksjonSomMatcherKontering == null) {
                     feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
@@ -42,6 +50,8 @@ class ReskontroService(
         }
         return feilmeldinger
     }
+
+    private fun erAlleForskudd(konteringer: Set<Kontering>): Boolean = konteringer.all { it.transaksjonskode == Transaksjonskode.A1.name || it.transaksjonskode == Transaksjonskode.A3.name }
 
     private fun finnMatcheneTransaksjon(
         transaksjoner: TransaksjonerDto?,
