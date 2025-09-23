@@ -161,8 +161,6 @@ class ReskontroServiceTest {
         assertTrue(resultat[referansekode]?.any { it.contains("Fant ikke transaksjon i reskontro for sak: $sakId") } == true)
     }
 
-
-
     @Test
     fun `skal ikke returnere feil feil om kontering ikke har samme dato men det er forskudd`() {
         val sakId = "12345"
