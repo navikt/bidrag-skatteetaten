@@ -162,6 +162,49 @@ class ReskontroServiceTest {
     }
 
     @Test
+    fun `skal ikke returnere feil feil om kontering ikke har samme dato men det er forskudd`() {
+        val sakId = "12345"
+        val vedtakId = 1
+        val referansekode = UUID.randomUUID().toString()
+
+        val oppdrag = TestData.opprettOppdrag(sakId = sakId)
+        val oppdragsperiode = TestData.opprettOppdragsperiode(oppdrag = oppdrag, delytelseId = 1001)
+        val kontering = TestData.opprettKontering(
+            vedtakId = vedtakId,
+            oppdragsperiode = oppdragsperiode,
+            transaksjonskode = "A1",
+            overforingsperiode = "2025-08",
+            konteringId = 321,
+        )
+
+        val transaksjonDto = TransaksjonDto(
+            delytelsesid = "1001",
+            transaksjonskode = "A1",
+            periode = Datoperiode("2025-09-01", "2025-10-01"),
+            transaksjonsid = null,
+            beskrivelse = null,
+            dato = null,
+            skyldner = null,
+            mottaker = null,
+            beløp = null,
+            restBeløp = null,
+            beløpIOpprinneligValuta = null,
+            valutakode = null,
+            saksnummer = null,
+            barn = null,
+            søknadstype = null,
+        )
+        val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto))
+
+        val inputKonteringer = mapOf(referansekode to setOf(kontering))
+        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+
+        val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
+
+        assertEquals(0, resultat.size)
+    }
+
+    @Test
     fun `skal returnere feil om kontering ikke har samme delytelsesid`() {
         val sakId = "12345"
         val vedtakId = 1

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.ResendingAvKravScheduler
+import no.nav.bidrag.regnskap.hendelse.schedule.krav.SendKravScheduler
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.SjekkAvBehandlingsstatusScheduler
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import no.nav.security.token.support.core.api.Protected
@@ -23,6 +24,7 @@ class BehandlingsstatusController(
     private val skattConsumer: SkattConsumer,
     private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
     private val resendingAvKravScheduler: ResendingAvKravScheduler,
+    private val sendKravScheduler: SendKravScheduler,
 ) {
 
     @GetMapping("/behandlingsstatus")
@@ -57,6 +59,25 @@ class BehandlingsstatusController(
     )
     fun startSkedulertSjekkAvBehandlingsstatus(): ResponseEntity<Any> {
         sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/sendKrav")
+    @Operation(
+        summary = "Starter oversending av krav som ikke har blitt oversendt tidligere manuelt. Denne jobben kjøres også hvert 10. minutt.",
+        security = [SecurityRequirement(name = "bearer-key")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Startet oversending av krav.",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun sendKrav(): ResponseEntity<Any> {
+        sendKravScheduler.skedulertOverforingAvKrav()
         return ResponseEntity.ok().build()
     }
 
