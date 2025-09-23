@@ -70,7 +70,7 @@ class SjekkAvBehandlingsstatusScheduler(
                     LOGGER.warn { "BatchUId $batchUid har alle konteringer registert i reskontro. Makerer derfor batchUid som OK. Denne batchUid burde ha returnert DONE fra Skatt." }
                     behandlingsstatusService.behandleVellykkedeKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]!!)
                 } else {
-                    feilmeldingSammenslått += "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede konteringer.\n\n"
+                    feilmeldingSammenslått += "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede av totalt ${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]?.size} konteringer.\n\n"
                 }
             }
 

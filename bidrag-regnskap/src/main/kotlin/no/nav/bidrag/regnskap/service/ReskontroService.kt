@@ -30,7 +30,6 @@ class ReskontroService(
                 LOGGER.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
                 feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
                 feilmeldinger[sisteReferansekode]?.add("Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
-                return@forEach
             }
 
             konteringer.forEach { kontering ->
@@ -45,9 +44,9 @@ class ReskontroService(
     }
 
     private fun finnMatcheneTransaksjon(
-        transaksjoner: TransaksjonerDto,
+        transaksjoner: TransaksjonerDto?,
         kontering: Kontering,
-    ): TransaksjonDto? = transaksjoner.transaksjoner.find { transaksjon ->
+    ): TransaksjonDto? = transaksjoner?.transaksjoner?.find { transaksjon ->
         val sammeDelytelsesId = transaksjon.delytelsesid == kontering.oppdragsperiode!!.delytelseId.toString()
         val sammeTransaksjonskode = transaksjon.transaksjonskode == kontering.transaksjonskode
         val sammePeriode = transaksjon.periode?.toMånedsperiode()?.fom.toString() == kontering.overføringsperiode
