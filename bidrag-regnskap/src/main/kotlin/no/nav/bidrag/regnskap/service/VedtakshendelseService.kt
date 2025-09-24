@@ -15,6 +15,7 @@ import no.nav.bidrag.transport.behandling.vedtak.Engangsbeløp
 import no.nav.bidrag.transport.behandling.vedtak.Stønadsendring
 import no.nav.bidrag.transport.behandling.vedtak.VedtakHendelse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 private val LOGGER = KotlinLogging.logger {}
@@ -31,6 +32,7 @@ class VedtakshendelseService(
     private val driftsavvikService: DriftsavvikService,
 ) {
 
+    @Transactional
     fun behandleHendelse(hendelse: String): List<Int> {
         if (driftsavvikService.harAktivtDriftsavvik(erInnlesing = true)) {
             throw PåløpException("Det finnes aktive driftsavvik som ikke tillater innlesing. Kan derfor ikke opprette oppdrag for vedtakshendelse.")
