@@ -16,7 +16,7 @@ class ReskontroService(
 ) {
 
     /**
-     * Denne metoden sammenligner konteringer med hva som finnes i reskontro. Den kan ta input med konteringer, eller så henter den alle oversendte konteringer som ikke har fått godkjent behandlingsstatus.
+     * Denne metoden sammenligner konteringer med hva som finnes i reskontro. Den tar input med konteringer.
      * Metoden tar deretter å oppretter en liste med feilmelding om det finnes avvik mellom oversending og reskontro.
      * Dette er ikke ment som en erstatning av sjekkAvBehandlingstatus, men heller som et suplement.
      */

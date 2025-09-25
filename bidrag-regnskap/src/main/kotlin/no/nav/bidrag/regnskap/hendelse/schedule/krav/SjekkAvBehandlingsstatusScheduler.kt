@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.shedlock.core.LockAssert
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.regnskap.service.BehandlingsstatusService
 import no.nav.bidrag.regnskap.service.ReskontroService
 import no.nav.bidrag.regnskap.slack.SlackService
@@ -66,7 +67,7 @@ class SjekkAvBehandlingsstatusScheduler(
 
             feiledeOverføringer.forEach { (batchUid, feilmelding) ->
 
-                if (!feilmeldingerReskontro.containsKey(batchUid)) {
+                if (!feilmeldingerReskontro.containsKey(batchUid) && !erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)) {
                     LOGGER.warn { "BatchUId $batchUid har alle konteringer registert i reskontro. Makerer derfor batchUid som OK. Denne batchUid burde ha returnert DONE fra Skatt." }
                     behandlingsstatusService.behandleVellykkedeKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]!!)
                 } else {
@@ -86,6 +87,8 @@ class SjekkAvBehandlingsstatusScheduler(
             LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
         }
     }
+
+    private fun erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>): Boolean = konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.any { (_, konteringer) -> konteringer.any { it.transaksjonskode == "A1" || it.transaksjonskode == "A3" } }
 
     // Sørger for at slack melding på behandlingsstatus kun blir sendt en gang om dagen
     private fun erInnenforDagligSlackTidsvindu(): Boolean {
