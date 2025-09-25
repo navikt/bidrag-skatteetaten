@@ -42,36 +42,32 @@ class SjekkAvBehandlingsstatusScheduler(
             return
         }
 
-        val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = behandlingsstatusService.hentKonteringerMedIkkeGodkjentBehandlingsstatus()
+        val ikkeGodkjenteKonteringer = behandlingsstatusService.hentKonteringerMedIkkeGodkjentBehandlingsstatus()
 
-        if (konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.isEmpty()) {
+        if (ikkeGodkjenteKonteringer.isEmpty()) {
             LOGGER.info { "Det finnes ingen konteringer som ikke har sjekket behandlingsstatus." }
             return
         }
 
         val feiledeOverføringer: Map<String, String> =
-            behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
+            behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringer(ikkeGodkjenteKonteringer)
 
-        LOGGER.info {
-            "${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.size} batchUider har nå fått sjekket behandlingsstatus. (${
-                konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.entries.joinToString(
-                    ", ",
-                ) { it.key }
-            })"
-        }
+        loggBatchUiderSomFremdelesFeiler(ikkeGodkjenteKonteringer)
+
         if (feiledeOverføringer.isNotEmpty()) {
             val feilmeldingerReskontro =
-                reskontroService.sammenlignOversendteKonteringerMedReskontro(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)
+                reskontroService.sammenlignOversendteKonteringerMedReskontro(ikkeGodkjenteKonteringer)
 
             var feilmeldingSammenslått = ""
 
             feiledeOverføringer.forEach { (batchUid, feilmelding) ->
 
-                if (!feilmeldingerReskontro.containsKey(batchUid) && !erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)) {
+                if (!feilmeldingerReskontro.containsKey(batchUid) && !erForskudd(ikkeGodkjenteKonteringer)) {
                     LOGGER.warn { "BatchUId $batchUid har alle konteringer registert i reskontro. Makerer derfor batchUid som OK. Denne batchUid burde ha returnert DONE fra Skatt." }
-                    behandlingsstatusService.behandleVellykkedeKonteringer(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]!!)
+                    behandlingsstatusService.behandleVellykkedeKonteringer(ikkeGodkjenteKonteringer[batchUid]!!)
                 } else {
-                    feilmeldingSammenslått += "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede av totalt ${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]?.size} konteringer.\n\n"
+                    val nyFeilmelding = utledFeilmelding(ikkeGodkjenteKonteringer, feilmelding, feilmeldingerReskontro, batchUid)
+                    feilmeldingSammenslått += nyFeilmelding
                 }
             }
 
@@ -86,6 +82,28 @@ class SjekkAvBehandlingsstatusScheduler(
             }
             LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
         }
+    }
+
+    private fun loggBatchUiderSomFremdelesFeiler(ikkeGodkjenteKonteringer: Map<String, Set<Kontering>>) {
+        LOGGER.info {
+            "${ikkeGodkjenteKonteringer.size} batchUider har fremdeles feil behandlingsstatus. (${
+                ikkeGodkjenteKonteringer.entries.joinToString(
+                    ", ",
+                ) { it.key }
+            })"
+        }
+    }
+
+    private fun utledFeilmelding(
+        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>,
+        feilmelding: String,
+        feilmeldingerReskontro: HashMap<String, MutableSet<String>>,
+        batchUid: String,
+    ): String {
+        if (!erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)) {
+            return "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede av totalt ${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]?.size} konteringer.\n\n"
+        }
+        return "$feilmelding\nDenne batchUiden inneholder forskudd som ikke nødvendigvis finnes i reskontro enda.\n\n"
     }
 
     private fun erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>): Boolean = konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.any { (_, konteringer) -> konteringer.any { it.transaksjonskode == "A1" || it.transaksjonskode == "A3" } }
