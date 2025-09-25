@@ -96,7 +96,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return bidragssakMedSkyldnerDto
         } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved opprettelse av BidragssakMedSkyldnerDto for innkrevingssak på person. Respons fra Skatt: $innkrevingssak" }
+            LOGGER.error { "Feil ved opprettelse av BidragssakMedSkyldnerDto for innkrevingssak på person. Respons fra Skatt: $innkrevingssak" }
             throw e
         }
     }
@@ -129,7 +129,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return bidragssakDto
         } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved opprettelse av BidragssakDto for innkrevingssak på sak. Respons fra Skatt: $sak" }
+            LOGGER.error { "Feil ved opprettelse av BidragssakDto for innkrevingssak på sak. Respons fra Skatt: $sak" }
             throw e
         }
     }
@@ -180,7 +180,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return innkrevingssaksinformasjonDto
         } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved opprettelse av InnkrevingssaksinformasjonDto for informasjon om innkrevingssaken. Respons fra Skatt: $innkrevingsinformasjon" }
+            LOGGER.error { "Feil ved opprettelse av InnkrevingssaksinformasjonDto for informasjon om innkrevingssaken. Respons fra Skatt: $innkrevingsinformasjon" }
             throw e
         }
     }
@@ -220,7 +220,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return transaksjonerDto
         } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
+            LOGGER.error { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
             throw e
         }
     }
