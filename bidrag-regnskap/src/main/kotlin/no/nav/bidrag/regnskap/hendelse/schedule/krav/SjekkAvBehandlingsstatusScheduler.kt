@@ -62,11 +62,11 @@ class SjekkAvBehandlingsstatusScheduler(
 
             feiledeOverføringer.forEach { (batchUid, feilmelding) ->
 
-                if (!feilmeldingerReskontro.containsKey(batchUid) && !erForskudd(ikkeGodkjenteKonteringer)) {
+                if (!feilmeldingerReskontro.containsKey(batchUid) && !erForskudd(ikkeGodkjenteKonteringer[batchUid])) {
                     LOGGER.warn { "BatchUId $batchUid har alle konteringer registert i reskontro. Makerer derfor batchUid som OK. Denne batchUid burde ha returnert DONE fra Skatt." }
                     behandlingsstatusService.behandleVellykkedeKonteringer(ikkeGodkjenteKonteringer[batchUid]!!)
                 } else {
-                    val nyFeilmelding = utledFeilmelding(ikkeGodkjenteKonteringer, feilmelding, feilmeldingerReskontro, batchUid)
+                    val nyFeilmelding = utledFeilmelding(ikkeGodkjenteKonteringer[batchUid], feilmelding, feilmeldingerReskontro, batchUid)
                     feilmeldingSammenslått += nyFeilmelding
                 }
             }
@@ -95,18 +95,18 @@ class SjekkAvBehandlingsstatusScheduler(
     }
 
     private fun utledFeilmelding(
-        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>,
+        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Set<Kontering>?,
         feilmelding: String,
         feilmeldingerReskontro: HashMap<String, MutableSet<String>>,
         batchUid: String,
     ): String {
         if (!erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus)) {
-            return "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede av totalt ${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus[batchUid]?.size} konteringer.\n\n"
+            return "$feilmelding\nDenne batchUiden har ${feilmeldingerReskontro[batchUid]?.size} feilede av totalt ${konteringerSomIkkeHarFåttGodkjentBehandlingsstatus?.size} konteringer.\n\n"
         }
         return "$feilmelding\nDenne batchUiden inneholder forskudd som ikke nødvendigvis finnes i reskontro enda.\n\n"
     }
 
-    private fun erForskudd(konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>): Boolean = konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.any { (_, konteringer) -> konteringer.any { it.transaksjonskode == "A1" || it.transaksjonskode == "A3" } }
+    private fun erForskudd(konteringerForBatchUid: Set<Kontering>?): Boolean = konteringerForBatchUid?.any { it.transaksjonskode == "A1" || it.transaksjonskode == "A3" } ?: false
 
     // Sørger for at slack melding på behandlingsstatus kun blir sendt en gang om dagen
     private fun erInnenforDagligSlackTidsvindu(): Boolean {
