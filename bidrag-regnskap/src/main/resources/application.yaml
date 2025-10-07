@@ -22,6 +22,8 @@ springdoc:
     path: /
     display-request-duration: true
     try-it-out-enabled: true
+  cache:
+    disabled: true
 
 maskinporten:
   tokenUrl: ${MASKINPORTEN_ISSUER}token
