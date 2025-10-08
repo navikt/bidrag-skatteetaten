@@ -35,6 +35,7 @@ class PåløpskjøringServiceTest {
     private val skattConsumer = mockk<SkattConsumer>(relaxed = true)
     private val sjekkAvBehandlingsstatusScheduler = mockk<SjekkAvBehandlingsstatusScheduler>(relaxed = true)
     private val cacheConfig = mockk<CacheConfig>(relaxed = true)
+    private val konteringService = mockk<KonteringService>(relaxed = true)
 
     private val påløpskjøringService =
         PåløpskjøringService(
@@ -46,6 +47,7 @@ class PåløpskjøringServiceTest {
             skattConsumer,
             sjekkAvBehandlingsstatusScheduler,
             cacheConfig,
+            konteringService,
         )
 
     @BeforeEach

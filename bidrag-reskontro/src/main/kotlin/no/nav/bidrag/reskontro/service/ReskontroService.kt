@@ -220,7 +220,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return transaksjonerDto
         } catch (e: Exception) {
-            LOGGER.error { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
+            LOGGER.error(e) { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
             throw e
         }
     }
