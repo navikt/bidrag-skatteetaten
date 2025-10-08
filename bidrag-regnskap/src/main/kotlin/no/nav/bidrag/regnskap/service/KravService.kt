@@ -137,23 +137,23 @@ class KravService(
                 }
 
                 HttpStatus.BAD_REQUEST -> {
-                    LOGGER.error { "En eller flere konteringer har ikke gått gjennom validering, ${skattResponse.body}" }
+                    LOGGER.error { "En eller flere konteringer har ikke gått gjennom validering. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding${skattResponse.body}" }
                 }
 
                 HttpStatus.SERVICE_UNAVAILABLE -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Tjenesten hos skatt er slått av. Dette kan skje enten ved innlesing av påløpsfil eller ved andre uventede feil. Feilmelding: ${skattResponse.body}" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Tjenesten hos skatt er slått av. Dette kan skje enten ved innlesing av påløpsfil eller ved andre uventede feil. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: ${skattResponse.body}" }
                 }
 
                 HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. Feilmelding: $skattResponse" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode} Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: $skattResponse" }
                 }
 
                 else -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Feilmelding: ${skattResponse.body}" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: ${skattResponse.body}" }
                 }
             }
         } catch (e: Exception) {
-            LOGGER.error { "Tolkningen av svaret fra skatt feilet på noe uventet! Feil: ${e.message}" }
+            LOGGER.error { "Tolkningen av svaret fra skatt feilet på noe uventet! \nKonteringer: $konteringerFraOverførtKrav \nFeil: ${e.message}" }
         }
     }
 
