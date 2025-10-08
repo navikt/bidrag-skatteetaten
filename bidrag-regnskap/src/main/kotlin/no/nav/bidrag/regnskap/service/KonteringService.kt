@@ -7,16 +7,22 @@ import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
 import no.nav.bidrag.regnskap.persistence.entity.Oppdragsperiode
+import no.nav.bidrag.regnskap.persistence.entity.Påløp
 import no.nav.bidrag.regnskap.util.KonteringUtils.vurderSøknadType
 import no.nav.bidrag.regnskap.util.KonteringUtils.vurderType
 import no.nav.bidrag.regnskap.util.PeriodeUtils
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 
 @Service
-class KonteringService {
+class KonteringService(
+    private val persistenceService: PersistenceService,
+) {
 
     fun opprettNyeKonteringerPåOppdragsperiode(oppdragsperiode: Oppdragsperiode, hendelse: Hendelse, sisteOverførtePeriode: YearMonth) {
         val perioderForOppdragsperiode =
@@ -40,6 +46,28 @@ class KonteringService {
                 vedtakId = vedtakId,
             )
             oppdragsperiode.konteringer = oppdragsperiode.konteringer.plus(nyKontering)
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun settAlleKonteringerSomOverførtForPåløp(påløp: Påløp) {
+        val tidspunkt = LocalDateTime.now()
+        val påløpKjøredato = påløp.kjøredato.toLocalDate()
+        val konteringer = persistenceService.hentAlleIkkeOverførteKonteringer()
+
+        konteringer.forEach { kontering ->
+            // Om konteringen er knyttet til et oppdrag som har utsattTilDato senere enn nåværende tidspunkt så er ikke konteringen med i påløpsfila.
+            if (kontering.oppdragsperiode?.oppdrag?.utsattTilDato?.isAfter(påløpKjøredato) == true) {
+                return@forEach
+            }
+            if (kontering.oppdragsperiode?.oppdrag?.harFeiledeKonteringer == true) {
+                return@forEach
+            }
+
+            kontering.overføringstidspunkt = tidspunkt
+            kontering.behandlingsstatusOkTidspunkt = tidspunkt
+            kontering.sisteReferansekode = null
+            kontering.sendtIPåløpsperiode = påløp.forPeriode
         }
     }
 

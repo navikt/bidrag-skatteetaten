@@ -35,6 +35,7 @@ class PåløpskjøringService(
     private val skattConsumer: SkattConsumer,
     private val sjekkAvBehandlingsstatusScheduler: SjekkAvBehandlingsstatusScheduler,
     private val cacheConfig: CacheConfig,
+    private val konteringService: KonteringService,
     @param:Autowired(required = false) private val lyttere: List<PåløpskjøringLytter> = emptyList(),
 ) {
 
@@ -93,9 +94,15 @@ class PåløpskjøringService(
 
         if (genererFil) {
             genererPåløpsfil(påløp, overførFil)
+            if (overførFil) {
+                settAlleKonteringerSomOverførtForPåløp(påløp)
+            }
         }
-
         opprettKonteringerForAlleUtsatteEllerFeiledeOppdragsperioder(utsatteEllerFeiledeOppdragsperioder, påløp)
+    }
+
+    fun settAlleKonteringerSomOverførtForPåløp(påløp: Påløp) {
+        konteringService.settAlleKonteringerSomOverførtForPåløp(påløp)
     }
 
     private fun forberedPåløpskjøring(

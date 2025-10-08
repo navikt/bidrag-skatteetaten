@@ -1,10 +1,10 @@
 package no.nav.bidrag.regnskap.hendelse.kafka.vedtak
 
 import com.fasterxml.jackson.core.JacksonException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.regnskap.controller.KafkaOffsettController
 import no.nav.bidrag.regnskap.service.VedtakshendelseService
 import org.apache.kafka.common.TopicPartition
-import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.AbstractConsumerSeekAware
 import org.springframework.kafka.support.Acknowledgment
@@ -12,7 +12,7 @@ import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
 
-private val LOGGER = LoggerFactory.getLogger(VedtakshendelseListener::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Component
 class VedtakshendelseListener(
@@ -34,7 +34,7 @@ class VedtakshendelseListener(
         acknowledgment: Acknowledgment,
     ) {
         try {
-            LOGGER.info("Starter behandling av vedtakhendelse med offset: $offset")
+            LOGGER.info { "Starter behandling av vedtakhendelse med offset: $offset. Hendelse: $hendelse" }
 
             if (kafkaOffsettController.skalHoppeOverNesteMelding()) {
                 hoppOverHendele(offset, acknowledgment)
@@ -51,28 +51,28 @@ class VedtakshendelseListener(
             try {
                 vedtakshendelseService.sendKrav(opprettedeOppdrag)
             } catch (e: Exception) {
-                LOGGER.error("Oversending av krav feilet for oppdrag: $opprettedeOppdrag med offset: $offset! Feilmelding: ${e.stackTraceToString()}")
+                LOGGER.error(e) { "Oversending av krav feilet for oppdrag: $opprettedeOppdrag med offset: $offset!" }
             } finally {
                 acknowledgment.acknowledge()
             }
         } catch (e: JacksonException) {
-            LOGGER.error(
+            LOGGER.error(e) {
                 "Mapping av hendelse feilet for kafkamelding med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId " +
-                    "\nFeil: $e \n\nHendelse: $hendelse",
-            )
+                    "\n\nHendelse: $hendelse"
+            }
             throw e
         }
     }
 
     private fun settNyOffsett(topic: String, partition: Int) {
         val nyOffsett = kafkaOffsettController.hentNyOffset()
-        LOGGER.warn("Setter ny offsett til: $nyOffsett!")
+        LOGGER.warn { "Setter ny offsett til: $nyOffsett!" }
         this.getSeekCallbacksFor(TopicPartition(topic, partition))?.forEach { it.seek(topic, partition, nyOffsett) }
         kafkaOffsettController.tilbakestillOffsettEndring()
     }
 
     private fun hoppOverHendele(offset: Long, acknowledgment: Acknowledgment) {
-        LOGGER.info("Hopper over behandling av vedtakhendelse med offset: $offset")
+        LOGGER.info { "Hopper over behandling av vedtakhendelse med offset: $offset" }
         acknowledgment.acknowledge()
         kafkaOffsettController.tilbakestillHoppOverNesteMelding()
     }
