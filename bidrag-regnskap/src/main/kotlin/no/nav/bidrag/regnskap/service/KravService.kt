@@ -118,6 +118,7 @@ class KravService(
         // sorterer på vedtakId slik at tidligste vedtak kommer først
         // mapper så til kontering for å opprette en KravKontering per kontering
         // mapper deretter kravKonteringene per vedtak i hver sin kravliste og sender til skatt per kravliste
+        LOGGER.info { "Konteringer: ${oppdragsperioderMedIkkeOverførteKonteringerListe.flatMap { it.konteringer }}" }
         val ikkeOverførteKonteringer = finnAlleIkkeOverførteKonteringer(oppdragsperioderMedIkkeOverførteKonteringerListe)
         LOGGER.info { "Alle ikke overførte konteringer: $ikkeOverførteKonteringer" }
         val konteringerGruppertPåVedtakId = ikkeOverførteKonteringer.groupBy { it.vedtakId }
