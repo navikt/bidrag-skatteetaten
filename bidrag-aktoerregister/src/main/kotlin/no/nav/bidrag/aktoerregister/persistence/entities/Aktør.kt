@@ -159,8 +159,8 @@ data class Aktør(
             bankLandkode != other.bankLandkode -> false
             bankCode != other.bankCode -> false
             valutaKode != other.valutaKode -> false
-            fornavn != other.fornavn -> false
-            etternavn != other.etternavn -> false
+            fornavn?.lowercase()?.trim() != other.fornavn?.lowercase()?.trim() -> false
+            etternavn?.lowercase()?.trim() != other.etternavn?.lowercase()?.trim() -> false
             fødtDato != other.fødtDato -> false
             dødDato != other.dødDato -> false
             gradering != other.gradering -> false
