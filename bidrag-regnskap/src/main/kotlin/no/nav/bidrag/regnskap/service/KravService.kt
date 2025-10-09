@@ -67,7 +67,9 @@ class KravService(
         oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>,
         oppdragListe: List<Oppdrag>,
     ) {
+        LOGGER.info { "Oppretter kravlister for oppdrag: $oppdragListe." }
         val kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
+        LOGGER.info { "Sender kravlister til skatt: $kravlister." }
         kravlister.forEach { kravliste ->
             val skattResponse = skattConsumer.sendKrav(kravliste.first)
             lagreOverføringAvKrav(skattResponse, kravliste.second, oppdragListe)
@@ -153,7 +155,7 @@ class KravService(
                 }
             }
         } catch (e: Exception) {
-            LOGGER.error { "Tolkningen av svaret fra skatt feilet på noe uventet! \nKonteringer: $konteringerFraOverførtKrav \nFeil: ${e.message}" }
+            LOGGER.error(e) { "Tolkningen av svaret fra skatt feilet på noe uventet! \nKonteringer: $konteringerFraOverførtKrav \nFeil: ${e.message}" }
         }
     }
 
