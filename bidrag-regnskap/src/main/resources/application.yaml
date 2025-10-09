@@ -146,7 +146,7 @@ spring:
     url: ${DB_JDBC_URL}
     hikari:
       idle-timeout: 10001
-      max-lifetime: 30001
+      max-lifetime: 60001
       connectionTimeout: 1000
       maximum-pool-size: 10
       minimum-idle: 1
