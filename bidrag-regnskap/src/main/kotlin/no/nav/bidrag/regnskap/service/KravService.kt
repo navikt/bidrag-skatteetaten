@@ -119,14 +119,18 @@ class KravService(
         // mapper så til kontering for å opprette en KravKontering per kontering
         // mapper deretter kravKonteringene per vedtak i hver sin kravliste og sender til skatt per kravliste
         val ikkeOverførteKonteringer = finnAlleIkkeOverførteKonteringer(oppdragsperioderMedIkkeOverførteKonteringerListe)
+        LOGGER.info { "Alle ikke overførte konteringer: $ikkeOverførteKonteringer" }
         val konteringerGruppertPåVedtakId = ikkeOverførteKonteringer.groupBy { it.vedtakId }
+        LOGGER.info { "Konteringer gruppert på vedtakId: $konteringerGruppertPåVedtakId" }
         val sorterteVedtakIdTilKonteringerMap =
             konteringerGruppertPåVedtakId.mapValues { entry ->
                 entry.value.sortedBy { kontering -> kontering.vedtakId }
             }.toSortedMap()
+        LOGGER.info { "Sorterte vedtakId til konteringer map: $sorterteVedtakIdTilKonteringerMap" }
         val kravlisteForKonteringer = sorterteVedtakIdTilKonteringerMap.map { (_, konteringer) ->
             Pair(Kravliste(listOf(opprettKravKonteringListe(konteringer))), konteringer)
         }
+        LOGGER.info { "Kravliste for konteringer: $kravlisteForKonteringer" }
 
         return kravlisteForKonteringer
     }
