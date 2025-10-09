@@ -117,7 +117,7 @@ spring:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?user=${DB_USERNAME}&password=${DB_PASSWORD}&reWriteBatchedInserts=true
     hikari:
       idle-timeout: 10001
-      max-lifetime: 30001
+      max-lifetime: 60001
       connectionTimeout: 10000
       maximum-pool-size: 20
       minimum-idle: 1
