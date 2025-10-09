@@ -264,8 +264,8 @@ class AktørService(
     fun finnOppdaterteFelterPåAktør(aktør: Aktør, nyAktør: Aktør): List<String> {
         val oppdaterteFelterPåAktør = mutableListOf<String>()
 
-        if (aktør.fornavn != nyAktør.fornavn ||
-            aktør.etternavn != nyAktør.etternavn
+        if (aktør.fornavn?.lowercase()?.trim() != nyAktør.fornavn?.lowercase()?.trim() ||
+            aktør.etternavn?.lowercase()?.trim() != nyAktør.etternavn?.lowercase()?.trim()
         ) {
             oppdaterteFelterPåAktør.add("navnOppdatering")
         }
