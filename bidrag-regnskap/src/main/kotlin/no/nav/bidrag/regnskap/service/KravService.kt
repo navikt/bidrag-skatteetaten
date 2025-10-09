@@ -67,7 +67,7 @@ class KravService(
         oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>,
         oppdragListe: List<Oppdrag>,
     ) {
-        LOGGER.info { "Oppretter kravlister for oppdrag: $oppdragListe." }
+        LOGGER.info { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
         val kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
         LOGGER.info { "Sender kravlister til skatt: $kravlister." }
         kravlister.forEach { kravliste ->
