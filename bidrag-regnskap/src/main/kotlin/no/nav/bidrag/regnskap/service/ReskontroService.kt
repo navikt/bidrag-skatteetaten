@@ -26,7 +26,15 @@ class ReskontroService(
             // Siden alle konteringer oversendt for en referansekode alltid er knyttet til samme sak og vedtak kan vi hente saksnummer fra første kontering
             val saksnummer = konteringer.first().oppdragsperiode!!.oppdrag!!.sakId
 
-            val transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
+            val transaksjoner: TransaksjonerDto?
+            try {
+                transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
+            } catch (e: Exception) {
+                LOGGER.error(e) { "Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer for konteringer: $konteringer" }
+                feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
+                feilmeldinger[sisteReferansekode]?.add("Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
+                return@forEach
+            }
             if (transaksjoner == null || transaksjoner.transaksjoner.isEmpty()) {
                 if (erAlleForskudd(konteringer)) {
                     LOGGER.info { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer, men alle er forskudd som ikke finnes i reskontro før om en uke." }
