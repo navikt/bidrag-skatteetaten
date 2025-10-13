@@ -67,8 +67,14 @@ class KravService(
         oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>,
         oppdragListe: List<Oppdrag>,
     ) {
-        LOGGER.info { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
-        val kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
+        val kravlister: List<Pair<Kravliste, List<Kontering>>>
+        try {
+            LOGGER.info { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
+            kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
+        } catch (e: Exception) {
+            LOGGER.error(e) { "Klarte ikke opprette kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
+            return
+        }
         LOGGER.info { "Sender kravlister til skatt: $kravlister." }
         kravlister.forEach { kravliste ->
             val skattResponse = skattConsumer.sendKrav(kravliste.first)
