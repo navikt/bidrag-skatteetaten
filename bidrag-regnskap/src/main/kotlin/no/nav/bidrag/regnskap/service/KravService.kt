@@ -67,15 +67,9 @@ class KravService(
         oppdragsperioderMedIkkeOverførteKonteringerListe: List<Oppdragsperiode>,
         oppdragListe: List<Oppdrag>,
     ) {
-        val kravlister: List<Pair<Kravliste, List<Kontering>>>
-        try {
-            LOGGER.info { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
-            kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
-        } catch (e: Exception) {
-            LOGGER.error(e) { "Klarte ikke opprette kravlister" }
-            return
-        }
-        LOGGER.info { "Sender kravlister til skatt: $kravlister." }
+        LOGGER.debug { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
+        val kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
+        LOGGER.debug { "Sender kravlister til skatt: $kravlister." }
         kravlister.forEach { kravliste ->
             val skattResponse = skattConsumer.sendKrav(kravliste.first)
             lagreOverføringAvKrav(skattResponse, kravliste.second, oppdragListe)
@@ -124,20 +118,20 @@ class KravService(
         // sorterer på vedtakId slik at tidligste vedtak kommer først
         // mapper så til kontering for å opprette en KravKontering per kontering
         // mapper deretter kravKonteringene per vedtak i hver sin kravliste og sender til skatt per kravliste
-        LOGGER.info { "Konteringer: ${oppdragsperioderMedIkkeOverførteKonteringerListe.flatMap { it.konteringer }}" }
+        LOGGER.debug { "Konteringer: ${oppdragsperioderMedIkkeOverførteKonteringerListe.flatMap { it.konteringer }}" }
         val ikkeOverførteKonteringer = finnAlleIkkeOverførteKonteringer(oppdragsperioderMedIkkeOverførteKonteringerListe)
-        LOGGER.info { "Alle ikke overførte konteringer: $ikkeOverførteKonteringer" }
+        LOGGER.debug { "Alle ikke overførte konteringer: $ikkeOverførteKonteringer" }
         val konteringerGruppertPåVedtakId = ikkeOverførteKonteringer.groupBy { it.vedtakId }
-        LOGGER.info { "Konteringer gruppert på vedtakId: $konteringerGruppertPåVedtakId" }
+        LOGGER.debug { "Konteringer gruppert på vedtakId: $konteringerGruppertPåVedtakId" }
         val sorterteVedtakIdTilKonteringerMap =
             konteringerGruppertPåVedtakId.mapValues { entry ->
                 entry.value.sortedBy { kontering -> kontering.vedtakId }
             }.toSortedMap()
-        LOGGER.info { "Sorterte vedtakId til konteringer map: $sorterteVedtakIdTilKonteringerMap" }
+        LOGGER.debug { "Sorterte vedtakId til konteringer map: $sorterteVedtakIdTilKonteringerMap" }
         val kravlisteForKonteringer = sorterteVedtakIdTilKonteringerMap.map { (_, konteringer) ->
             Pair(Kravliste(listOf(opprettKravKonteringListe(konteringer))), konteringer)
         }
-        LOGGER.info { "Kravliste for konteringer: $kravlisteForKonteringer" }
+        LOGGER.debug { "Kravliste for konteringer: $kravlisteForKonteringer" }
 
         return kravlisteForKonteringer
     }
@@ -150,23 +144,23 @@ class KravService(
                 }
 
                 HttpStatus.BAD_REQUEST -> {
-                    LOGGER.error { "En eller flere konteringer har ikke gått gjennom validering. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding${skattResponse.body}" }
+                    LOGGER.error { "En eller flere konteringer har ikke gått gjennom validering. \nSaksnummer: ${oppdrag.first().sakId} \nFeilmelding${skattResponse.body}" }
                 }
 
                 HttpStatus.SERVICE_UNAVAILABLE -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Tjenesten hos skatt er slått av. Dette kan skje enten ved innlesing av påløpsfil eller ved andre uventede feil. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: ${skattResponse.body}" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. Tjenesten hos skatt er slått av. Dette kan skje enten ved innlesing av påløpsfil eller ved andre uventede feil. \nSaksnummer: ${oppdrag.first().sakId} \nFeilmelding: ${skattResponse.body}" }
                 }
 
                 HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode} Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: $skattResponse" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode} Bidrag-Regnskap er ikke autorisert eller mangler rettigheter for kallet mot skatt. \nSaksnummer: ${oppdrag.first().sakId} \nFeilmelding: $skattResponse" }
                 }
 
                 else -> {
-                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. \nKonteringer: $konteringerFraOverførtKrav \nFeilmelding: ${skattResponse.body}" }
+                    LOGGER.error { "Skatt svarte med uventet statuskode: ${skattResponse.statusCode}. \nSaksnummer: ${oppdrag.first().sakId} \nFeilmelding: ${skattResponse.body}" }
                 }
             }
         } catch (e: Exception) {
-            LOGGER.error(e) { "Tolkningen av svaret fra skatt feilet på noe uventet! \nKonteringer: $konteringerFraOverførtKrav \nFeil: ${e.message}" }
+            LOGGER.error(e) { "Tolkningen av svaret fra skatt feilet på noe uventet! \nSaksnummer: ${oppdrag.first().sakId} \nFeil: ${e.message}" }
         }
     }
 
