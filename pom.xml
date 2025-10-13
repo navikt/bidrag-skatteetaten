@@ -51,7 +51,6 @@
         <module>bidrag-aktoerregister</module>
         <module>bidrag-reskontro</module>
         <module>bidrag-elin-stub</module>
-        <module>bidrag-reskontro-legacy</module>
     </modules>
 
     <repositories>

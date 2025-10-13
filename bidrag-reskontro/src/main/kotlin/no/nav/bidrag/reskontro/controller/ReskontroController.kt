@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import no.nav.bidrag.reskontro.service.ReskontroLegacyService
 import no.nav.bidrag.reskontro.service.ReskontroService
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
@@ -15,7 +14,6 @@ import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSk
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import no.nav.security.token.support.core.api.Protected
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -28,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController
 @Protected
 class ReskontroController(
     private val reskontroService: ReskontroService,
-    private val reskontroLegacyService: ReskontroLegacyService,
-    @param:Value($$"#{new Boolean('${RESKONTRO_LEGACY_ENABLED}')}") private val reskontroLegacyEnabled: Boolean,
 ) {
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
@@ -45,10 +41,6 @@ class ReskontroController(
         ],
     )
     fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentInnkrevingssakPåSak(saksnummerRequest) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val innkrevingssakPåSak = reskontroService.hentInnkrevingssakPåSak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(innkrevingssakPåSak)
@@ -69,10 +61,6 @@ class ReskontroController(
         ],
     )
     fun hentInnkrevingssakPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentInnkrevingssakPåPerson(personRequest) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val innkrevingssakPåPerson = reskontroService.hentInnkrevingssakPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(innkrevingssakPåPerson)
@@ -92,10 +80,6 @@ class ReskontroController(
         ],
     )
     fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentTransaksjonerPåBidragssak(saksnummerRequest) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val transaksjonerPåBidragssak = reskontroService.hentTransaksjonerPåBidragssak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåBidragssak)
@@ -115,10 +99,6 @@ class ReskontroController(
         ],
     )
     fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentTransaksjonerPåPerson(personRequest) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val transaksjonerPåPerson = reskontroService.hentTransaksjonerPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåPerson)
@@ -138,10 +118,6 @@ class ReskontroController(
         ],
     )
     fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentTransaksjonerPåTransaksjonsid(transaksjonsid) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val transaksjonerPåTransaksjonsid = reskontroService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåTransaksjonsid)
@@ -161,10 +137,6 @@ class ReskontroController(
         ],
     )
     fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> {
-        if (reskontroLegacyEnabled) {
-            val legacyResponse = reskontroLegacyService.hentInformasjonOmInnkrevingssaken(personRequest) ?: return ResponseEntity.notFound().build()
-            return ResponseEntity.ok(legacyResponse)
-        }
         val informasjonOmInnkrevingssaken = reskontroService.hentInformasjonOmInnkrevingssaken(personRequest)
             ?: return ResponseEntity.notFound().build()
 
@@ -184,10 +156,6 @@ class ReskontroController(
         ],
     )
     fun endreRmForSak(@RequestBody endreRmForSak: EndreRmForSakRequest) {
-        if (reskontroLegacyEnabled) {
-            reskontroLegacyService.endreRmForSak(endreRmForSak)
-            return
-        }
         reskontroService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
     }
 }

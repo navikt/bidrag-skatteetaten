@@ -16,10 +16,6 @@ env:
   SKATT_URL: https://ske-elin-api-bisysresk.elin.innkreving.skatteetaten.no
   SKATT_HOST: ske-elin-api-bisysresk.elin.innkreving.skatteetaten.no
   MASKINPORTEN_SCOPES: "skatteetaten:barnebidragreskontro"
-  RESKONTRO_LEGACY_URL: https://bidrag-reskontro-legacy.prod-fss-pub.nais.io
-  RESKONTRO_LEGACY_SCOPE: prod-fss.bidrag.bidrag-reskontro-legacy
-  RESKONTRO_LEGACY_HOST: bidrag-reskontro-legacy.prod-fss-pub.nais.io
-  RESKONTRO_LEGACY_ENABLED: false
   JAVA_OPTS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
   inbound:
