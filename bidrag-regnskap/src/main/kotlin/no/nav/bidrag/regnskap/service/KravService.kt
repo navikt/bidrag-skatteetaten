@@ -72,7 +72,7 @@ class KravService(
             LOGGER.info { "Oppretter kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
             kravlister = opprettKravlister(oppdragsperioderMedIkkeOverførteKonteringerListe)
         } catch (e: Exception) {
-            LOGGER.error(e) { "Klarte ikke opprette kravlister for oppdragsperioder: $oppdragsperioderMedIkkeOverførteKonteringerListe." }
+            LOGGER.error(e) { "Klarte ikke opprette kravlister" }
             return
         }
         LOGGER.info { "Sender kravlister til skatt: $kravlister." }
