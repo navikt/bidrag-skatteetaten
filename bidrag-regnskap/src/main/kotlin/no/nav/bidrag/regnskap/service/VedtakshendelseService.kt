@@ -66,9 +66,9 @@ class VedtakshendelseService(
     }
 
     private fun opprettOppdragForStønadsending(vedtakHendelse: VedtakHendelse, stønadsendring: Stønadsendring): Int? {
-        LOGGER.debug { "Oppretter oppdrag for stønadendring." }
+        LOGGER.debug { "Lagrer hendelse for stønadendring." }
 
-        if (erInnkrevingOgEndring(stønadsendring.innkreving, stønadsendring.beslutning)) {
+        if (erInnkrevingOgEndring("Stønadsendring (vedtakId: ${vedtakHendelse.id}, sak: ${stønadsendring.sak.verdi}", stønadsendring.innkreving, stønadsendring.beslutning)) {
             val hendelse = Hendelse(
                 type = stønadsendring.type.name,
                 vedtakType = vedtakHendelse.type,
@@ -90,7 +90,16 @@ class VedtakshendelseService(
         return null
     }
 
-    private fun erInnkrevingOgEndring(innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean = innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
+    private fun erInnkrevingOgEndring(hendelsestype: String, innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean {
+        val erInnkrevingOgEndring = innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
+        return if (erInnkrevingOgEndring) {
+            LOGGER.debug { "$hendelsestype har innkreving og er en endring. Lagrer hendelse." }
+            true
+        } else {
+            LOGGER.info { "$hendelsestype har ikke innkreving eller er ikke en endring. Lagrer ikke.." }
+            false
+        }
+    }
 
     private fun mapPeriodelisteTilDomene(periodeListe: List<no.nav.bidrag.transport.behandling.vedtak.Periode>): List<Periode> = periodeListe.map { periode ->
         Periode(
@@ -103,9 +112,9 @@ class VedtakshendelseService(
     }
 
     private fun opprettOppdragForEngangsbeløp(vedtakHendelse: VedtakHendelse, engangsbeløp: Engangsbeløp): Int? {
-        LOGGER.debug { "Oppretter oppdrag for engangsbeløp." }
+        LOGGER.debug { "Lagrer hendelse for engangsbeløp." }
 
-        if (erInnkrevingOgEndring(engangsbeløp.innkreving, engangsbeløp.beslutning)) {
+        if (erInnkrevingOgEndring("Engangsbeløp (vedtakId: ${vedtakHendelse.id}, sak: ${engangsbeløp.sak.verdi}", engangsbeløp.innkreving, engangsbeløp.beslutning)) {
             val betaltBeløp = engangsbeløp.betaltBeløp ?: BigDecimal.ZERO
             val hendelse = Hendelse(
                 type = engangsbeløp.type.name,
