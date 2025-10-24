@@ -64,6 +64,6 @@ class KravApiRequestInterceptor : ClientHttpRequestInterceptor {
 
     private fun logRequest(request: HttpRequest, body: ByteArray?) {
         val bodySize = body?.size ?: 0
-        LOGGER.info { "Request URI: ${request.uri}, Method: ${request.method}, Body Size: $bodySize bytes, Header Size: ${request.headers.size}" }
+        LOGGER.debug { "Request URI: ${request.uri}, Method: ${request.method}, Body Size: $bodySize bytes, Header Size: ${request.headers.size}" }
     }
 }
