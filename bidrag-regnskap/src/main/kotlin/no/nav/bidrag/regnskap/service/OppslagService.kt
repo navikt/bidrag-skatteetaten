@@ -54,7 +54,7 @@ class OppslagService(
         val oppdrag = persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi)
 
         val utsatteVedtak = hentUtsatteVedtak(oppdrag)
-        val ikkeOversendteVedtak = hentIkkeOversendteVedtak(oppdrag)
+        val ikkeOversendteVedtak = hentIkkeOversendteVedtak(oppdrag, utsatteVedtak.map { it.vedtakId })
         val feiledeVedtak = hentFeiledeVedtak(oppdrag)
 
         return UtsatteOgFeiledeVedtak(utsatteVedtak, ikkeOversendteVedtak, feiledeVedtak)
@@ -69,12 +69,13 @@ class OppslagService(
             .map { UtsatteVedtak(it.vedtakId, it.oppdrag!!.utsattTilDato!!) }
     }
 
-    private fun hentIkkeOversendteVedtak(oppdrag: List<Oppdrag>): List<IkkeOversendteVedtak> = oppdrag
+    private fun hentIkkeOversendteVedtak(oppdrag: List<Oppdrag>, utsatteVedtak: List<Int>): List<IkkeOversendteVedtak> = oppdrag
         .flatMap { it.oppdragsperioder }
         .flatMap { it.konteringer }
         .filter { it.overføringstidspunkt == null }
         .map { it.oppdragsperiode!! }
         .distinctBy { it.vedtakId }
+        .filterNot { utsatteVedtak.contains(it.vedtakId) }
         .map { IkkeOversendteVedtak(it.vedtakId) }
 
     private fun hentFeiledeVedtak(oppdrag: List<Oppdrag>): List<FeiledeVedtak> = oppdrag
