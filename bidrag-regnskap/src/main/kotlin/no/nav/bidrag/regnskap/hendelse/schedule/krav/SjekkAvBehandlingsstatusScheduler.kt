@@ -58,7 +58,8 @@ class SjekkAvBehandlingsstatusScheduler(
             val feilmeldingerReskontro =
                 reskontroService.sammenlignOversendteKonteringerMedReskontro(ikkeGodkjenteKonteringer)
 
-            var feilmeldingSammenslått = ""
+            var nyeFeilmeldinger = ""
+            val sakerSomFremdelesFeiler = mutableListOf<String>()
 
             feiledeOverføringer.forEach { (batchUid, feilmelding) ->
 
@@ -67,20 +68,30 @@ class SjekkAvBehandlingsstatusScheduler(
                     behandlingsstatusService.behandleVellykkedeKonteringer(ikkeGodkjenteKonteringer[batchUid]!!)
                 } else {
                     val nyFeilmelding = utledFeilmelding(ikkeGodkjenteKonteringer[batchUid], feilmelding, feilmeldingerReskontro, batchUid)
-                    feilmeldingSammenslått += nyFeilmelding
+                    val oppdrag = ikkeGodkjenteKonteringer[batchUid]!!.first().oppdragsperiode!!.oppdrag!!
+                    val hash = ikkeGodkjenteKonteringer[batchUid].hashCode() + oppdrag.oppdragId.hashCode()
+                    if (hash == oppdrag.sisteFeilmeldingHash) {
+                        sakerSomFremdelesFeiler.add(oppdrag.sakId)
+                    }
+                    nyeFeilmeldinger += nyFeilmelding
+                    oppdrag.sisteFeilmeldingHash = hash
                 }
             }
 
-            if (feilmeldingSammenslått.isEmpty()) {
+            if (nyeFeilmeldinger.isEmpty() && sakerSomFremdelesFeiler.isEmpty()) {
                 return
             }
 
+            val nyeFeil = if (nyeFeilmeldinger.isNotEmpty()) "\nNye feil:\n$nyeFeilmeldinger" else ""
+            val gjentagendeFeil =
+                if (sakerSomFremdelesFeiler.isNotEmpty()) "\nSaker som fremdeles feiler: ${sakerSomFremdelesFeiler.joinToString(", ")}" else ""
+
             if (erInnenforDagligSlackTidsvindu()) {
                 slackService.sendMelding(
-                    ":ohno: Sjekk av behandlingsstatus feilet! Miljø: $clientId\n\nFølgende batchUider feilet:\n$feilmeldingSammenslått",
+                    ":ohno: Saker feiler mot skatt i $clientId.\n$nyeFeil$gjentagendeFeil",
                 )
             }
-            LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n $feilmeldingSammenslått" }
+            LOGGER.error { "Det har oppstått feil ved overføring av krav på følgende batchUider med følgende feilmelding:\n$nyeFeil$gjentagendeFeil" }
         }
     }
 

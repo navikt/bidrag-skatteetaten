@@ -21,21 +21,21 @@
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
         <kotlin.version>2.2.21</kotlin.version>
-        <bidrag-felles.version>2025.10.29.081636</bidrag-felles.version>
-        <jackson.version>2.20.0</jackson.version>
+        <bidrag-felles.version>2025.11.05.095539</bidrag-felles.version>
+        <jackson.version>2.20.1</jackson.version>
         <kotest.version>6.0.4</kotest.version>
         <ktlint.version>1.7.1</ktlint.version>
         <mockk.version>1.14.6</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
         <nav-token-support.version>5.0.37</nav-token-support.version>
         <kotlin-logging-jvm.version>7.0.13</kotlin-logging-jvm.version>
-        <slack-api.version>1.45.4</slack-api.version>
+        <slack-api.version>1.46.0</slack-api.version>
         <shedlock.version>6.10.0</shedlock.version>
         <jsch.version>2.27.3</jsch.version>
         <google-cloud-storage.version>2.59.0</google-cloud-storage.version>
         <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>2.8.13</springdoc-openapi-ui.version>
-        <logback-encoder.version>8.1</logback-encoder.version>
+        <logback-encoder.version>9.0</logback-encoder.version>
     </properties>
 
     <dependencies>
