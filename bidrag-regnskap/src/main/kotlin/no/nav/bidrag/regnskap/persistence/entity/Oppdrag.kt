@@ -51,7 +51,7 @@ data class Oppdrag(
     var harFeiledeKonteringer: Boolean = false,
 
     @Column(name = "siste_feilmelding_hash")
-    var sisteFeilmeldingHash: Int? = null,
+    var sisteFeilmeldingHash: MutableList<Int>? = null,
 
     @OneToMany(mappedBy = "oppdrag", cascade = [CascadeType.ALL])
     @OrderBy("oppdragsperiodeId")
