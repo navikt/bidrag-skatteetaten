@@ -79,7 +79,7 @@ class SjekkAvBehandlingsstatusScheduler(
                         feilmeldingHashList.add(hash)
                         nyeFeilmeldinger += nyFeilmelding
                     } else {
-                        sakerSomFremdelesFeiler.add(oppdrag.sakId)
+                        sakerSomFremdelesFeiler.add(oppdrag.sakId + " - $batchUid")
                     }
                 }
             }
