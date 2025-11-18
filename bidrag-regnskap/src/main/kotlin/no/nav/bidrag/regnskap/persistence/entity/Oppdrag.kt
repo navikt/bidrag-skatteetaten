@@ -50,6 +50,9 @@ data class Oppdrag(
     @Column(name = "har_feilede_konteringer")
     var harFeiledeKonteringer: Boolean = false,
 
+    @Column(name = "siste_feilmelding_hash")
+    var sisteFeilmeldingHash: MutableList<Int>? = null,
+
     @OneToMany(mappedBy = "oppdrag", cascade = [CascadeType.ALL])
     @OrderBy("oppdragsperiodeId")
     var oppdragsperioder: List<Oppdragsperiode> = emptyList(),
