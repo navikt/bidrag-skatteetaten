@@ -194,11 +194,11 @@ class KravService(
     private fun mapKonteringTilKravkontering(kontering: Kontering): Kravkontering {
         var transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode)
 
-        // TODO(Midlertidlig løsning frem til skatt har lagt til støtte for L1 og L3)
-        if (transaksjonskode == Transaksjonskode.L1) {
+        // TODO(Midlertidlig løsning frem til skatt har lagt til støtte for M1 og M3)
+        if (transaksjonskode == Transaksjonskode.M1) {
             transaksjonskode = Transaksjonskode.B1
         }
-        if (transaksjonskode == Transaksjonskode.L3) {
+        if (transaksjonskode == Transaksjonskode.M3) {
             transaksjonskode = Transaksjonskode.B3
         }
 
