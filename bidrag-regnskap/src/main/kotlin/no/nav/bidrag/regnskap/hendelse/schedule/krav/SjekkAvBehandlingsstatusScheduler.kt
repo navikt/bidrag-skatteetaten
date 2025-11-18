@@ -73,10 +73,14 @@ class SjekkAvBehandlingsstatusScheduler(
 
                     val feilmeldingHashList = oppdrag.sisteFeilmeldingHash
                     if (feilmeldingHashList == null) {
-                        oppdrag.sisteFeilmeldingHash = mutableListOf(hash)
+                        if (erInnenforDagligSlackTidsvindu()) {
+                            oppdrag.sisteFeilmeldingHash = mutableListOf(hash)
+                        }
                         nyeFeilmeldinger += nyFeilmelding
                     } else if (!feilmeldingHashList.contains(hash)) {
-                        feilmeldingHashList.add(hash)
+                        if (erInnenforDagligSlackTidsvindu()) {
+                            feilmeldingHashList.add(hash)
+                        }
                         nyeFeilmeldinger += nyFeilmelding
                     } else {
                         sakerSomFremdelesFeiler.add(oppdrag.sakId + " - $batchUid")
