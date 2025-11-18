@@ -158,7 +158,7 @@ class PåløpsfilGenerator(
         writer.writeEndElement()
 
         writer.writeStartElement("kravhaverId")
-        writer.writeCharacters(kontering.oppdragsperiode?.oppdrag?.kravhaverIdent)
+        writer.writeCharacters(kontering.oppdragsperiode?.oppdrag?.kravhaverIdent.orEmpty())
         writer.writeEndElement()
 
         writer.writeStartElement("utbetalesTilId")
@@ -204,7 +204,7 @@ class PåløpsfilGenerator(
         writer.writeEndElement()
 
         writer.writeStartElement("tekst")
-        writer.writeCharacters(kontering.oppdragsperiode?.eksternReferanse)
+        writer.writeCharacters(kontering.oppdragsperiode?.eksternReferanse.orEmpty())
         writer.writeEndElement()
 
         writer.writeStartElement("refFagsystemId")
