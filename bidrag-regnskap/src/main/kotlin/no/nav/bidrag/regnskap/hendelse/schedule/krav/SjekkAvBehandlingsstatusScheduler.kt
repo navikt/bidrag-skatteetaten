@@ -69,7 +69,7 @@ class SjekkAvBehandlingsstatusScheduler(
                 } else {
                     val nyFeilmelding = utledFeilmelding(ikkeGodkjenteKonteringer[batchUid], feilmelding, feilmeldingerReskontro, batchUid)
                     val oppdrag = ikkeGodkjenteKonteringer[batchUid]!!.first().oppdragsperiode!!.oppdrag!!
-                    val hash = ikkeGodkjenteKonteringer[batchUid]!!.map { it.konteringId }.hashCode() + oppdrag.oppdragId.hashCode()
+                    val hash = ikkeGodkjenteKonteringer[batchUid]!!.map { it.konteringId }.sumOf { it!! }.hashCode() + oppdrag.oppdragId.hashCode()
 
                     val feilmeldingHashList = oppdrag.sisteFeilmeldingHash
                     if (feilmeldingHashList == null) {

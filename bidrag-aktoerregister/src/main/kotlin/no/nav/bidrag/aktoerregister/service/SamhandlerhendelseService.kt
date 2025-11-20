@@ -21,9 +21,11 @@ class SamhandlerhendelseService(private val aktørRepository: AktørRepository, 
             SamhandlerKafkaHendelsestype.OPPRETTET -> {
                 opprettNySamhandler(hendelse.samhandlerId)
             }
+
             SamhandlerKafkaHendelsestype.OPPDATERT -> {
                 oppdaterSamhandler(hendelse.samhandlerId)
             }
+
             SamhandlerKafkaHendelsestype.OPPHØRT -> {
                 opphørSamhandler(hendelse.samhandlerId)
             }
