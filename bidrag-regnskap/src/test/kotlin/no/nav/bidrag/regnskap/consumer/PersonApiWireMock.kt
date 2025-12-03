@@ -2,6 +2,7 @@ package no.nav.bidrag.regnskap.consumer
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 
 class PersonApiWireMock {
 
@@ -9,7 +10,7 @@ class PersonApiWireMock {
         private const val PORT = 8099
     }
 
-    val nyIdent = "00000000000"
+    val nyIdent = genererFødselsnummer()
 
     private val mock = WireMockServer(PORT)
 

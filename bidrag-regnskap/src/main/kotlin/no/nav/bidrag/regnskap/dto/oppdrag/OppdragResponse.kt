@@ -21,15 +21,13 @@ data class OppdragResponse(
     val type: String,
 
     @field:Schema(
-        description = "SakId for bidragssaken.",
-        example = "123456",
+        description = "Saksnummer for bidragssaken.",
     )
     val sakId: String,
 
     @field:Schema(
         description = "Personident (FNR/DNR) eller aktoernummer (TSS-ident/samhandler) til kravhaver." +
             "\n\nKravhaver angis ikke for gebyr.",
-        example = "12345678910",
     )
     val kravhaverIdent: String?,
 
@@ -37,21 +35,18 @@ data class OppdragResponse(
         description = "Personident (FNR/DNR) eller aktoernummer (TSS-ident/samhandler) til skyldner. " +
             "For Bidrag er dette BP i saken." +
             "\n\nFor forskudd settes skyldnerIdent til NAVs aktoernummer 80000345435.",
-        example = "12345678910",
     )
     val skyldnerIdent: String,
 
     @field:Schema(
         description = "Personident (FNR/DNR) til bidragsmottaker i bidragssaken. " +
             "I saker der bidragsmottaker ikke er satt benyttes et dummynr 22222222226",
-        example = "12345678910",
     )
     val gjelderIdent: String,
 
     @field:Schema(
         description = "Personident (FNR/DNR) eller aktoernummer (TSS-ident/samhandler) til mottaker av kravet." +
             "\n\nFor gebyr settes mottakerIdent til NAVs aktoernummer 80000345435.",
-        example = "12345678910",
     )
     val mottakerIdent: String,
 

@@ -14,13 +14,11 @@ data class PatchMottakerRequest(
 
     @field:Schema(
         description = "Ident til kravhaver.",
-        example = "00000000000",
     )
     val kravhaver: Personident,
 
     @field:Schema(
         description = "Ident til ny mottaker.",
-        example = "00000000000",
     )
     val mottaker: Personident,
 )
