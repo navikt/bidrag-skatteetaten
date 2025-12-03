@@ -3,7 +3,7 @@ package no.nav.bidrag.regnskap.service
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.bidrag.commons.util.PersonidentGenerator
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
@@ -23,7 +23,6 @@ import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.PostgreSQLContainer
 import java.math.BigDecimal
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -123,9 +122,9 @@ class PåløpskjøringServiceIT {
             val oppdrag = Oppdrag(
                 stønadType = "BIDRAG",
                 sakId = Random.nextInt().toString(),
-                skyldnerIdent = PersonidentGenerator.genererFødselsnummer(),
-                gjelderIdent = PersonidentGenerator.genererFødselsnummer(),
-                mottakerIdent = PersonidentGenerator.genererFødselsnummer(),
+                skyldnerIdent = genererFødselsnummer(),
+                gjelderIdent = genererFødselsnummer(),
+                mottakerIdent = genererFødselsnummer(),
             )
             val oppdragsperiode = Oppdragsperiode(
                 oppdrag = oppdrag,
@@ -149,9 +148,9 @@ class PåløpskjøringServiceIT {
             stønadType = "BIDRAG",
             sakId = Random.nextInt().toString(),
             utsattTilDato = LocalDate.now().plusDays(1),
-            skyldnerIdent = PersonidentGenerator.genererFødselsnummer(),
-            gjelderIdent = PersonidentGenerator.genererFødselsnummer(),
-            mottakerIdent = PersonidentGenerator.genererFødselsnummer(),
+            skyldnerIdent = genererFødselsnummer(),
+            gjelderIdent = genererFødselsnummer(),
+            mottakerIdent = genererFødselsnummer(),
         )
         val utsattOppdragsperiode = Oppdragsperiode(
             oppdrag = utsattOppdrag,
@@ -172,9 +171,9 @@ class PåløpskjøringServiceIT {
         val feiletOppdrag = Oppdrag(
             stønadType = "BIDRAG",
             sakId = Random.nextInt().toString(),
-            skyldnerIdent = PersonidentGenerator.genererFødselsnummer(),
-            gjelderIdent = PersonidentGenerator.genererFødselsnummer(),
-            mottakerIdent = PersonidentGenerator.genererFødselsnummer(),
+            skyldnerIdent = genererFødselsnummer(),
+            gjelderIdent = genererFødselsnummer(),
+            mottakerIdent = genererFødselsnummer(),
         )
         val feiledVedtakId = Random.nextInt()
         val feiletOppdragsperiode = Oppdragsperiode(

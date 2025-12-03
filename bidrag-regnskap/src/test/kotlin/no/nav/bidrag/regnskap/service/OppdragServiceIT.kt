@@ -1,8 +1,8 @@
 package no.nav.bidrag.regnskap.service
 
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 import no.nav.bidrag.domene.organisasjon.Enhetsnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.consumer.SakApiWireMock
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
@@ -96,9 +96,9 @@ class OppdragServiceIT {
                 Hendelse(
                     type = "BIDRAG",
                     vedtakType = Vedtakstype.FASTSETTELSE,
-                    kravhaverIdent = PersonidentGenerator.genererFødselsnummer(),
-                    skyldnerIdent = PersonidentGenerator.genererFødselsnummer(),
-                    mottakerIdent = PersonidentGenerator.genererFødselsnummer(),
+                    kravhaverIdent = genererFødselsnummer(),
+                    skyldnerIdent = genererFødselsnummer(),
+                    mottakerIdent = genererFødselsnummer(),
                     sakId = Random.nextInt().toString(),
                     vedtakId = Random.nextInt(),
                     vedtakDato = LocalDate.now(),

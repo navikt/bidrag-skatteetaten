@@ -6,12 +6,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.Type
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.sak.Saksnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.utils.TestData
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class OppslagServiceTest {
@@ -43,7 +43,7 @@ class OppslagServiceTest {
         @Test
         fun `skal hente eksisterende oppdrag`() {
             val stonadType = Stønadstype.BIDRAG
-            val skyldnerIdent = PersonidentGenerator.genererFødselsnummer()
+            val skyldnerIdent = genererFødselsnummer()
 
             every { persistenceService.hentOppdrag(any()) } returns TestData.opprettOppdrag(
                 stonadType = stonadType,

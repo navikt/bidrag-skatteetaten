@@ -1,8 +1,8 @@
 package no.nav.bidrag.aktoerregister.hendelse
 
 import no.nav.bidrag.aktoerregister.AktoerregisterApplicationTest
-import no.nav.bidrag.commons.util.Kjonn
-import no.nav.bidrag.commons.util.PersonidentGenerator
+import no.nav.bidrag.generer.testdata.person.Kjønn
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,8 +53,8 @@ class PersonHendelseListenerTest {
 
     @Test
     fun `skal lese inn person-hendelse via kafka`() {
-        val personIdent1 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.MANN)
-        val personIdent2 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.KVINNE)
+        val personIdent1 = genererFødselsnummer(LocalDate.now().minusYears(30), Kjønn.MANN)
+        val personIdent2 = genererFødselsnummer(LocalDate.now().minusYears(30), Kjønn.KVINNE)
         val hendelse = "{" +
             "\"aktørid\":\"123456\"," +
             "\"personidenter\":[" +

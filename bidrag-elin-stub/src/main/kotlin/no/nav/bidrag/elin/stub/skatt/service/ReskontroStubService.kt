@@ -1,6 +1,5 @@
 package no.nav.bidrag.elin.stub.skatt.service
 
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Aktivitet
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.BarnISak
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Bidragssak
@@ -11,6 +10,7 @@ import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Output
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Retur
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Skyldner
 import no.nav.bidrag.elin.stub.skatt.dto.reskontro.Transaksjon
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -38,7 +38,7 @@ class ReskontroStubService {
                         perBarnISak =
                         listOf(
                             BarnISak(
-                                fodselsnummer = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2001, 1, 1)),
+                                fodselsnummer = genererFødselsnummer(LocalDate.of(2001, 1, 1)),
                                 restGjeldOffentlig = Random.nextInt(0, 10000).toDouble(),
                                 restGjeldPrivat = Random.nextInt(0, 10000).toDouble(),
                                 sumIkkeUtbetalt = Random.nextInt(0, 10000).toDouble(),
@@ -79,7 +79,7 @@ class ReskontroStubService {
                         perBarnISak =
                         listOf(
                             BarnISak(
-                                fodselsnummer = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2001, 1, 2)),
+                                fodselsnummer = genererFødselsnummer(LocalDate.of(2001, 1, 2)),
                                 restGjeldOffentlig = Random.nextInt(0, 10000).toDouble(),
                                 restGjeldPrivat = Random.nextInt(0, 10000).toDouble(),
                                 sumIkkeUtbetalt = 0.0,
@@ -123,8 +123,8 @@ class ReskontroStubService {
                             kode = "B1",
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
-                            kildeFodselsOrgNr = PersonidentGenerator.genererFødselsnummer(),
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            kildeFodselsOrgNr = genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -132,7 +132,7 @@ class ReskontroStubService {
                             bidragssaksnummer = input.bidragssaksnummer,
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),
@@ -141,8 +141,8 @@ class ReskontroStubService {
                             kode = "B1",
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
-                            kildeFodselsOrgNr = PersonidentGenerator.genererFødselsnummer(),
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            kildeFodselsOrgNr = genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -150,7 +150,7 @@ class ReskontroStubService {
                             bidragssaksnummer = input.bidragssaksnummer,
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),
@@ -177,7 +177,7 @@ class ReskontroStubService {
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
                             kildeFodselsOrgNr = input.fodselsOrgnr,
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -185,7 +185,7 @@ class ReskontroStubService {
                             bidragssaksnummer = Random.nextLong(),
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),
@@ -195,7 +195,7 @@ class ReskontroStubService {
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
                             kildeFodselsOrgNr = input.fodselsOrgnr,
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -203,7 +203,7 @@ class ReskontroStubService {
                             bidragssaksnummer = Random.nextLong(),
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),
@@ -229,8 +229,8 @@ class ReskontroStubService {
                             kode = "B1",
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
-                            kildeFodselsOrgNr = PersonidentGenerator.genererFødselsnummer(),
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            kildeFodselsOrgNr = genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -238,7 +238,7 @@ class ReskontroStubService {
                             bidragssaksnummer = Random.nextLong(),
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(2).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),
@@ -247,8 +247,8 @@ class ReskontroStubService {
                             kode = "B1",
                             beskrivelse = "Bidrag",
                             dato = LocalDateTime.now().toString(),
-                            kildeFodselsOrgNr = PersonidentGenerator.genererFødselsnummer(),
-                            mottakerFodslesOrgNr = PersonidentGenerator.genererFødselsnummer(),
+                            kildeFodselsOrgNr = genererFødselsnummer(),
+                            mottakerFodslesOrgNr = genererFødselsnummer(),
                             opprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
                             restBeloep = Random.nextInt(0, 10000).toDouble(),
                             valutaOpprinneligBeloep = Random.nextInt(0, 10000).toDouble(),
@@ -256,7 +256,7 @@ class ReskontroStubService {
                             bidragssaksnummer = Random.nextLong(),
                             periodeSisteDatoFom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
                             periodeSisteDatoTom = LocalDateTime.now().withDayOfMonth(1).minusMonths(1).toString(),
-                            barnFodselsnr = PersonidentGenerator.genererFødselsnummer(LocalDate.of(2000, 1, 1)),
+                            barnFodselsnr = genererFødselsnummer(LocalDate.of(2000, 1, 1)),
                             bidragsId = UUID.randomUUID().toString(),
                             soeknadsType = "Ukjent",
                         ),

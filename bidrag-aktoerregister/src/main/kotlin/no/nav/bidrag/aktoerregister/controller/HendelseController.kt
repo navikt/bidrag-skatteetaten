@@ -14,12 +14,12 @@ class HendelseController(
     private val personHendelseService: PersonHendelseService,
 ) {
     @Operation(
-        summary = "Start manuell innlesing av en hendelse.",
+        summary = "Start manuell innlesing av en personhendelse.",
         description = "Hendelser skal automatisk behandles. Dette endepunktet er ment for testtilfeller.",
     )
     @ApiResponse(responseCode = "200", description = "Hendelse har blitt behandlet.")
-    @PostMapping("/hendelse")
-    fun startSamhandlerBatch(hendelse: String): ResponseEntity<*> {
+    @PostMapping("/personhendelse")
+    fun behandleHendelse(hendelse: String): ResponseEntity<*> {
         personHendelseService.behandleHendelse(hendelse)
         return ResponseEntity.ok().build<Any>()
     }

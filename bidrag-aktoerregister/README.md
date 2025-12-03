@@ -26,31 +26,9 @@ Hendelsene inneholder i seg selv ikke endringene, disse må hentes for aktørId'
 
 Returnerer informasjon om aktør av type `identType` med id `ident`. `identType` kan være `PERSONNUMMER` eller `AKTOERNUMMER`. Ved oppslag på ident av type `PERSONNUMMER` returneres kun kontoinformasjon. Ved oppslag på ident av type `AKTOERNUMMER` returneres både kontoinformasjon og adresseinformasjon.
 
-```
-# Endepunkt
-GET /aktoer/{identType}/{ident}
-
-# Hent aktør med identType = PERSONNUMMER og ident = 17818798717
-GET /aktoer/PERSONNUMMER/17818798717
-
-# Hent aktør med identType = AKTOERNUMMER og ident = 80000365099
-GET /aktoer/AKTOERNUMMER/80000365099
-```
-
 ### Hent hendelser
 
 Returnerer en liste av aktører som har blitt oppdatert siden sekvensnummer `fraSekvensnummer`. Antall aktøerer i den returnerte listen styres av parameteren `antall`. Den returnerte listen vil aldri inneholde flere innslag av samme aktør. Altså kan det hende at det siste sekvensnummeret som returneres er større enn `fraSekvensnummer` + `antall`. Den returnerte hendelseslisten vil være sortert etter sekvensnummer i stigende rekkefølge.
-
-```
-# Endepunkt
-GET /hendelser?fraSekvensnummer=X&antall=Y
-
-# Hente de 1000 første hendelsene
-GET /hendelser?fraSekvensnummer=0&antall=1000
-
-# Hent 1000 hendelser fra og med sekvensnummer 1001
-GET /hendelser?fraSekvensnummer=1001&antall=1000
-```
 
 ## Integrasjoner
 

@@ -2,9 +2,9 @@ package no.nav.bidrag.regnskap.util
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.commons.util.SjekkForNyIdent
 import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.consumer.PersonApiWireMock
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -24,8 +24,8 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootTest(classes = [BidragRegnskapLocal::class])
 class SjekkForNyIdentAspectTest {
 
-    private val ident1: String = PersonidentGenerator.genererFødselsnummer()
-    private val ident2 = PersonidentGenerator.genererFødselsnummer()
+    private val ident1: String = genererFødselsnummer()
+    private val ident2 = genererFødselsnummer()
 
     @Autowired
     private lateinit var dummyClassForAnnotasjon: DummyClassForAnnotasjon

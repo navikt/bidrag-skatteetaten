@@ -8,10 +8,10 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
 import no.nav.bidrag.regnskap.utils.TestData
@@ -140,9 +140,9 @@ class KravServiceTest {
 
     @Test
     fun `skal støtte å sende over flere oppdrag i samme krav`() {
-        val bm = PersonidentGenerator.genererFødselsnummer()
-        val bp = PersonidentGenerator.genererFødselsnummer()
-        val barn = PersonidentGenerator.genererFødselsnummer()
+        val bm = genererFødselsnummer()
+        val bp = genererFødselsnummer()
+        val barn = genererFødselsnummer()
         val nav = "80000345435"
 
         val bidragOppdrag = TestData.opprettOppdrag(
@@ -228,9 +228,9 @@ class KravServiceTest {
 
     @Test
     fun `skal sende samme oppdragId men forskjellig vedtakId i forskjellige Krav i samme kall mot skatt`() {
-        val bm = PersonidentGenerator.genererFødselsnummer()
-        val bp = PersonidentGenerator.genererFødselsnummer()
-        val barn = PersonidentGenerator.genererFødselsnummer()
+        val bm = genererFødselsnummer()
+        val bp = genererFødselsnummer()
+        val barn = genererFødselsnummer()
         val nav = "80000345435"
 
         val bidragOppdrag = TestData.opprettOppdrag(
@@ -317,9 +317,9 @@ class KravServiceTest {
 
     @Test
     fun `skal opprette kravliste sortert med eldste vedtak først`() {
-        val bm = PersonidentGenerator.genererFødselsnummer()
-        val bp = PersonidentGenerator.genererFødselsnummer()
-        val barn = PersonidentGenerator.genererFødselsnummer()
+        val bm = genererFødselsnummer()
+        val bp = genererFødselsnummer()
+        val barn = genererFødselsnummer()
         val nav = "80000345435"
 
         val bidragOppdrag = TestData.opprettOppdrag(

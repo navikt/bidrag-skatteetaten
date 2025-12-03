@@ -1,6 +1,5 @@
 package no.nav.bidrag.regnskap.utils
 
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.Type
@@ -8,6 +7,7 @@ import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.enums.vedtak.Vedtakstype
 import no.nav.bidrag.domene.organisasjon.Enhetsnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
 import no.nav.bidrag.regnskap.dto.vedtak.Periode
 import no.nav.bidrag.regnskap.persistence.entity.Driftsavvik
@@ -28,11 +28,11 @@ object TestData {
         stonadType: Stønadstype? = Stønadstype.BIDRAG,
         engangsbelopType: Engangsbeløptype? = null,
         sakId: String = "123456",
-        skyldnerIdent: String = PersonidentGenerator.genererFødselsnummer(),
+        skyldnerIdent: String = genererFødselsnummer(),
         oppdragsperioder: List<Oppdragsperiode> = listOf(opprettOppdragsperiode()),
-        kravhaverIdent: String = PersonidentGenerator.genererFødselsnummer(),
-        mottakerIdent: String = PersonidentGenerator.genererFødselsnummer(),
-        gjelderIdent: String = PersonidentGenerator.genererFødselsnummer(),
+        kravhaverIdent: String = genererFødselsnummer(),
+        mottakerIdent: String = genererFødselsnummer(),
+        gjelderIdent: String = genererFødselsnummer(),
         utsattTilDato: LocalDate? = null,
         endretTidspunkt: LocalDateTime? = null,
         harFeiledeKonteringer: Boolean = false,
@@ -53,9 +53,9 @@ object TestData {
     fun opprettHendelse(
         type: String = Stønadstype.BIDRAG.name,
         vedtakType: Vedtakstype = Vedtakstype.FASTSETTELSE,
-        kravhaverIdent: String = PersonidentGenerator.genererFødselsnummer(),
-        skyldnerIdent: String = PersonidentGenerator.genererFødselsnummer(),
-        mottakerIdent: String = PersonidentGenerator.genererFødselsnummer(),
+        kravhaverIdent: String = genererFødselsnummer(),
+        skyldnerIdent: String = genererFødselsnummer(),
+        mottakerIdent: String = genererFødselsnummer(),
         sakId: String = "Sak123",
         vedtakId: Int = 12345,
         vedtakDato: LocalDate = LocalDate.now(),
