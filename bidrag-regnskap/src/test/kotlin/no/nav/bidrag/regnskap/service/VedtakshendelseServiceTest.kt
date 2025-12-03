@@ -10,6 +10,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import no.nav.bidrag.commons.util.IdentUtils
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
+import no.nav.bidrag.generer.testdata.sak.genererSaksnummer
 import no.nav.bidrag.regnskap.util.PåløpException
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.BeforeEach
@@ -141,10 +143,10 @@ class VedtakshendelseServiceTest {
         "stønadsendringListe":[
           {
             "type":"BIDRAG",
-            "sak":"456",
-            "skyldner":"11111111111",
-            "kravhaver":"22222222222",
-            "mottaker":"333333333333",
+            "sak":"${genererSaksnummer()}",
+            "skyldner":"${genererFødselsnummer()}",
+            "kravhaver":"${genererFødselsnummer()}",
+            "mottaker":"${genererFødselsnummer()}",
             "innkreving":"MED_INNKREVING",
             "beslutning":"ENDRING",
             "periodeListe":[
@@ -173,10 +175,10 @@ class VedtakshendelseServiceTest {
         "engangsbeløpListe":[
           {
             "type":"GEBYR_SKYLDNER",
-            "sak":"789",
-            "skyldner":"11111111111",
-            "kravhaver":"22222222222",
-            "mottaker":"333333333333",
+            "sak":"${genererSaksnummer()}",
+            "skyldner":"${genererFødselsnummer()}",
+            "kravhaver":"${genererFødselsnummer()}",
+            "mottaker":"${genererFødselsnummer()}",
             "belop":"1790",
             "valutakode":"NOK",
             "resultatkode":"GIGI",

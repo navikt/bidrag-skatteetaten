@@ -7,11 +7,11 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import no.nav.bidrag.commons.util.IdentUtils
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.consumer.BidragSakConsumer
 import no.nav.bidrag.regnskap.utils.TestData
 import org.junit.jupiter.api.Nested
@@ -156,8 +156,8 @@ class OppdragServiceTest {
         @Test
         fun `skal patche mottaker når det finnes et bidrags oppdrag`() {
             val saksnummer = Saksnummer("123456")
-            val kravhaver = Personident(PersonidentGenerator.genererFødselsnummer())
-            val mottaker = Personident(PersonidentGenerator.genererFødselsnummer())
+            val kravhaver = Personident(genererFødselsnummer())
+            val mottaker = Personident(genererFødselsnummer())
 
             val oppdrag = TestData.opprettOppdrag(
                 stonadType = Stønadstype.BIDRAG,
@@ -179,8 +179,8 @@ class OppdragServiceTest {
         @Test
         fun `skal patche mottaker når det finnes et bidrag- og et forskudds oppdrag`() {
             val saksnummer = Saksnummer("123456")
-            val kravhaver = Personident(PersonidentGenerator.genererFødselsnummer())
-            val mottaker = Personident(PersonidentGenerator.genererFødselsnummer())
+            val kravhaver = Personident(genererFødselsnummer())
+            val mottaker = Personident(genererFødselsnummer())
 
             val oppdrag1 = TestData.opprettOppdrag(
                 stonadType = Stønadstype.BIDRAG,
@@ -213,8 +213,8 @@ class OppdragServiceTest {
         @Test
         fun `skal patche mottaker for gebyr`() {
             val saksnummer = Saksnummer("123456")
-            val kravhaver = Personident(PersonidentGenerator.genererFødselsnummer())
-            val mottaker = Personident(PersonidentGenerator.genererFødselsnummer())
+            val kravhaver = Personident(genererFødselsnummer())
+            val mottaker = Personident(genererFødselsnummer())
 
             val oppdrag1 = TestData.opprettOppdrag(
                 stonadType = null,
@@ -236,8 +236,8 @@ class OppdragServiceTest {
         @Test
         fun `skal patche mottaker for ektefellebidrag`() {
             val saksnummer = Saksnummer("123456")
-            val kravhaver = Personident(PersonidentGenerator.genererFødselsnummer())
-            val mottaker = Personident(PersonidentGenerator.genererFødselsnummer())
+            val kravhaver = Personident(genererFødselsnummer())
+            val mottaker = Personident(genererFødselsnummer())
 
             val oppdrag1 = TestData.opprettOppdrag(
                 stonadType = Stønadstype.EKTEFELLEBIDRAG,

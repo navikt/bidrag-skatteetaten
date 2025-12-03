@@ -7,8 +7,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.sak.Saksnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.reskontro.consumer.SkattReskontroConsumer
 import no.nav.bidrag.reskontro.dto.consumer.BarnISak
 import no.nav.bidrag.reskontro.dto.consumer.Bidragssak
@@ -46,7 +46,7 @@ class ReskontroServiceTest {
         val erStoppIUtbetaling = "N"
 
         val barnISak = BarnISak(
-            fodselsnummer = PersonidentGenerator.genererFødselsnummer(),
+            fodselsnummer = genererFødselsnummer(),
             restGjeldOffentlig = restGjeldOffentlig,
             restGjeldPrivat = restGjeldPrivat,
             sumIkkeUtbetalt = sumIkkeUtbetalt,

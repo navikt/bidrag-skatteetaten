@@ -7,7 +7,7 @@ import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.entities.Dødsbo
 import no.nav.bidrag.aktoerregister.persistence.entities.TidligereIdenter
-import no.nav.bidrag.commons.util.PersonidentGenerator.genererFødselsnummer
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import org.assertj.core.api.AssertionsForClassTypes
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -24,8 +24,8 @@ internal class AktørTilAkteorDTOConverterTest {
 
     @Test
     fun skalKonvertereAktoerTilAktoerDTO() {
-        val aktoerIdent = genererFødselsnummer(null, null)
-        val tidligereAktoerIdent = genererFødselsnummer(null, null)
+        val aktoerIdent = genererFødselsnummer()
+        val tidligereAktoerIdent = genererFødselsnummer()
         val aktoerType = Identtype.PERSONNUMMER
         val offentligId = "6"
         val offentligType = "OffentligType"

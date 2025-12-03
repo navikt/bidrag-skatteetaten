@@ -10,12 +10,12 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.Type
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.consumer.KravApiWireMock
 import no.nav.bidrag.regnskap.consumer.PersonApiWireMock
@@ -337,8 +337,8 @@ internal class VedtakshendelseListenerIT {
         skrivTilTestdatafil(listOf(kontering), "Ettergivelse tilbakekreving")
     }
 
-    val skyldnerIdent = PersonidentGenerator.genererFødselsnummer()
-    val kravhaverIdent = PersonidentGenerator.genererFødselsnummer()
+    val skyldnerIdent = genererFødselsnummer()
+    val kravhaverIdent = genererFødselsnummer()
 
     @Test
     @Order(12)
@@ -391,10 +391,10 @@ internal class VedtakshendelseListenerIT {
         )
     }
 
-    val bmBidrag = PersonidentGenerator.genererFødselsnummer()
-    val bpBidrag = PersonidentGenerator.genererFødselsnummer()
-    val barn1Bidrag = PersonidentGenerator.genererFødselsnummer()
-    val barn2Bidrag = PersonidentGenerator.genererFødselsnummer()
+    val bmBidrag = genererFødselsnummer()
+    val bpBidrag = genererFødselsnummer()
+    val barn1Bidrag = genererFødselsnummer()
+    val barn2Bidrag = genererFødselsnummer()
 
     @Test
     @Order(14)
@@ -500,9 +500,9 @@ internal class VedtakshendelseListenerIT {
         )
     }
 
-    val bpOppfostring = PersonidentGenerator.genererFødselsnummer()
-    val barn1Oppfostring = PersonidentGenerator.genererFødselsnummer()
-    val barn2Oppfostring = PersonidentGenerator.genererFødselsnummer()
+    val bpOppfostring = genererFødselsnummer()
+    val barn1Oppfostring = genererFødselsnummer()
+    val barn2Oppfostring = genererFødselsnummer()
 
     @Test
     @Order(16)
@@ -593,8 +593,8 @@ internal class VedtakshendelseListenerIT {
         )
     }
 
-    val bidrag18årsMottaker = PersonidentGenerator.genererFødselsnummer()
-    val bidrag18årsMottakerNy = PersonidentGenerator.genererFødselsnummer()
+    val bidrag18årsMottaker = genererFødselsnummer()
+    val bidrag18årsMottakerNy = genererFødselsnummer()
 
     @Test
     @Order(18)
@@ -654,10 +654,10 @@ internal class VedtakshendelseListenerIT {
         )
     }
 
-    val skyldnerIdEktefelleBidrag = PersonidentGenerator.genererFødselsnummer()
-    val kravhaverIdEktefellebidrag = PersonidentGenerator.genererFødselsnummer()
-    val mottakerEktefellebidrag = PersonidentGenerator.genererFødselsnummer()
-    val mottakerEktefellebidragNy = PersonidentGenerator.genererFødselsnummer()
+    val skyldnerIdEktefelleBidrag = genererFødselsnummer()
+    val kravhaverIdEktefellebidrag = genererFødselsnummer()
+    val mottakerEktefellebidrag = genererFødselsnummer()
+    val mottakerEktefellebidragNy = genererFødselsnummer()
 
     @Test
     @Order(20)
@@ -740,10 +740,10 @@ internal class VedtakshendelseListenerIT {
         skrivTilTestdatafil(hentAlleKonteringerForOppdrag(oppdrag), "Motregning")
     }
 
-    val endreRmBmBidrag = PersonidentGenerator.genererFødselsnummer()
-    val endreRmBmNyBidrag = PersonidentGenerator.genererFødselsnummer()
-    val endreRmBpBidrag = PersonidentGenerator.genererFødselsnummer()
-    val endreRmBarn1Bidrag = PersonidentGenerator.genererFødselsnummer()
+    val endreRmBmBidrag = genererFødselsnummer()
+    val endreRmBmNyBidrag = genererFødselsnummer()
+    val endreRmBpBidrag = genererFødselsnummer()
+    val endreRmBarn1Bidrag = genererFødselsnummer()
 
     @Test
     @Order(23)
@@ -890,12 +890,12 @@ internal class VedtakshendelseListenerIT {
     private fun hentFilOgSendPåKafka(
         filnavn: String,
         antallKonteringerTotalt: Int,
-        kravhaverIdent: String = PersonidentGenerator.genererFødselsnummer(),
-        mottaker: String = PersonidentGenerator.genererFødselsnummer(),
-        bm: String = PersonidentGenerator.genererFødselsnummer(),
-        bp: String = PersonidentGenerator.genererFødselsnummer(),
-        barn1: String = PersonidentGenerator.genererFødselsnummer(),
-        barn2: String = PersonidentGenerator.genererFødselsnummer(),
+        kravhaverIdent: String = genererFødselsnummer(),
+        mottaker: String = genererFødselsnummer(),
+        bm: String = genererFødselsnummer(),
+        bp: String = genererFødselsnummer(),
+        barn1: String = genererFødselsnummer(),
+        barn2: String = genererFødselsnummer(),
     ): VedtakHendelse {
         val vedtakFilString =
             leggInnGenererteIdenter(hentTestfil(filnavn), kravhaverIdent, mottaker, bm, bp, barn1, barn2)
@@ -972,7 +972,7 @@ internal class VedtakshendelseListenerIT {
         barn2: String,
     ): String = vedtakFil.replace(
         "\"skyldner\": \"\"",
-        "\"skyldner\" : \"${PersonidentGenerator.genererFødselsnummer()}\"",
+        "\"skyldner\" : \"${genererFødselsnummer()}\"",
     )
         .replace("\"kravhaver\": \"\"", "\"kravhaver\" : \"$kravhaverIdent\"")
         .replace("\"mottaker\": \"\"", "\"mottaker\" : \"$mottaker\"")

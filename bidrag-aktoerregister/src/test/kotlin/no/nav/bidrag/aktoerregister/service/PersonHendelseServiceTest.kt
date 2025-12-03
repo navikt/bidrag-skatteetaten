@@ -10,9 +10,9 @@ import io.mockk.verify
 import no.nav.bidrag.aktoerregister.config.RestConfig
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
-import no.nav.bidrag.commons.util.Kjonn
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.generer.testdata.person.Kjønn
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
@@ -30,8 +30,8 @@ class PersonHendelseServiceTest {
     private lateinit var personHendelseService: PersonHendelseService
 
     companion object {
-        val personIdent1 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.MANN)
-        val personIdent2 = PersonidentGenerator.genererFødselsnummer(LocalDate.now().minusYears(30), Kjonn.KVINNE)
+        val personIdent1 = genererFødselsnummer(LocalDate.now().minusYears(30), Kjønn.MANN)
+        val personIdent2 = genererFødselsnummer(LocalDate.now().minusYears(30), Kjønn.KVINNE)
         val aktør = Aktør(id = 0, aktørIdent = personIdent2, aktørType = Identtype.PERSONNUMMER.name)
         val aktørMedNyId = Aktør(id = 1, aktørIdent = personIdent1, aktørType = Identtype.PERSONNUMMER.name)
         val hendelse = "{" +

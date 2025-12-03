@@ -1,10 +1,10 @@
 package no.nav.bidrag.regnskap.fil.påløp
 
 import io.mockk.mockk
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.Type
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.BidragRegnskapLocal
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
@@ -93,9 +93,9 @@ class PåløpsfilGeneratorIT {
             val oppdrag = Oppdrag(
                 stønadType = "BIDRAG",
                 sakId = Random.nextInt().toString(),
-                skyldnerIdent = PersonidentGenerator.genererFødselsnummer(),
-                gjelderIdent = PersonidentGenerator.genererFødselsnummer(),
-                mottakerIdent = PersonidentGenerator.genererFødselsnummer(),
+                skyldnerIdent = genererFødselsnummer(),
+                gjelderIdent = genererFødselsnummer(),
+                mottakerIdent = genererFødselsnummer(),
             )
             val oppdragsperiode = Oppdragsperiode(
                 oppdrag = oppdrag,

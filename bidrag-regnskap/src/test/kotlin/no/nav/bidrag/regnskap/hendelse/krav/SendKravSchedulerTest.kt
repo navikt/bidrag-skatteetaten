@@ -9,10 +9,10 @@ import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.verify
 import net.javacrumbs.shedlock.core.LockAssert
-import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
+import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.KravSchedulerUtils
 import no.nav.bidrag.regnskap.hendelse.schedule.krav.SendKravScheduler
 import no.nav.bidrag.regnskap.service.KravService
@@ -138,9 +138,9 @@ internal class SendKravSchedulerTest {
 
     @Test
     fun `skal sende over flere oppdrag med samme sakId i samme krav`() {
-        val bm = PersonidentGenerator.genererFødselsnummer()
-        val bp = PersonidentGenerator.genererFødselsnummer()
-        val barn = PersonidentGenerator.genererFødselsnummer()
+        val bm = genererFødselsnummer()
+        val bp = genererFødselsnummer()
+        val barn = genererFødselsnummer()
         val nav = "80000345435"
 
         val annetOppdrag = TestData.opprettOppdrag(oppdragId = 0, sakId = "654321")

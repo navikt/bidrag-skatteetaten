@@ -8,6 +8,9 @@ import io.mockk.verify
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
+import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.generer.testdata.samhandler.genererSamhandler
+import no.nav.bidrag.generer.testdata.samhandler.genererSamhandlerId
 import no.nav.bidrag.transport.samhandler.SamhandlerKafkaHendelsestype
 import no.nav.bidrag.transport.samhandler.Samhandlerhendelse
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,7 +31,7 @@ class SamhandlerhendelseServiceTest {
     @Test
     fun testOpprettNySamhandler() {
         val samhandlerhendelse = Samhandlerhendelse(
-            samhandlerId = "80000000001",
+            samhandlerId = genererSamhandlerId().verdi,
             hendelsestype = SamhandlerKafkaHendelsestype.OPPRETTET,
             sporingId = "sporingId",
         )
@@ -40,10 +43,11 @@ class SamhandlerhendelseServiceTest {
 
     @Test
     fun testOppdaterSamhandler() {
-        every { aktørRepository.findByAktørIdent(any()) } returns Aktør(aktørIdent = "80000000001", aktørType = Identtype.AKTOERNUMMER.name)
-        every { aktørService.hentAktørFraSamhandler(any()) } returns Aktør(aktørIdent = "80000000001", aktørType = Identtype.AKTOERNUMMER.name)
+        val samhandler = genererSamhandlerId().verdi
+        every { aktørRepository.findByAktørIdent(any()) } returns Aktør(aktørIdent = samhandler, aktørType = Identtype.AKTOERNUMMER.name)
+        every { aktørService.hentAktørFraSamhandler(any()) } returns Aktør(aktørIdent = samhandler, aktørType = Identtype.AKTOERNUMMER.name)
         val samhandlerhendelse = Samhandlerhendelse(
-            samhandlerId = "80000000001",
+            samhandlerId = samhandler,
             hendelsestype = SamhandlerKafkaHendelsestype.OPPDATERT,
             sporingId = "sporingId",
         )
@@ -57,7 +61,7 @@ class SamhandlerhendelseServiceTest {
     @Test
     fun testOpphørSamhandler() {
         val samhandlerhendelse = Samhandlerhendelse(
-            samhandlerId = "80000000001",
+            samhandlerId = genererSamhandlerId().verdi,
             hendelsestype = SamhandlerKafkaHendelsestype.OPPHØRT,
             sporingId = "sporingId",
         )
