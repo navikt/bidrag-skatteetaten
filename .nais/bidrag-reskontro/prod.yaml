@@ -29,3 +29,6 @@ azure:
       - application: bidrag-regnskap
         namespace: bidrag
         cluster: prod-gcp
+      - application: bidrag-automatisk-jobb
+        namespace: bidrag
+        cluster: prod-gcp
