@@ -28,3 +28,6 @@ azure:
       - application: bidrag-regnskap-q2
         namespace: bidrag
         cluster: dev-gcp
+      - application: bidrag-automatisk-jobb-q2
+        namespace: bidrag
+        cluster: dev-gcp
