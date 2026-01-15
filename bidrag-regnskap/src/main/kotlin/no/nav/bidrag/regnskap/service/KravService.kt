@@ -192,7 +192,7 @@ class KravService(
     )
 
     private fun mapKonteringTilKravkontering(kontering: Kontering): Kravkontering {
-        var transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode)
+        val transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode)
 
         val oppdrag = kontering.oppdragsperiode!!.oppdrag!!
         val beløp = if (transaksjonskode.negativtBeløp) {
