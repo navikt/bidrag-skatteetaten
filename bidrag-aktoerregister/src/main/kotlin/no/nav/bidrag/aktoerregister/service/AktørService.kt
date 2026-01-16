@@ -111,6 +111,7 @@ class AktørService(
     }
 
     fun hentAktørFraDatabase(aktørIdent: Ident): Pair<Aktør?, Boolean> {
+        // Boolean-verdien indikerer om vi må tvinge en oppdatering etter å ha funnet duplikat aktør via tidligere identer
         var tvingOppdatering = false
         // Først sjekk om det finnes en aktør med denne identen direkte
         val direkteAktør = aktørRepository.findByAktørIdent(aktørIdent.verdi)
