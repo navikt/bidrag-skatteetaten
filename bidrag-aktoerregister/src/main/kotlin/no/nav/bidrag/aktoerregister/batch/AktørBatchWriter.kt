@@ -14,7 +14,8 @@ class AktørBatchWriter(private val aktørService: AktørService) : ItemWriter<A
             .filter { it.aktørStatus == AktørStatus.UPDATED }
             .forEach {
                 if (!slettedeAktører.contains(it.aktør.aktørIdent)) {
-                    aktørService.oppdaterAktør(it.aktør, it.nyAktør, it.originalIdent)?.let { slettedeAktører.add(it) }
+                    aktørService.oppdaterAktør(it.aktør, it.nyAktør, it.originalIdent)
+                    slettedeAktører.add(it.aktør.aktørIdent)
                 }
             }
     }

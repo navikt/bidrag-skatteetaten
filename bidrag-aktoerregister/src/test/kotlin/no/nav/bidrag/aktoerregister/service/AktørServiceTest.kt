@@ -9,7 +9,6 @@ import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
-import no.nav.bidrag.generer.testdata.adresse.genererAdresse
 import no.nav.bidrag.generer.testdata.konto.genererKontonummer
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.BeforeEach
@@ -116,10 +115,17 @@ class AktørServiceTest {
         aktørRepository.save(aktør)
         aktørRepository.save(nyAktør)
 
-        val slettetAktørIdent = aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
+        // oppdaterAktør vil oppdatere aktør til å ha nyAktørIdent som aktørIdent
+        aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
 
-        slettetAktørIdent shouldBe nyAktørIdent
-        aktørRepository.findByAktørIdent(nyAktørIdent) shouldNotBe null
+        // Flush for å sikre at endringer er synkronisert
+        entityManager.flush()
+        entityManager.clear()
+
+        // Verifiser at aktøren er oppdatert med ny ident og data
+        val oppdatertAktør = aktørRepository.findByAktørIdent(aktør.aktørIdent)
+        oppdatertAktør shouldNotBe null
+        oppdatertAktør?.adresselinje1 shouldBe "Testgate 2"
     }
 
     @Test
