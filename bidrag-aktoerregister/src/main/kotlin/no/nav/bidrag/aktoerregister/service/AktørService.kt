@@ -129,13 +129,13 @@ class AktørService(
         if (matchendeAktører.size > 1) {
             LOGGER.warn {
                 "Fant ${matchendeAktører.size} aktører med tidligere ident ${aktørIdent.verdi}. " +
-                        "Aktør-IDer: ${matchendeAktører.map { it.id }.joinToString(", ")}. " +
-                        "Velger eldste aktør (id=${matchendeAktører.minBy { it.id!! }.id})."
+                    "Aktør-IDer: ${matchendeAktører.map { it.id }.joinToString(", ")}. " +
+                    "Velger eldste aktør (id=${matchendeAktører.minBy { it.id!! }.id})."
             }
             tvingOppdatering = true
         }
 
-        return Pair(matchendeAktører.minBy { it.id!!}, tvingOppdatering)
+        return Pair(matchendeAktører.minBy { it.id!! }, tvingOppdatering)
     }
 
     fun oppdaterAktør(aktør: Aktør, nyAktør: Aktør, originalIdent: String?) {

@@ -163,7 +163,7 @@ class DuplikathåndteringServiceTest {
                 id = 2,
                 ident = "67890",
                 antallHendelser = 2,
-                antallTidligereIdenter = 1
+                antallTidligereIdenter = 1,
             )
 
             every { hendelseRepository.delete(any()) } just Runs
@@ -316,20 +316,18 @@ class DuplikathåndteringServiceTest {
     }
 
     // Helper functions
-    private fun opprettAktør(id: Int, ident: String): Aktør {
-        return Aktør(
-            aktørIdent = ident,
-            aktørType = Identtype.PERSONNUMMER.name
-        ).apply {
-            this.id = id
-        }
+    private fun opprettAktør(id: Int, ident: String): Aktør = Aktør(
+        aktørIdent = ident,
+        aktørType = Identtype.PERSONNUMMER.name,
+    ).apply {
+        this.id = id
     }
 
     private fun opprettAktørMedRelasjoner(
         id: Int,
         ident: String,
         antallHendelser: Int,
-        antallTidligereIdenter: Int
+        antallTidligereIdenter: Int,
     ): Aktør {
         val aktør = opprettAktør(id, ident)
 
@@ -344,8 +342,8 @@ class DuplikathåndteringServiceTest {
                 TidligereIdenter(
                     tidligereAktoerIdent = "tidligere_$index",
                     identtype = Identtype.PERSONNUMMER.name,
-                    aktør = aktør
-                )
+                    aktør = aktør,
+                ),
             )
         }
 
