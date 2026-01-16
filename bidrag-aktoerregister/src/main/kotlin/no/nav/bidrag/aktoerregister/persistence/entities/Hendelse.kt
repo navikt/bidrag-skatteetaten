@@ -11,7 +11,7 @@ import jakarta.persistence.Version
 import java.sql.Timestamp
 
 @Entity
-data class Hendelse(
+class Hendelse(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

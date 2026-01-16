@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 
 @Entity(name = "dodsbo")
-data class Dødsbo(
+class Dødsbo(
 
     @Id
     @Column(name = "id")

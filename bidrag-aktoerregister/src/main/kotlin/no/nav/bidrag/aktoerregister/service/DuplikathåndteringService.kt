@@ -65,8 +65,6 @@ class DuplikathåndteringService(
             hendelseRepository.delete(hendelse)
         }
 
-        aktør.dødsbo
-
         // Slett tidligere identer manuelt
         aktør.tidligereIdenter.forEach { tidligereIdent ->
             tidligereIdenterRepository.delete(tidligereIdent)
