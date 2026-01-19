@@ -142,12 +142,15 @@ class AktørService(
         try {
             var primærAktør = aktør
 
-            val duplikatAktør = hentAktørFraDatabase(Ident(nyAktør.aktørIdent)).first
-            if (duplikatAktør != null) {
-                LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
-                val matchendeAktører = listOf(primærAktør, duplikatAktør)
-                primærAktør = duplikatHåndteringService.velgPrimærAktør(matchendeAktører)
-                duplikatHåndteringService.slettDuplikater(primærAktør, matchendeAktører)
+            // Sjekk for duplikat aktør hvis aktørIdent har endret seg
+            if (aktør.aktørIdent != nyAktør.aktørIdent) {
+                val duplikatAktør = hentAktørFraDatabase(Ident(nyAktør.aktørIdent)).first
+                if (duplikatAktør != null) {
+                    LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
+                    val matchendeAktører = listOf(primærAktør, duplikatAktør)
+                    primærAktør = duplikatHåndteringService.velgPrimærAktør(matchendeAktører)
+                    duplikatHåndteringService.slettDuplikater(primærAktør, matchendeAktører)
+                }
             }
             // Track endringer mellom gammel og ny aktør
             val endringer = aktørendringstracker.utledEndringer(primærAktør, nyAktør)
