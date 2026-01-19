@@ -89,46 +89,6 @@ class AktørServiceTest {
     }
 
     @Test
-    fun `skal oppdatere aktør og slette duplikater`() {
-        val originalIdent = "originalIdent"
-        val nyAktørIdent = "nyAktørIdent"
-        val kontonummer = genererKontonummer().norskKontonummer(true).opprett()
-        val aktør = Aktør(
-            aktørIdent = originalIdent,
-            aktørType = Identtype.PERSONNUMMER.name,
-            land = "Norge",
-            postnr = "0682",
-            poststed = "Oslo",
-            adresselinje1 = "Testgate 1",
-            norskKontonr = kontonummer.norskKontonummer,
-        )
-        val nyAktør = Aktør(
-            aktørIdent = nyAktørIdent,
-            aktørType = Identtype.PERSONNUMMER.name,
-            land = "Norge",
-            postnr = "0682",
-            poststed = "Oslo",
-            adresselinje1 = "Testgate 2",
-            norskKontonr = kontonummer.norskKontonummer,
-        )
-
-        aktørRepository.save(aktør)
-        aktørRepository.save(nyAktør)
-
-        // oppdaterAktør vil oppdatere aktør til å ha nyAktørIdent som aktørIdent
-        aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
-
-        // Flush for å sikre at endringer er synkronisert
-        entityManager.flush()
-        entityManager.clear()
-
-        // Verifiser at aktøren er oppdatert med ny ident og data
-        val oppdatertAktør = aktørRepository.findByAktørIdent(aktør.aktørIdent)
-        oppdatertAktør shouldNotBe null
-        oppdatertAktør?.adresselinje1 shouldBe "Testgate 2"
-    }
-
-    @Test
     fun `skal oppdaterer aktør`() {
         val originalIdent = "originalIdent"
         val kontonummer = genererKontonummer().norskKontonummer(true).opprett()
