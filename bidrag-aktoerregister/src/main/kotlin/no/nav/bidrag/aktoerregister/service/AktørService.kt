@@ -144,7 +144,7 @@ class AktørService(
 
             val duplikatAktør = hentAktørFraDatabase(Ident(nyAktør.aktørIdent)).first
             if (duplikatAktør != null) {
-                LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering."  }
+                LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
                 val matchendeAktører = listOf(primærAktør, duplikatAktør)
                 primærAktør = duplikatHåndteringService.velgPrimærAktør(matchendeAktører)
                 duplikatHåndteringService.slettDuplikater(primærAktør, matchendeAktører)
