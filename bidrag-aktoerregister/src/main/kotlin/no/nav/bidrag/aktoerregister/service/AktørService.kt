@@ -140,25 +140,34 @@ class AktørService(
 
     fun oppdaterAktør(aktør: Aktør, nyAktør: Aktør, originalIdent: String?) {
         try {
+            var primærAktør = aktør
+
+            val duplikatAktør = hentAktørFraDatabase(Ident(nyAktør.aktørIdent)).first
+            if (duplikatAktør != null) {
+                LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
+                val matchendeAktører = listOf(primærAktør, duplikatAktør)
+                primærAktør = duplikatHåndteringService.velgPrimærAktør(matchendeAktører)
+                duplikatHåndteringService.slettDuplikater(primærAktør, matchendeAktører)
+            }
             // Track endringer mellom gammel og ny aktør
-            val endringer = aktørendringstracker.utledEndringer(aktør, nyAktør)
+            val endringer = aktørendringstracker.utledEndringer(primærAktør, nyAktør)
 
             // Fjern eksisterende tidligere identer
-            fjernEksisterendeTidligereIdenter(aktør)
+            fjernEksisterendeTidligereIdenter(primærAktør)
 
             // Oppdater alle felter på aktøren
-            aktør.oppdaterAlleFelter(nyAktør)
+            primærAktør.oppdaterAlleFelter(nyAktør)
             entityManager.flush()
 
             // Sett nye relasjoner
-            settNyeTidligereIdenter(aktør)
-            settDødsbo(aktør)
+            settNyeTidligereIdenter(primærAktør)
+            settDødsbo(primærAktør)
 
             // Opprett hendelser for endringene
-            hendelseService.opprettHendelserPåAktør(aktør, originalIdent, endringer)
+            hendelseService.opprettHendelserPåAktør(primærAktør, originalIdent, endringer)
 
-            LOGGER.info { "Lagrer aktør: ${aktør.aktørIdent}" }
-            aktørRepository.save(aktør)
+            LOGGER.info { "Lagrer aktør: ${primærAktør.aktørIdent}" }
+            aktørRepository.save(primærAktør)
         } catch (e: Exception) {
             LOGGER.error(e) {
                 "Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. " +
