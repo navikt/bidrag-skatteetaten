@@ -44,8 +44,8 @@ class PersonHendelseServiceTest {
 
     @Test
     fun `skal behandle hendelse med ny ident`() {
-        every { aktørService.hentAktørFraDatabase(Ident(personIdent1)) } returns null
-        every { aktørService.hentAktørFraDatabase(Ident(personIdent2)) } returns aktør
+        every { aktørService.hentAktørFraDatabase(Ident(personIdent1)) } returns Pair(null, false)
+        every { aktørService.hentAktørFraDatabase(Ident(personIdent2)) } returns Pair(aktør, false)
         every { aktørService.hentAktørFraPerson(Ident(personIdent1)) } returns aktørMedNyId
         every { aktørService.hentAktørFraPerson(Ident(personIdent2)) } returns aktørMedNyId
 
@@ -56,8 +56,8 @@ class PersonHendelseServiceTest {
 
     @Test
     fun `skal behandle hendelse for ident som ikke finne si aktørregisteret`() {
-        every { aktørService.hentAktørFraDatabase(Ident(personIdent1)) } returns null
-        every { aktørService.hentAktørFraDatabase(Ident(personIdent2)) } returns null
+        every { aktørService.hentAktørFraDatabase(Ident(personIdent1)) } returns Pair(null, false)
+        every { aktørService.hentAktørFraDatabase(Ident(personIdent2)) } returns Pair(null, false)
 
         personHendelseService.behandleHendelse(hendelse)
 

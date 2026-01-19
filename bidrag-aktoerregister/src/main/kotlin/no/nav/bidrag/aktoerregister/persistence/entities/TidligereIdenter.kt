@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 
 @Entity(name = "tidligere_identer")
-data class TidligereIdenter(
+class TidligereIdenter(
 
     @Id
     @Column(name = "id")

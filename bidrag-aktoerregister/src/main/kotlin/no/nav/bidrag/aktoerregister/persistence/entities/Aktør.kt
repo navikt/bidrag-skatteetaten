@@ -11,8 +11,9 @@ import jakarta.persistence.OneToOne
 import jakarta.persistence.Version
 import java.sql.Timestamp
 import java.time.LocalDate
+
 @Entity(name = "aktoer")
-data class Aktør(
+class Aktør(
 
     @Id
     @Column(name = "id")
@@ -132,7 +133,6 @@ data class Aktør(
         this.adresselinje2 = aktør.adresselinje2
         this.adresselinje3 = aktør.adresselinje3
         this.leilighetsnummer = aktør.leilighetsnummer
-        this.valutaKode = aktør.valutaKode
         this.poststed = aktør.poststed
         this.postnr = aktør.postnr
         this.land = aktør.land

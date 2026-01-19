@@ -19,7 +19,7 @@ class PersonHendelseService(private val objectMapper: ObjectMapper, private val 
         val endringsmelding = mapEndringsmelding(hendelse)
 
         endringsmelding.personidenter.forEach { ident ->
-            val aktør = aktørService.hentAktørFraDatabase(Ident(ident))
+            val aktør = aktørService.hentAktørFraDatabase(Ident(ident)).first
             aktør?.let {
                 LOGGER.info { "Fant lagret aktør $it." }
                 try {

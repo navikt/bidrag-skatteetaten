@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface TidligereIdenterRepository : JpaRepository<TidligereIdenter, Int> {
 
-    fun findByTidligereAktoerIdent(tidligereAktoerIdent: String): TidligereIdenter?
+    fun findByTidligereAktoerIdent(tidligereAktoerIdent: String): List<TidligereIdenter>
 }

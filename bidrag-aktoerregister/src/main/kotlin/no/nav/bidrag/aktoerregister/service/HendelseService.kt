@@ -3,6 +3,7 @@ package no.nav.bidrag.aktoerregister.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
 import no.nav.bidrag.aktoerregister.dto.HendelseDTO
+import no.nav.bidrag.aktoerregister.dto.enumer.Hendelsestype
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.entities.Hendelse
@@ -48,20 +49,20 @@ class HendelseService(
         Identtype.AKTOERNUMMER
     }
 
-    fun opprettHendelserPåAktør(aktør: Aktør, originalIdent: String?, oppdaterteFelter: List<String> = listOf()) {
+    fun opprettHendelserPåAktør(aktør: Aktør, originalIdent: String?, endringer: Set<Hendelsestype> = emptySet()) {
         if (originalIdent != null && originalIdent != aktør.aktørIdent) {
             val hendelse = Hendelse(
                 aktørIdent = originalIdent,
                 aktør = aktør,
-                kontonummerOppdatering = oppdaterteFelter.contains("kontonummerOppdatering"),
-                identOppdatering = oppdaterteFelter.contains("identOppdatering"),
-                navnOppdatering = oppdaterteFelter.contains("navnOppdatering"),
-                adresseOppdatering = oppdaterteFelter.contains("adresseOppdatering"),
-                fødtDatoOppdatering = oppdaterteFelter.contains("fødtDatoOppdatering"),
-                dødDatoOppdatering = oppdaterteFelter.contains("dødDatoOppdatering"),
-                graderingOppdatering = oppdaterteFelter.contains("graderingOppdatering"),
-                dødsboOppdatering = oppdaterteFelter.contains("dødsboOppdatering"),
-                språkOppdatering = oppdaterteFelter.contains("språkOppdatering"),
+                kontonummerOppdatering = endringer.contains(Hendelsestype.KONTONUMMER_OPPDATERING),
+                identOppdatering = endringer.contains(Hendelsestype.IDENT_OPPDATERING),
+                navnOppdatering = endringer.contains(Hendelsestype.NAVN_OPPDATERING),
+                adresseOppdatering = endringer.contains(Hendelsestype.ADRESSE_OPPDATERING),
+                fødtDatoOppdatering = endringer.contains(Hendelsestype.FODT_DATO_OPPDATERING),
+                dødDatoOppdatering = endringer.contains(Hendelsestype.DOD_DATO_OPPDATERING),
+                graderingOppdatering = endringer.contains(Hendelsestype.GRADERING_OPPDATERING),
+                dødsboOppdatering = endringer.contains(Hendelsestype.DODSBO_OPPDATERING),
+                språkOppdatering = endringer.contains(Hendelsestype.SPRAK_OPPDATERING),
             )
             aktør.addHendelse(hendelse)
         }
@@ -69,15 +70,15 @@ class HendelseService(
             Hendelse(
                 aktørIdent = aktør.aktørIdent,
                 aktør = aktør,
-                kontonummerOppdatering = oppdaterteFelter.contains("kontonummerOppdatering"),
-                identOppdatering = oppdaterteFelter.contains("identOppdatering"),
-                navnOppdatering = oppdaterteFelter.contains("navnOppdatering"),
-                adresseOppdatering = oppdaterteFelter.contains("adresseOppdatering"),
-                fødtDatoOppdatering = oppdaterteFelter.contains("fødtDatoOppdatering"),
-                dødDatoOppdatering = oppdaterteFelter.contains("dødDatoOppdatering"),
-                graderingOppdatering = oppdaterteFelter.contains("graderingOppdatering"),
-                dødsboOppdatering = oppdaterteFelter.contains("dødsboOppdatering"),
-                språkOppdatering = oppdaterteFelter.contains("språkOppdatering"),
+                kontonummerOppdatering = endringer.contains(Hendelsestype.KONTONUMMER_OPPDATERING),
+                identOppdatering = endringer.contains(Hendelsestype.IDENT_OPPDATERING),
+                navnOppdatering = endringer.contains(Hendelsestype.NAVN_OPPDATERING),
+                adresseOppdatering = endringer.contains(Hendelsestype.ADRESSE_OPPDATERING),
+                fødtDatoOppdatering = endringer.contains(Hendelsestype.FODT_DATO_OPPDATERING),
+                dødDatoOppdatering = endringer.contains(Hendelsestype.DOD_DATO_OPPDATERING),
+                graderingOppdatering = endringer.contains(Hendelsestype.GRADERING_OPPDATERING),
+                dødsboOppdatering = endringer.contains(Hendelsestype.DODSBO_OPPDATERING),
+                språkOppdatering = endringer.contains(Hendelsestype.SPRAK_OPPDATERING),
             ),
         )
     }

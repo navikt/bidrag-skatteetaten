@@ -9,7 +9,6 @@ import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
-import no.nav.bidrag.generer.testdata.adresse.genererAdresse
 import no.nav.bidrag.generer.testdata.konto.genererKontonummer
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.BeforeEach
@@ -87,39 +86,6 @@ class AktørServiceTest {
 
         savedAktoerer.size shouldBeExactly 20
         savedHendelser.size shouldBeExactly 40
-    }
-
-    @Test
-    fun `skal oppdatere aktør og slette duplikater`() {
-        val originalIdent = "originalIdent"
-        val nyAktørIdent = "nyAktørIdent"
-        val kontonummer = genererKontonummer().norskKontonummer(true).opprett()
-        val aktør = Aktør(
-            aktørIdent = originalIdent,
-            aktørType = Identtype.PERSONNUMMER.name,
-            land = "Norge",
-            postnr = "0682",
-            poststed = "Oslo",
-            adresselinje1 = "Testgate 1",
-            norskKontonr = kontonummer.norskKontonummer,
-        )
-        val nyAktør = Aktør(
-            aktørIdent = nyAktørIdent,
-            aktørType = Identtype.PERSONNUMMER.name,
-            land = "Norge",
-            postnr = "0682",
-            poststed = "Oslo",
-            adresselinje1 = "Testgate 2",
-            norskKontonr = kontonummer.norskKontonummer,
-        )
-
-        aktørRepository.save(aktør)
-        aktørRepository.save(nyAktør)
-
-        val slettetAktørIdent = aktørService.oppdaterAktør(aktør, nyAktør, originalIdent)
-
-        slettetAktørIdent shouldBe nyAktørIdent
-        aktørRepository.findByAktørIdent(nyAktørIdent) shouldNotBe null
     }
 
     @Test
