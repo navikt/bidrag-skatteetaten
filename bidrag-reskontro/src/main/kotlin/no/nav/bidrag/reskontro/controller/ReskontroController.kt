@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.reskontro.service.ReskontroService
 import no.nav.bidrag.transport.person.PersonRequest
+import no.nav.bidrag.transport.reskontro.TransaksjonskodeDto
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
 import no.nav.bidrag.transport.reskontro.request.SaksnummerRequest
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssak.BidragssakMedSkyldnerDto
 import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.InnkrevingssaksinformasjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
+import no.nav.bidrag.transport.reskontro.tilDto
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import kotlin.enums.EnumEntries
 
 @RestController
 @Protected
@@ -172,5 +173,5 @@ class ReskontroController(
             ApiResponse(responseCode = "401", description = "Token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonskoder(): ResponseEntity<EnumEntries<Transaksjonskode>> = ResponseEntity.ok(Transaksjonskode.entries)
+    fun hentTransaksjonskoder(): ResponseEntity<List<TransaksjonskodeDto>?> = ResponseEntity.ok(Transaksjonskode.entries.tilDto())
 }
