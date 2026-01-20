@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.reskontro.service.ReskontroService
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.reskontro.request.EndreRmForSakRequest
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import kotlin.enums.EnumEntries
 
 @RestController
 @Protected
@@ -158,4 +160,17 @@ class ReskontroController(
     fun endreRmForSak(@RequestBody endreRmForSak: EndreRmForSakRequest) {
         reskontroService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
     }
+
+    @GetMapping("/transaksjonskoder")
+    @Operation(
+        description = "Henter informasjon om alle gyldige transaksjonskoder",
+        security = [SecurityRequirement(name = "bearer-key")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Hentet informasjon om transaksjonskoder"),
+            ApiResponse(responseCode = "401", description = "Maskinporten-token er ikke gyldig", content = [Content()]),
+        ],
+    )
+    fun hentTransaksjonskoder(): ResponseEntity<EnumEntries<Transaksjonskode>> = ResponseEntity.ok(Transaksjonskode.entries)
 }
