@@ -194,6 +194,14 @@ class KravService(
     private fun mapKonteringTilKravkontering(kontering: Kontering): Kravkontering {
         var transaksjonskode = Transaksjonskode.valueOf(kontering.transaksjonskode)
 
+        // TODO(Midlertidlig løsning frem til skatt har lagt til støtte for M1 og M3)
+        if (transaksjonskode == Transaksjonskode.M1) {
+            transaksjonskode = Transaksjonskode.B1
+        }
+        if (transaksjonskode == Transaksjonskode.M3) {
+            transaksjonskode = Transaksjonskode.B3
+        }
+
         val oppdrag = kontering.oppdragsperiode!!.oppdrag!!
         val beløp = if (transaksjonskode.negativtBeløp) {
             kontering.oppdragsperiode.beløp.negate()
