@@ -6,7 +6,7 @@ import no.nav.bidrag.aktoerregister.batch.AktørStatus
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.service.AktørService
 import no.nav.bidrag.domene.ident.Ident
-import org.springframework.batch.item.ItemProcessor
+import org.springframework.batch.infrastructure.item.ItemProcessor
 import org.springframework.stereotype.Component
 
 private val LOGGER = KotlinLogging.logger { }
@@ -14,7 +14,7 @@ private val LOGGER = KotlinLogging.logger { }
 @Component
 class PersonBatchProcessor(
     private val aktørService: AktørService,
-) : ItemProcessor<Aktør, AktørBatchProcessorResult?> {
+) : ItemProcessor<Aktør, AktørBatchProcessorResult> {
 
     override fun process(aktør: Aktør): AktørBatchProcessorResult? = try {
         aktørService.hentAktørFraPerson(Ident(aktør.aktørIdent))

@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles
 @EnableMockOAuth2Server
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = [BidragRegnskapLocal::class])
-class SjekkForNyIdentAspectTest {
+class SjekkForNyIdentAspectTest { //TODO(Spring boot 4; Avhengig av commons oppgradering først)
 
     private val ident1: String = genererFødselsnummer()
     private val ident2 = genererFødselsnummer()

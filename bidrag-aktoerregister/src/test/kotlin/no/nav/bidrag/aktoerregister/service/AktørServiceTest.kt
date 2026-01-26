@@ -2,7 +2,6 @@ package no.nav.bidrag.aktoerregister.service
 
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import jakarta.persistence.EntityManager
 import no.nav.bidrag.aktoerregister.AktoerregisterApplicationTest
 import no.nav.bidrag.aktoerregister.dto.enumer.Identtype
@@ -14,19 +13,17 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.postgresql.PostgreSQLContainer
 import java.util.UUID
 
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableMockOAuth2Server
 @Transactional
 class AktørServiceTest {
@@ -45,7 +42,7 @@ class AktørServiceTest {
 
     companion object {
         @Container
-        var database: PostgreSQLContainer<*> = PostgreSQLContainer("postgres").apply {
+        var database: PostgreSQLContainer = PostgreSQLContainer("postgres").apply {
             withDatabaseName("test_db")
             withUsername("root")
             withPassword("root")

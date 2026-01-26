@@ -8,7 +8,6 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -36,8 +35,7 @@ class RestTemplateConfiguration {
     @Bean("regnskap")
     @Scope("prototype")
     fun baseRestTemplate(
-        @Value("\${NAIS_APP_NAME}") naisAppName: String,
-        observationRestTemplateCustomizer: ObservationRestTemplateCustomizer,
+        @Value($$"${NAIS_APP_NAME}") naisAppName: String,
     ): RestTemplate {
         val restTemplate = HttpHeaderRestTemplate()
         restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()
@@ -45,7 +43,6 @@ class RestTemplateConfiguration {
         restTemplate.addHeaderGenerator("Nav-Callid") { CorrelationId.fetchCorrelationIdForThread() }
         restTemplate.addHeaderGenerator("Nav-Consumer-Id") { naisAppName }
         restTemplate.interceptors.add(KravApiRequestInterceptor())
-        observationRestTemplateCustomizer.customize(restTemplate)
         return restTemplate
     }
 
@@ -64,6 +61,6 @@ class KravApiRequestInterceptor : ClientHttpRequestInterceptor {
 
     private fun logRequest(request: HttpRequest, body: ByteArray?) {
         val bodySize = body?.size ?: 0
-        LOGGER.debug { "Request URI: ${request.uri}, Method: ${request.method}, Body Size: $bodySize bytes, Header Size: ${request.headers.size}" }
+        LOGGER.debug { "Request URI: ${request.uri}, Method: ${request.method}, Body Size: $bodySize bytes" }
     }
 }

@@ -1,7 +1,7 @@
 package no.nav.bidrag.aktoerregister.batch.samhandler
 
-import org.springframework.batch.core.Job
-import org.springframework.batch.core.JobParametersBuilder
+import org.springframework.batch.core.job.Job
+import org.springframework.batch.core.job.parameters.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
@@ -15,6 +15,6 @@ class SamhandlerBatch(private val jobLauncher: JobLauncher, @Qualifier("samhandl
         val jobParameters = JobParametersBuilder()
             .addString("time", SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time))
             .toJobParameters()
-        jobLauncher.run(job, jobParameters)
+        jobLauncher.run(job, jobParameters) //TODO(Spring boot 4)
     }
 }

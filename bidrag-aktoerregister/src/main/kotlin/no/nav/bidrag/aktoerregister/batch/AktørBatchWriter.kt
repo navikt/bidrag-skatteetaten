@@ -1,8 +1,8 @@
 package no.nav.bidrag.aktoerregister.batch
 
 import no.nav.bidrag.aktoerregister.service.AktørService
-import org.springframework.batch.item.Chunk
-import org.springframework.batch.item.ItemWriter
+import org.springframework.batch.infrastructure.item.Chunk
+import org.springframework.batch.infrastructure.item.ItemWriter
 import org.springframework.stereotype.Component
 
 @Component
