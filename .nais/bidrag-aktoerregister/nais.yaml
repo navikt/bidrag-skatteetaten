@@ -70,6 +70,8 @@ spec:
               orgno: "889640782"
             - name: "Skatteetaten"
               orgno: "974761076"
+            - name: "Banqsoft"
+              orgno: "871579792"
   envFrom:
     - secret: bidrag-aktoerregister-mqpassword
   ingresses:
