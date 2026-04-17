@@ -19,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestOperations
+import org.springframework.web.client.exchange
+import org.springframework.web.client.postForEntity
 import java.net.URI
 
 private val LOGGER = KotlinLogging.logger {}
@@ -38,10 +40,9 @@ class SkattReskontroConsumer(
     fun hentInnkrevningssakerPåSak(saksnummer: Long): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + BIDRAGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Kaller hent bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
@@ -94,10 +95,9 @@ class SkattReskontroConsumer(
     fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + BIDRAGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Kaller hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response. " }
@@ -128,7 +128,7 @@ class SkattReskontroConsumer(
     fun hentTransaksjonerPåBidragssak(saksnummer: Long): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
                 ReskontroConsumerInput(
                     aksjonskode = 3,
@@ -137,7 +137,6 @@ class SkattReskontroConsumer(
                     datoTom = "9999-01-01T00:00:00.000Z",
                     maxAntallTransaksjoner = Int.MAX_VALUE,
                 ),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Kaller hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
@@ -168,7 +167,7 @@ class SkattReskontroConsumer(
     fun hentTransaksjonerPåPerson(person: Personident): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
                 ReskontroConsumerInput(
                     aksjonskode = 4,
@@ -177,7 +176,6 @@ class SkattReskontroConsumer(
                     datoTom = "9999-01-01T00:00:00.000Z",
                     maxAntallTransaksjoner = Int.MAX_VALUE,
                 ),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Kaller hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
@@ -208,7 +206,7 @@ class SkattReskontroConsumer(
     fun hentTransaksjonerPåTransaksjonsId(transaksjonsid: Long): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + TRANSAKSJONER_PATH),
                 ReskontroConsumerInput(
                     aksjonskode = 5,
@@ -216,7 +214,6 @@ class SkattReskontroConsumer(
                     datoFom = "1900-01-01T00:00:00.000Z",
                     datoTom = "9999-01-01T00:00:00.000Z",
                 ),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
@@ -250,10 +247,9 @@ class SkattReskontroConsumer(
     fun hentInformasjonOmInnkrevingssaken(person: Personident): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
         try {
-            val response = restTemplate.postForEntity(
+            val response = restTemplate.postForEntity<ReskontroConsumerOutput>(
                 URI.create(skattUrl + INNKREVINGSSAK_PATH),
                 ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
-                ReskontroConsumerOutput::class.java,
             )
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.debug { "Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
@@ -286,10 +282,10 @@ class SkattReskontroConsumer(
 
     fun endreRmForSak(saksnummer: Long, barn: Personident, nyRm: Personident): ReskontroConsumerOutput {
         val startTime = System.currentTimeMillis()
-        val response = restTemplate.exchange(
+        val response = restTemplate.exchange<ReskontroConsumerOutput>(
             URI.create(skattUrl + ENDRE_RM_PATH),
             HttpMethod.PATCH,
-            HttpEntity<ReskontroConsumerInput>(
+            HttpEntity(
                 ReskontroConsumerInput(
                     aksjonskode = 8,
                     bidragssaksnummer = saksnummer,
@@ -297,7 +293,6 @@ class SkattReskontroConsumer(
                     fodselsnrNy = nyRm.verdi,
                 ),
             ),
-            ReskontroConsumerOutput::class.java,
         )
         val elapsed = System.currentTimeMillis() - startTime
         LOGGER.info { "Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
