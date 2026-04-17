@@ -1,6 +1,8 @@
 package no.nav.bidrag.regnskap.slack
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.service.slack.SlackMelding
+import no.nav.bidrag.commons.service.slack.SlackService
 import no.nav.bidrag.regnskap.persistence.entity.Påløp
 import no.nav.bidrag.regnskap.service.PåløpskjøringLytter
 import org.springframework.beans.factory.annotation.Value
@@ -17,23 +19,23 @@ private val LOGGER = KotlinLogging.logger {}
 @Service
 class SlackPåløpVarsler(
     private val slackService: SlackService,
-    @Value("\${NAIS_CLIENT_ID}") private val clientId: String,
+    @param:Value($$"${NAIS_CLIENT_ID}") private val clientId: String,
 ) : PåløpskjøringLytter {
 
     val antallKlumper = 20
     var pågåendePåløp: PågåendePåløp? = null
-    override fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overførFil: Boolean) {
+    override fun påløpStartet(påløp: Påløp, schedulertKjøring: Boolean, genererFil: Boolean, overføreFil: Boolean) {
         pågåendePåløp?.melding?.svarITråd("Nytt påløp startet...")
 
         val melding = slackService.sendMelding(
             ":open_file_folder: Påløpskjøring er startet for ${påløp.forPeriode}!" +
                 "\nSkedulert: $schedulertKjøring" +
                 "\nGenerere fil: $genererFil" +
-                "\nOverføre fil: $overførFil" +
+                "\nOverføre fil: $overføreFil" +
                 "\nMiljø: $clientId",
         )
         pågåendePåløp =
-            PågåendePåløp(påløp = påløp, schedulertKjøring = schedulertKjøring, genererFil = genererFil, overførFil = overførFil, melding = melding)
+            PågåendePåløp(påløp = påløp, schedulertKjøring = schedulertKjøring, genererFil = genererFil, overførFil = overføreFil, melding = melding)
     }
 
     override fun rapporterOppdragsperioderBehandlet(påløp: Påløp, antallBehandlet: Int, antallOppdragsperioder: Int) {
@@ -185,15 +187,15 @@ class SlackPåløpVarsler(
         val schedulertKjøring: Boolean,
         val genererFil: Boolean,
         val overførFil: Boolean,
-        val melding: SlackService.SlackMelding,
+        val melding: SlackMelding,
     ) {
         val oppdateringInterval = Duration.ofSeconds(30)
-        var konteringerMelding: SlackService.SlackMelding? = null
-        var påløpsfilMelding: SlackService.SlackMelding? = null
-        var lastOppFilTilGcpMelding: SlackService.SlackMelding? = null
-        var lastOppFilTilFilsluseMelding: SlackService.SlackMelding? = null
-        var skalIkkeLasteOppPåløpsfilMelding: SlackService.SlackMelding? = null
-        var driftsavvikCacheMelding: SlackService.SlackMelding? = null
+        var konteringerMelding: SlackMelding? = null
+        var påløpsfilMelding: SlackMelding? = null
+        var lastOppFilTilGcpMelding: SlackMelding? = null
+        var lastOppFilTilFilsluseMelding: SlackMelding? = null
+        var skalIkkeLasteOppPåløpsfilMelding: SlackMelding? = null
+        var driftsavvikCacheMelding: SlackMelding? = null
         var nesteOppdateringKonteringerMelding: Instant? = Instant.now()
         var nestSisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)
         var sisteObservasjon: PåløpObservasjon = PåløpObservasjon(antallBehandlet = 0)

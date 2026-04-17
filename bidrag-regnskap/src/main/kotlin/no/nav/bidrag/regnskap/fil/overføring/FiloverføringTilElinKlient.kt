@@ -3,9 +3,9 @@ package no.nav.bidrag.regnskap.fil.overføring
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import no.nav.bidrag.commons.service.slack.SlackService
 import no.nav.bidrag.regnskap.config.FiloverføringTilElinConfig
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
-import no.nav.bidrag.regnskap.slack.SlackService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
