@@ -2,22 +2,22 @@ package no.nav.bidrag.aktoerregister.batch.person
 
 import org.springframework.batch.core.job.Job
 import org.springframework.batch.core.job.parameters.JobParametersBuilder
-import org.springframework.batch.core.launch.JobLauncher
+import org.springframework.batch.core.launch.JobOperator
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class PersonBatch(
-    private val jobLauncher: JobLauncher, // TODO(Spring boot 4)
+    private val jobOperator: JobOperator,
     @param:Qualifier("personJob") private val job: Job,
 ) {
 
     fun startPersonBatch() {
         val jobParameters = JobParametersBuilder()
-            .addString("time", SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time))
+            .addString("time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
             .toJobParameters()
-        jobLauncher.run(job, jobParameters)
+        jobOperator.start(job, jobParameters)
     }
 }
