@@ -110,10 +110,10 @@ class ManglendeKonteringerService(
         val perioderMellomDato = hentAllePerioderMellomDato(oppdragsperiode.periodeFra, oppdragsperiode.periodeTil, påløpsPeriode)
         val konteringerForelderYearMonth = YearMonth.parse(konteringerForeldetDato)
         val transaksjonskode = Transaksjonskode.hentTransaksjonskodeForType(oppdragsperiode.oppdrag!!.stønadType).name
-        val stønadType = oppdragsperiode.oppdrag.stønadType
+        val stønadType = oppdragsperiode.oppdrag!!.stønadType
         val vedtakType = oppdragsperiode.vedtakType
         val vedtakId = oppdragsperiode.vedtakId
-        val alleOppdragsperioderPåOppdrag = oppdragsperiode.oppdrag.oppdragsperioder
+        val alleOppdragsperioderPåOppdrag = oppdragsperiode.oppdrag!!.oppdragsperioder
 
         perioderMellomDato.filterNot { it.isBefore(konteringerForelderYearMonth) }.forEachIndexed { periodeIndex, periode ->
             if (oppdragsperiode.konteringer.any { it.overføringsperiode == periode.toString() }) {
