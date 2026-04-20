@@ -11,7 +11,6 @@ import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 @Configuration
 @EnableSecurityConfiguration
@@ -19,12 +18,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 class RestConfig {
 
     @Bean
-    fun jackson2ObjectMapperBuilder(): Jackson2ObjectMapperBuilder = Jackson2ObjectMapperBuilder()
-        .dateFormat(StdDateFormat())
-        .failOnUnknownProperties(false)
-        .serializationInclusion(JsonInclude.Include.NON_NULL)
-
-    @Bean
-    fun objectMapper(): ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build()).registerModule(JavaTimeModule())
+    fun objectMapper(): ObjectMapper = ObjectMapper()
+        .registerModule(KotlinModule.Builder().build())
+        .registerModule(JavaTimeModule())
+        .setDateFormat(StdDateFormat())
+        .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 }
