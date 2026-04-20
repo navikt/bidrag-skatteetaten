@@ -43,7 +43,10 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+    job:
+      enabled: false
   kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
     consumer:
       auto-offset-reset: earliest
       group-id: bidrag-aktoerregister
