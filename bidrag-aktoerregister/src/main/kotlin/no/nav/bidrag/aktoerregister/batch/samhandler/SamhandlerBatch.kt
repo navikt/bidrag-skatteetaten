@@ -15,6 +15,6 @@ class SamhandlerBatch(private val jobLauncher: JobLauncher, @Qualifier("samhandl
         val jobParameters = JobParametersBuilder()
             .addString("time", SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time))
             .toJobParameters()
-        jobLauncher.run(job, jobParameters) //TODO(Spring boot 4)
+        jobLauncher.run(job, jobParameters) // TODO(Spring boot 4)
     }
 }

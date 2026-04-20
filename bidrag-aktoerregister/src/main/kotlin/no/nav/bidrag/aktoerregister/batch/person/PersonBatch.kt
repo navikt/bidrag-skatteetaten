@@ -10,7 +10,7 @@ import java.util.Calendar
 
 @Component
 class PersonBatch(
-    private val jobLauncher: JobLauncher, //TODO(Spring boot 4)
+    private val jobLauncher: JobLauncher, // TODO(Spring boot 4)
     @param:Qualifier("personJob") private val job: Job,
 ) {
 
