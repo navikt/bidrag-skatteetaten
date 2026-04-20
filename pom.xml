@@ -21,7 +21,7 @@
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>21</java.version>
         <kotlin.version>2.2.21</kotlin.version>
-        <bidrag-felles.version>2026.04.17.075818-SB4</bidrag-felles.version>
+        <bidrag-felles.version>2026.04.20.131942-SB4</bidrag-felles.version>
         <jackson.version>2.21.2</jackson.version>
         <kotest.version>6.0.4</kotest.version>
         <ktlint.version>1.8.0</ktlint.version>
