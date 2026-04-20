@@ -204,9 +204,9 @@ class KravService(
 
         val oppdrag = kontering.oppdragsperiode!!.oppdrag!!
         val beløp = if (transaksjonskode.negativtBeløp) {
-            kontering.oppdragsperiode.beløp.negate()
+            kontering.oppdragsperiode!!.beløp.negate()
         } else {
-            kontering.oppdragsperiode.beløp
+            kontering.oppdragsperiode!!.beløp
         }
 
         return Kravkontering(
@@ -218,15 +218,15 @@ class KravService(
             mottakerIdent = oppdrag.mottakerIdent,
             skyldnerIdent = oppdrag.skyldnerIdent,
             belop = beløp,
-            valuta = kontering.oppdragsperiode.valuta,
+            valuta = kontering.oppdragsperiode!!.valuta,
             periode = kontering.overføringsperiode,
-            vedtaksdato = kontering.oppdragsperiode.vedtaksdato.toString(),
+            vedtaksdato = kontering.oppdragsperiode!!.vedtaksdato.toString(),
             kjoredato = LocalDate.now().toString(),
-            saksbehandlerId = kontering.oppdragsperiode.opprettetAv,
-            attestantId = kontering.oppdragsperiode.opprettetAv,
-            tekst = kontering.oppdragsperiode.eksternReferanse,
+            saksbehandlerId = kontering.oppdragsperiode!!.opprettetAv,
+            attestantId = kontering.oppdragsperiode!!.opprettetAv,
+            tekst = kontering.oppdragsperiode!!.eksternReferanse,
             fagsystemId = oppdrag.sakId,
-            delytelsesId = kontering.oppdragsperiode.delytelseId.toString(),
+            delytelsesId = kontering.oppdragsperiode!!.delytelseId.toString(),
         )
     }
 
