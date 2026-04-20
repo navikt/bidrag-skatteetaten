@@ -1,5 +1,6 @@
 package no.nav.bidrag.regnskap
 
+import no.nav.bidrag.commons.util.EnableSjekkForNyIdent
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -10,6 +11,7 @@ const val PROFILE_NAIS = "nais"
 @SpringBootApplication
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableAsync
+@EnableSjekkForNyIdent
 class BidragRegnskap
 
 fun main(args: Array<String>) {
