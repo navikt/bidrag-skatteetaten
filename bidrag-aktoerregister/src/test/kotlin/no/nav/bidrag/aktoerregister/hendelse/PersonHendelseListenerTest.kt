@@ -22,7 +22,14 @@ import java.time.LocalDate
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
 @EnableMockOAuth2Server
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:9092", "port=9092"])
+@EmbeddedKafka(
+    partitions = 1, brokerProperties = ["listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
+        "listener.security.protocol.map=EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT",
+        "controller.listener.names=CONTROLLER",
+        "inter.broker.listener.name=EXTERNAL",
+        "offsets.topic.num.partitions=1",
+    ],
+)
 class PersonHendelseListenerTest {
 
     @Autowired
