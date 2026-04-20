@@ -23,7 +23,9 @@ import java.time.LocalDate
 @Testcontainers
 @EnableMockOAuth2Server
 @EmbeddedKafka(
-    partitions = 1, brokerProperties = ["listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
+    partitions = 1,
+    brokerProperties = [
+        "listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
         "listener.security.protocol.map=EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT",
         "controller.listener.names=CONTROLLER",
         "inter.broker.listener.name=EXTERNAL",
