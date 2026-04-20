@@ -46,7 +46,11 @@ spring:
     job:
       enabled: false
   kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    bootstrap-servers: ${spring.embedded.kafka.brokers:${KAFKA_BROKERS}}
+    properties:
+      security.protocol: PLAINTEXT
+    listener:
+      auto-startup: false
     consumer:
       auto-offset-reset: earliest
       group-id: bidrag-aktoerregister
