@@ -70,7 +70,7 @@ internal class SakConsumerTest {
         Enhetsnummer("eierfogd"),
         Saksnummer("123"),
         Bidragssakstatus.NY,
-        Sakskategori.N,
+        Sakskategori.NASJONAL,
         erParagraf19 = false,
         begrensetTilgang = false,
         opprettetDato = LocalDate.now(),
