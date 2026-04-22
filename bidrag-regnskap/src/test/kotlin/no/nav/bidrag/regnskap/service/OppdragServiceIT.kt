@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +34,15 @@ import kotlin.time.measureTime
 @EnableMockOAuth2Server
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = [BidragRegnskapLocal::class])
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:9092", "port=9092"])
+@EmbeddedKafka(
+    partitions = 1,
+    brokerProperties = [
+        "listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
+        "listener.security.protocol.map=EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT",
+        "controller.listener.names=CONTROLLER",
+        "inter.broker.listener.name=EXTERNAL",
+    ],
+)
 class OppdragServiceIT {
     companion object {
 
