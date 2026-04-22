@@ -12,7 +12,6 @@
 
   <groupId>no.nav</groupId>
   <artifactId>bidrag-regnskap</artifactId>
-  <version>${revision}</version>
   <name>bidrag-regnskap</name>
 
   <dependencies>
