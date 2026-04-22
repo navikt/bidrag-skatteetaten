@@ -1,6 +1,5 @@
 package no.nav.bidrag.elin.stub.skatt.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
@@ -13,6 +12,7 @@ import no.nav.bidrag.transport.regnskap.vedlikeholdsmodus.Vedlikeholdsmodus
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
 import java.util.UUID
 
 private val LOGGER = KotlinLogging.logger {}
