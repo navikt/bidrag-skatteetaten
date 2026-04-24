@@ -41,4 +41,6 @@
     <appender-ref ref="team-logs" />
   </root>
 
+  <logger name="org.hibernate.orm.connections.pooling" level="warn"/>
+
 </configuration>
