@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpStatusCodeException
 
@@ -19,7 +18,6 @@ class DefaultRestControllerAdvice {
         private val LOGGER = LoggerFactory.getLogger(DefaultRestControllerAdvice::class.java)
     }
 
-    @ResponseBody
     @ExceptionHandler(HttpStatusCodeException::class)
     fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
         val errorMessage = getErrorMessage(exception)
@@ -41,17 +39,6 @@ class DefaultRestControllerAdvice {
         return errorMessage.toString()
     }
 
-    @ResponseBody
-    @ExceptionHandler(Exception::class)
-    fun handleOtherExceptions(exception: Exception): ResponseEntity<Any> {
-        LOGGER.warn("Det skjedde en ukjent feil: ${exception.message} ${exception.stackTraceToString()}", exception)
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message}")
-            .build()
-    }
-
-    @ResponseBody
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
     fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<Any> {
         LOGGER.warn("Ugyldig eller manglende sikkerhetstoken", exception)
@@ -61,23 +48,20 @@ class DefaultRestControllerAdvice {
             .build()
     }
 
-    @ResponseBody
     @ExceptionHandler(IngenDataFraSkattException::class)
     fun handleIngenDataFraSkattException(exception: IngenDataFraSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.NO_CONTENT)
         .header(HttpHeaders.WARNING, "Fant ingen data: ${exception.message}")
         .build()
 
-    @ResponseBody
     @ExceptionHandler(MaskinportenClientException::class)
     fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt: ${exception.message}")
         .build()
 
-    @ResponseBody
     @ExceptionHandler(TimeoutFraSkattException::class)
-    fun handleMaskinportenClientException(exception: TimeoutFraSkattException): ResponseEntity<Any> = ResponseEntity
+    fun handleTimeoutFraSkattException(exception: TimeoutFraSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.BAD_GATEWAY)
         .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message}")
         .build()
