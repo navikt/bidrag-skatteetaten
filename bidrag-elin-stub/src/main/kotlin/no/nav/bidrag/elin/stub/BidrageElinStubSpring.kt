@@ -9,7 +9,7 @@ import org.springframework.boot.security.autoconfigure.actuate.web.servlet.Manag
 
 const val PROFILE_NAIS = "nais"
 
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class, UserDetailsServiceAutoConfiguration::class])
+@SpringBootApplication
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class BidragElinStubSpring
 
