@@ -786,6 +786,12 @@ internal class VedtakshendelseListenerIT {
             barn1 = endreRmBarn1Bidrag,
         )
 
+        // Siden antall konteringer ikke øker ved endre-rm-oppdatering, er await i hentFilOgSendPåKafka
+        // umiddelbart sann. Vi må derfor vente eksplisitt på at mottakerIdent faktisk er oppdatert.
+        await().atMost(TEN_SECONDS).until {
+            return@until persistenceService.hentOppdrag(100000019)?.mottakerIdent == endreRmBmNyBidrag
+        }
+
         val oppdrag = persistenceService.hentOppdrag(100000019)
         oppdrag?.mottakerIdent shouldBe endreRmBmNyBidrag
     }
