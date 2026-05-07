@@ -17,19 +17,19 @@ class DefaultRestControllerAdvice {
 
     @ResponseBody
     @ExceptionHandler(Exception::class)
-    fun handleOtherExceptions(exception: Exception): ResponseEntity<*> {
+    fun handleOtherExceptions(exception: Exception): ResponseEntity<Any> {
         LOGGER.warn("Det skjedde en ukjent feil", exception)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message}")
-            .build<Any>()
+            .build()
     }
 
     @ResponseBody
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<*> {
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<Any> {
         LOGGER.warn("Ugyldig eller manglende sikkerhetstoken", exception)
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build<Any>()
+            .header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build()
     }
 }
