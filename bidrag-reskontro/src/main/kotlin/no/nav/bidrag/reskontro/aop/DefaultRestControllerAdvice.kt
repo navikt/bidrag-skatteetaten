@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpStatusCodeException
 
+private fun String?.sanitizeHeader(): String = this?.replace("\r", "")?.replace("\n", " ") ?: ""
+
 @RestControllerAdvice
 class DefaultRestControllerAdvice {
     companion object {
@@ -24,7 +26,7 @@ class DefaultRestControllerAdvice {
         LOGGER.warn(errorMessage, exception)
         return ResponseEntity
             .status(exception.statusCode)
-            .header(HttpHeaders.WARNING, errorMessage)
+            .header(HttpHeaders.WARNING, errorMessage.sanitizeHeader())
             .build()
     }
 
@@ -51,18 +53,27 @@ class DefaultRestControllerAdvice {
     @ExceptionHandler(IngenDataFraSkattException::class)
     fun handleIngenDataFraSkattException(exception: IngenDataFraSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.NO_CONTENT)
-        .header(HttpHeaders.WARNING, "Fant ingen data: ${exception.message}")
+        .header(HttpHeaders.WARNING, "Fant ingen data: ${exception.message.sanitizeHeader()}")
         .build()
 
     @ExceptionHandler(MaskinportenClientException::class)
     fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
-        .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt: ${exception.message}")
+        .header(HttpHeaders.WARNING, "Feil i maskinportentoken benyttet mot skatt: ${exception.message.sanitizeHeader()}")
         .build()
 
     @ExceptionHandler(TimeoutFraSkattException::class)
     fun handleTimeoutFraSkattException(exception: TimeoutFraSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.BAD_GATEWAY)
-        .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message}")
+        .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message.sanitizeHeader()}")
         .build()
+
+    @ExceptionHandler(Exception::class)
+    fun handleOtherExceptions(exception: Exception): ResponseEntity<Any> {
+        LOGGER.warn("Det skjedde en ukjent feil: ${exception.message} ${exception.stackTraceToString()}", exception)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message.sanitizeHeader()}")
+            .build()
+    }
 }
