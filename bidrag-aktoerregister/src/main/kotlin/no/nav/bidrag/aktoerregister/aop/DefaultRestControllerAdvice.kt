@@ -18,32 +18,32 @@ class DefaultRestControllerAdvice {
 
     @ResponseBody
     @ExceptionHandler(HttpStatusCodeException::class)
-    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<*> {
+    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
         val errorMessage = getErrorMessage(exception)
         LOGGER.warn(exception) { errorMessage }
-        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, errorMessage).build<Any>()
+        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, errorMessage).build()
     }
 
     @ResponseBody
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException?): ResponseEntity<*> {
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException?): ResponseEntity<Any> {
         LOGGER.warn(exception) { "Ugyldig eller manglende sikkerhetstoken" }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build<Any>()
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build()
     }
 
     @ResponseBody
     @ExceptionHandler(ResponseStatusException::class)
-    fun handlerResponseStatusException(exception: ResponseStatusException): ResponseEntity<*> {
+    fun handlerResponseStatusException(exception: ResponseStatusException): ResponseEntity<Any> {
         LOGGER.warn(exception) { exception.message }
-        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, exception.message).build<Any>()
+        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, exception.message).build()
     }
 
     @ResponseBody
     @ExceptionHandler(Exception::class)
-    fun handleException(exception: Exception): ResponseEntity<*> {
+    fun handleException(exception: Exception): ResponseEntity<Any> {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message} Stacktrace: ${exception.stackTraceToString()}").build<Any>()
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message} Stacktrace: ${exception.stackTraceToString()}").build()
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {
