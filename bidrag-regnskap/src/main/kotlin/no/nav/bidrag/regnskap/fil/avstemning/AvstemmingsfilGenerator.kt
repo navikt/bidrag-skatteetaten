@@ -59,7 +59,7 @@ class AvstemmingsfilGenerator(
                         ";" +
                         kontering.oppdragsperiode!!.oppdrag!!.sakId +
                         ";" +
-                        kontering.oppdragsperiode.beløp.toString() +
+                        kontering.oppdragsperiode!!.beløp.toString() +
                         ";" +
                         LocalDate.of(periode.year, periode.month, 1)
                             .format(DateTimeFormatter.ofPattern("yyyyMMdd")).toString() +
@@ -74,11 +74,11 @@ class AvstemmingsfilGenerator(
                         } else {
                             "T;"
                         } +
-                        kontering.oppdragsperiode.delytelseId.toString() +
+                        kontering.oppdragsperiode!!.delytelseId.toString() +
                         ";" +
-                        kontering.oppdragsperiode.oppdrag!!.gjelderIdent +
+                        kontering.oppdragsperiode!!.oppdrag!!.gjelderIdent +
                         ";" +
-                        kontering.oppdragsperiode.oppdrag.kravhaverIdent +
+                        kontering.oppdragsperiode!!.oppdrag!!.kravhaverIdent +
                         ";" +
                         "\n"
                     )
@@ -89,7 +89,7 @@ class AvstemmingsfilGenerator(
                 LOGGER.info("Påløpskjøring: Har skrevet $index av ${konteringer.size} konteringer til avstemningsfil...")
             }
 
-            transaksjonskodeSummering.sum += kontering.oppdragsperiode.beløp
+            transaksjonskodeSummering.sum += kontering.oppdragsperiode!!.beløp
             transaksjonskodeSummering.antallKonteringer++
         }
         return avstemningsfilBuffer

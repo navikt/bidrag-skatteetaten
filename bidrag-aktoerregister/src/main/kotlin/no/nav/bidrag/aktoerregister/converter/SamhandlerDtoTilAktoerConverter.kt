@@ -14,7 +14,7 @@ class SamhandlerDtoTilAktoerConverter : Converter<SamhandlerDto, Aktør> {
         aktørType = Identtype.AKTOERNUMMER.name,
         etternavn = samhandler.navn,
         offentligId = samhandler.offentligId,
-        offentligIdType = samhandler.offentligIdType.name,
+        offentligIdType = samhandler.offentligIdType?.name,
         adresselinje1 = samhandler.adresse?.adresselinje1,
         adresselinje2 = samhandler.adresse?.adresselinje2,
         adresselinje3 = samhandler.adresse?.adresselinje3,

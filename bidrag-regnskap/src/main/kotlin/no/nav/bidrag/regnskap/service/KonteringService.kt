@@ -126,7 +126,7 @@ class KonteringService(
                     vedtakId = hendelse.vedtakId,
                 )
 
-                kontering.oppdragsperiode?.konteringer = kontering.oppdragsperiode.konteringer.plus(nyKorreksjonskontering)
+                kontering.oppdragsperiode?.konteringer = kontering.oppdragsperiode!!.konteringer.plus(nyKorreksjonskontering)
             }
         }
     }

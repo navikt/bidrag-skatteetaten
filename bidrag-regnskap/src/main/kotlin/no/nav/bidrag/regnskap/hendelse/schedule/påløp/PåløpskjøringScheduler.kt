@@ -4,9 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.shedlock.core.LockAssert
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
+import no.nav.bidrag.commons.service.slack.SlackService
 import no.nav.bidrag.regnskap.service.PersistenceService
 import no.nav.bidrag.regnskap.service.PåløpskjøringService
-import no.nav.bidrag.regnskap.slack.SlackService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling

@@ -43,7 +43,7 @@ class ReskontroController(
             ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
-    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto?> {
+    fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto> {
         val innkrevingssakPåSak = reskontroService.hentInnkrevingssakPåSak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(innkrevingssakPåSak)
@@ -63,7 +63,7 @@ class ReskontroController(
 
         ],
     )
-    fun hentInnkrevingssakPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto?> {
+    fun hentInnkrevingssakPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto> {
         val innkrevingssakPåPerson = reskontroService.hentInnkrevingssakPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(innkrevingssakPåPerson)
@@ -82,7 +82,7 @@ class ReskontroController(
             ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto?> {
+    fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåBidragssak = reskontroService.hentTransaksjonerPåBidragssak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåBidragssak)
@@ -101,7 +101,7 @@ class ReskontroController(
             ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto?> {
+    fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåPerson = reskontroService.hentTransaksjonerPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåPerson)
@@ -120,7 +120,7 @@ class ReskontroController(
             ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
-    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): ResponseEntity<TransaksjonerDto?> {
+    fun hentTransaksjonerPåTransaksjonsid(@RequestParam transaksjonsid: Long): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåTransaksjonsid = reskontroService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(transaksjonerPåTransaksjonsid)
@@ -139,7 +139,7 @@ class ReskontroController(
             ApiResponse(responseCode = "504", description = "Timeout mot skatt", content = [Content()]),
         ],
     )
-    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto?> {
+    fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto> {
         val informasjonOmInnkrevingssaken = reskontroService.hentInformasjonOmInnkrevingssaken(personRequest)
             ?: return ResponseEntity.notFound().build()
 
@@ -173,5 +173,5 @@ class ReskontroController(
             ApiResponse(responseCode = "401", description = "Token er ikke gyldig", content = [Content()]),
         ],
     )
-    fun hentTransaksjonskoder(): ResponseEntity<List<TransaksjonskodeDto>?> = ResponseEntity.ok(Transaksjonskode.entries.tilDto())
+    fun hentTransaksjonskoder(): ResponseEntity<List<TransaksjonskodeDto>> = ResponseEntity.ok(Transaksjonskode.entries.tilDto())
 }

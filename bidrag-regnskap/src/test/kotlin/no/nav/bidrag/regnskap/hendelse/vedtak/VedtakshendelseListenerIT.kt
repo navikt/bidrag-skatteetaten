@@ -48,7 +48,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.shaded.org.awaitility.Awaitility.await
 import org.testcontainers.shaded.org.awaitility.Durations.TEN_SECONDS
 import java.io.FileOutputStream
@@ -63,7 +63,15 @@ import java.time.YearMonth
 @TestInstance(PER_CLASS)
 @TestMethodOrder(OrderAnnotation::class)
 @SpringBootTest(classes = [BidragRegnskapLocal::class])
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:9092", "port=9092"])
+@EmbeddedKafka(
+    partitions = 1,
+    brokerProperties = [
+        "listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
+        "listener.security.protocol.map=EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT",
+        "controller.listener.names=CONTROLLER",
+        "inter.broker.listener.name=EXTERNAL",
+    ],
+)
 internal class VedtakshendelseListenerIT {
 
     companion object {

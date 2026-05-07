@@ -7,24 +7,31 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.shaded.org.awaitility.Awaitility
 import org.testcontainers.shaded.org.awaitility.Durations
 import java.time.LocalDate
 
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableMockOAuth2Server
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:9092", "port=9092"])
+@EmbeddedKafka(
+    partitions = 1,
+    brokerProperties = [
+        "listeners=EXTERNAL://localhost:0,CONTROLLER://localhost:0",
+        "listener.security.protocol.map=EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT",
+        "controller.listener.names=CONTROLLER",
+        "inter.broker.listener.name=EXTERNAL",
+        "offsets.topic.num.partitions=1",
+    ],
+)
 class PersonHendelseListenerTest {
 
     @Autowired
@@ -36,7 +43,7 @@ class PersonHendelseListenerTest {
     companion object {
 
         @Container
-        var database: PostgreSQLContainer<*> = PostgreSQLContainer("postgres").apply {
+        var database: PostgreSQLContainer = PostgreSQLContainer("postgres").apply {
             withDatabaseName("test_db")
             withUsername("root")
             withPassword("root")

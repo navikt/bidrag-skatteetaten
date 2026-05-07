@@ -79,8 +79,8 @@ class PatchService(
         vedtakId = oppdragsperiode.vedtakId,
         oppdragId = oppdragsperiode.oppdrag!!.oppdragId!!,
         oppdragsperiodeId = oppdragsperiode.oppdragsperiodeId!!,
-        sakId = oppdragsperiode.oppdrag.sakId,
-        stønadstype = oppdragsperiode.oppdrag.stønadType,
+        sakId = oppdragsperiode.oppdrag!!.sakId,
+        stønadstype = oppdragsperiode.oppdrag!!.stønadType,
         vedtakstype = Vedtakstype.valueOf(oppdragsperiode.vedtakType),
     )
 }

@@ -11,18 +11,16 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.postgresql.PostgreSQLContainer
 import java.util.*
 
 @SpringBootTest(classes = [AktoerregisterApplicationTest::class])
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableMockOAuth2Server
 class JpaRepositoryTests {
 
@@ -78,7 +76,7 @@ class JpaRepositoryTests {
 
     companion object {
         @Container
-        var database: PostgreSQLContainer<*> = PostgreSQLContainer("postgres").apply {
+        var database: PostgreSQLContainer = PostgreSQLContainer("postgres").apply {
             withDatabaseName("test_db")
             withUsername("root")
             withPassword("root")

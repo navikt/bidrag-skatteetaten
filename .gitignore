@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Lokale nais secrets ###
+**/src/test/resources/application-lokal-nais-secrets.properties

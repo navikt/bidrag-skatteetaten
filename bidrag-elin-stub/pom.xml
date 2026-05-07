@@ -28,10 +28,6 @@
       </dependency>
       <dependency>
           <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-data-rest</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-starter-security</artifactId>
       </dependency>
       <dependency>
@@ -49,10 +45,6 @@
       <dependency>
           <groupId>org.springframework.session</groupId>
           <artifactId>spring-session-core</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-aop</artifactId>
       </dependency>
       <dependency>
           <groupId>org.springframework.boot</groupId>
@@ -134,11 +126,6 @@
           <groupId>com.github.ben-manes.caffeine</groupId>
           <artifactId>caffeine</artifactId>
       </dependency>
-      <dependency>
-          <groupId>com.fasterxml.jackson.module</groupId>
-          <artifactId>jackson-module-kotlin</artifactId>
-          <version>${jackson.version}</version>
-      </dependency>
 
       <!--Test-->
       <dependency>
@@ -174,11 +161,6 @@
           <artifactId>bidrag-commons-test-felles</artifactId>
           <version>${bidrag-felles.version}</version>
           <scope>test</scope>
-      </dependency>
-        <dependency>
-          <groupId>org.jetbrains.kotlin</groupId>
-          <artifactId>kotlin-stdlib-jdk8</artifactId>
-          <version>${kotlin.version}</version>
       </dependency>
       <dependency>
           <groupId>org.jetbrains.kotlin</groupId>

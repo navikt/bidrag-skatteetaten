@@ -8,6 +8,10 @@ TOPIC_VEDTAK: bidrag.vedtak-feature-test
 TOPIC_PERSONHENDELSE: bidrag.personhendelse.v1
 PERSON_HENDELSE_KAFKA_GROUP_ID_SISTE: personhendelse.v1.bidrag-regnskap
 BIDRAG_BOT_SLACK_OAUTH_TOKEN: ikkeGyldigToken
+KAFKA_BROKERS: ${spring.embedded.kafka.brokers:localhost:9092}
+KAFKA_KEYSTORE_PATH: ""
+KAFKA_TRUSTSTORE_PATH: ""
+KAFKA_CREDSTORE_PASSWORD: ""
 
 scheduler:
   sendkrav:
@@ -24,7 +28,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:/db/migration
   kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers:${KAFKA_BROKERS}}
+    listener:
+      auto-startup: true
     consumer:
       auto-offset-reset: earliest
       group-id: bidrag-regnskap
