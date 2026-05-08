@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import net.javacrumbs.shedlock.core.LockProvider
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
-import no.nav.bidrag.commons.security.DisableDefaultSpringSecurityConfiguration
 import no.nav.bidrag.commons.service.slack.SlackService
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
@@ -30,7 +29,7 @@ import javax.sql.DataSource
 @SecurityScheme(bearerFormat = "JWT", name = "bearer-key", scheme = "bearer", type = SecuritySchemeType.HTTP)
 @OpenAPIDefinition(info = Info(title = "bidrag-regnskap", version = "v1"), security = [SecurityRequirement(name = "bearer-key")])
 @ComponentScan(basePackages = ["no.nav.bidrag.commons.util", "no.nav.bidrag.commons.security.maskinporten"])
-@Import(SlackService::class, DisableDefaultSpringSecurityConfiguration::class)
+@Import(SlackService::class)
 class BidragRegnskapConfiguration {
 
     @Bean
