@@ -26,7 +26,6 @@ class DefaultRestControllerAdvice {
         LOGGER.warn(errorMessage, exception)
         return ResponseEntity
             .status(exception.statusCode)
-            .header(HttpHeaders.WARNING, errorMessage.sanitizeHeader())
             .build()
     }
 
@@ -73,7 +72,7 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Det skjedde en ukjent feil: ${exception.message} ${exception.stackTraceToString()}", exception)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message.sanitizeHeader()}")
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil")
             .build()
     }
 }

@@ -21,7 +21,8 @@ class DefaultRestControllerAdvice {
     fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
         val errorMessage = getErrorMessage(exception)
         LOGGER.warn(exception) { errorMessage }
-        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, errorMessage.sanitizeHeader()).build()
+        return ResponseEntity.status(exception.statusCode)
+            .build()
     }
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
@@ -40,7 +41,7 @@ class DefaultRestControllerAdvice {
     fun handleException(exception: Exception): ResponseEntity<Any> {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message.sanitizeHeader()} Stacktrace: ${exception.stackTraceToString().sanitizeHeader()}")
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil")
             .build()
     }
 

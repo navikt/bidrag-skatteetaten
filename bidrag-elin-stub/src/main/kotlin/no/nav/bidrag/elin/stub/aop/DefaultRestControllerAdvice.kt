@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-private fun String?.sanitizeHeader(): String = this?.replace("\r", "")?.replace("\n", " ") ?: ""
-
 @RestControllerAdvice
 class DefaultRestControllerAdvice {
     companion object {
@@ -28,7 +26,7 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Det skjedde en ukjent feil", exception)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message.sanitizeHeader()}")
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil")
             .build()
     }
 }

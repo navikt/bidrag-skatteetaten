@@ -29,7 +29,8 @@ class DefaultRestControllerAdvice {
     fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
         val errorMessage = getErrorMessage(exception)
         LOGGER.warn(exception) { errorMessage }
-        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, errorMessage.sanitizeHeader()).build()
+        return ResponseEntity.status(exception.statusCode)
+            .build()
     }
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
@@ -42,24 +43,21 @@ class DefaultRestControllerAdvice {
     fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<Any> {
         LOGGER.error(exception) { "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}")
-            .build()
+            .header(HttpHeaders.WARNING, "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}").build()
     }
 
     @ExceptionHandler(PåløpException::class)
     fun handlePåløpException(exception: PåløpException): ResponseEntity<Any> {
         LOGGER.error(exception) { "$PÅLØP_ERROR_MESSAGE: ${exception.message}" }
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .header(HttpHeaders.WARNING, "$PÅLØP_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}")
-            .build()
+            .header(HttpHeaders.WARNING, "$PÅLØP_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}").build()
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(exception: Exception): ResponseEntity<Any> {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil: ${exception.message.sanitizeHeader()}")
-            .build()
+            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil").build()
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {
