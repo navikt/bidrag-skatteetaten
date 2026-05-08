@@ -7,11 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.scheduling.annotation.EnableAsync
 
 const val PROFILE_NAIS = "nais"
 
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class, UserDetailsServiceAutoConfiguration::class])
+@SpringBootApplication(
+    exclude = [
+        SecurityAutoConfiguration::class,
+        ManagementWebSecurityAutoConfiguration::class,
+        UserDetailsServiceAutoConfiguration::class,
+        ServletWebSecurityAutoConfiguration::class,
+    ],
+)
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableAsync
 @EnableSjekkForNyIdent

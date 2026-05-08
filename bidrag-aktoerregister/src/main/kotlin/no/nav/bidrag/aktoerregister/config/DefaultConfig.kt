@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
-import no.nav.bidrag.commons.security.DisableDefaultSpringSecurityConfiguration
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.UserMdcFilter
@@ -33,7 +32,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableScheduling
 @ConfigurationPropertiesScan
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
-@Import(CorrelationIdFilter::class, DefaultCorsFilter::class, UserMdcFilter::class, DisableDefaultSpringSecurityConfiguration::class)
+@Import(CorrelationIdFilter::class, DefaultCorsFilter::class, UserMdcFilter::class)
 class DefaultConfig {
 
     @Bean
