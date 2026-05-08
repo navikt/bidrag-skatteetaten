@@ -17,8 +17,9 @@ import org.springframework.test.context.ActiveProfiles
         ManagementWebSecurityAutoConfiguration::class,
         UserDetailsServiceAutoConfiguration::class,
         ServletWebSecurityAutoConfiguration::class,
-    ]
-)@EnableAspectJAutoProxy
+    ],
+)
+@EnableAspectJAutoProxy
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class BidragReskontroLocal
 

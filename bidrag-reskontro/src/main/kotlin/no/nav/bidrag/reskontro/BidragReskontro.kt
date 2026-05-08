@@ -16,8 +16,9 @@ const val PROFILE_NAIS = "nais"
         ManagementWebSecurityAutoConfiguration::class,
         UserDetailsServiceAutoConfiguration::class,
         ServletWebSecurityAutoConfiguration::class,
-    ]
-)@EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
+    ],
+)
+@EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class BidragReskontro
 
 fun main(args: Array<String>) {
