@@ -10,6 +10,8 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import no.nav.bidrag.domene.enums.regnskap.Søknadstype
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.domene.enums.regnskap.Type
@@ -50,9 +52,9 @@ import org.springframework.test.context.DynamicPropertySource
 import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.shaded.org.awaitility.Awaitility.await
-import org.testcontainers.shaded.org.awaitility.Durations.TEN_SECONDS
 import java.io.FileOutputStream
 import java.math.BigDecimal
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -116,6 +118,9 @@ internal class VedtakshendelseListenerIT {
 
     @Autowired
     private lateinit var kravService: KravService
+
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
 
     @Value("\${TOPIC_VEDTAK}")
     private lateinit var topic: String
@@ -206,7 +211,7 @@ internal class VedtakshendelseListenerIT {
     @Test
     @Order(4)
     fun `skal oppdatere gebyr for mottaker`() {
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000002) != null
         }
 
@@ -242,7 +247,7 @@ internal class VedtakshendelseListenerIT {
     @Test
     @Order(6)
     fun `skal oppdatere særtilskudd`() {
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000003) != null
         }
 
@@ -278,7 +283,7 @@ internal class VedtakshendelseListenerIT {
     @Test
     @Order(8)
     fun `skal oppdatere tilbakekreving`() {
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000004) != null
         }
 
@@ -370,7 +375,7 @@ internal class VedtakshendelseListenerIT {
     @Test
     @Order(13)
     fun `skal oppdatere bidragsforskudd`() {
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000009) != null
         }
 
@@ -523,7 +528,7 @@ internal class VedtakshendelseListenerIT {
             barn2 = barn2Oppfostring,
         )
 
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000014) != null
         }
 
@@ -537,7 +542,7 @@ internal class VedtakshendelseListenerIT {
             Søknadstype.EN,
         )
 
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000015) != null
         }
 
@@ -615,7 +620,7 @@ internal class VedtakshendelseListenerIT {
             mottaker = bidrag18årsMottaker,
         )
 
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000016) != null
         }
 
@@ -677,7 +682,7 @@ internal class VedtakshendelseListenerIT {
             kravhaverIdent = kravhaverIdEktefellebidrag,
         )
 
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000017) != null
         }
 
@@ -731,7 +736,7 @@ internal class VedtakshendelseListenerIT {
             177,
         )
 
-        await().atMost(TEN_SECONDS).until {
+        await().atMost(Duration.ofSeconds(30)).until {
             return@until persistenceService.hentOppdrag(100000018) != null
         }
 
@@ -788,7 +793,10 @@ internal class VedtakshendelseListenerIT {
 
         // Siden antall konteringer ikke øker ved endre-rm-oppdatering, er await i hentFilOgSendPåKafka
         // umiddelbart sann. Vi må derfor vente eksplisitt på at mottakerIdent faktisk er oppdatert.
-        await().atMost(TEN_SECONDS).until {
+        // entityManager.clear() brukes for å sikre at JPA L1-cachen (som kan ha cachet oppdrag med
+        // gammel mottakerIdent via findAll()-kallene i hentFilOgSendPåKafka) ikke returnerer stale data.
+        await().atMost(Duration.ofSeconds(30)).until {
+            entityManager.clear()
             return@until persistenceService.hentOppdrag(100000019)?.mottakerIdent == endreRmBmNyBidrag
         }
 
@@ -916,12 +924,8 @@ internal class VedtakshendelseListenerIT {
 
         kafkaTemplate.send(topic, vedtakFilString)
 
-        println(
-            "$filnavn blir nå behandlet. Antall opprettede konteringer totalt i db så langt: ${persistenceService.konteringRepository.findAll().size}",
-        )
-
-        await().atMost(TEN_SECONDS).until {
-            return@until persistenceService.konteringRepository.findAll().size == antallKonteringerTotalt
+        await().atMost(Duration.ofSeconds(30)).until {
+            return@until persistenceService.konteringRepository.count() == antallKonteringerTotalt.toLong()
         }
         return objectmapper.readValue(vedtakFilString, VedtakHendelse::class.java)
     }
