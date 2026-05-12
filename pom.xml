@@ -36,7 +36,7 @@
         <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-ui.version>3.0.3</springdoc-openapi-ui.version>
         <logback-encoder.version>9.0</logback-encoder.version>
-        <okhttp.version>5.2.1</okhttp.version>
+        <okhttp.version>5.3.2</okhttp.version>
     </properties>
 
     <dependencies>
