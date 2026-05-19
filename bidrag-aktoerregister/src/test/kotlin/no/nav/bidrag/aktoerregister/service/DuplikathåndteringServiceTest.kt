@@ -54,6 +54,7 @@ class DuplikathåndteringServiceTest {
 
         @Test
         fun `skal returnere tom liste når ingen aktører matcher`() {
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             every { aktørRepository.findByAktørIdent(any()) } returns null
 
             val resultat = duplikathåndteringService.finnAlleMatchendeAktører(setOf("12345", "67890"))
@@ -64,6 +65,7 @@ class DuplikathåndteringServiceTest {
 
         @Test
         fun `skal finne én aktør som matcher`() {
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             val aktør = opprettAktør(id = 1, ident = "12345")
             every { aktørRepository.findByAktørIdent("12345") } returns aktør
             every { aktørRepository.findByAktørIdent("67890") } returns null
@@ -76,6 +78,7 @@ class DuplikathåndteringServiceTest {
 
         @Test
         fun `skal finne flere aktører og returnere sortert etter id`() {
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             val aktør1 = opprettAktør(id = 3, ident = "12345")
             val aktør2 = opprettAktør(id = 1, ident = "67890")
             val aktør3 = opprettAktør(id = 2, ident = "11111")
@@ -95,6 +98,7 @@ class DuplikathåndteringServiceTest {
 
         @Test
         fun `skal fjerne duplikater hvis samme aktør matcher flere identer`() {
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             val aktør = opprettAktør(id = 1, ident = "12345")
             every { aktørRepository.findByAktørIdent("12345") } returns aktør
             every { aktørRepository.findByAktørIdent("67890") } returns aktør
@@ -267,6 +271,7 @@ class DuplikathåndteringServiceTest {
             every { aktørRepository.findByAktørIdent(genererFødselsnummer()) } returns null
             every { aktørRepository.findByAktørIdent(ident1) } returns aktør1
             every { aktørRepository.findByAktørIdent(ident2) } returns aktør2
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             every { hendelseRepository.delete(any()) } just Runs
             every { tidligereIdenterRepository.delete(any()) } just Runs
             every { aktørRepository.delete(any()) } just Runs
@@ -292,6 +297,7 @@ class DuplikathåndteringServiceTest {
 
         @Test
         fun `scenario - ingen duplikater funnet`() {
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             every { aktørRepository.findByAktørIdent(any()) } returns null
 
             val matchendeAktører = duplikathåndteringService.finnAlleMatchendeAktører(setOf("ident1", "ident2"))
@@ -302,7 +308,7 @@ class DuplikathåndteringServiceTest {
         @Test
         fun `scenario - alle tidligere identer peker på samme aktør`() {
             val aktør = opprettAktør(id = 1, ident = "current")
-
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
             every { aktørRepository.findByAktørIdent("old1") } returns aktør
             every { aktørRepository.findByAktørIdent("old2") } returns aktør
             every { aktørRepository.findByAktørIdent("old3") } returns aktør
