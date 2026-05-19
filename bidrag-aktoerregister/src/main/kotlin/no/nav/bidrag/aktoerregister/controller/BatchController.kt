@@ -57,6 +57,16 @@ class BatchController(
     }
 
     @Operation(
+        summary = "Henter duplikate aktører.",
+        description = "Henter duplikate aktører.",
+    )
+    @PostMapping("/duplikater")
+    fun finnDuplikater(): ResponseEntity<*> {
+        duplikathåndteringService.finnDuplikater()
+        return ResponseEntity.ok().build<Any>()
+    }
+
+    @Operation(
         summary = "Opprydding av duplikate aktører.",
         description = "Opprydding av duplikate aktører.",
     )

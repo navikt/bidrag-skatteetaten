@@ -45,6 +45,10 @@ class DuplikathåndteringService(
      */
     fun velgPrimærAktør(matchendeAktører: List<Aktør>): Aktør = matchendeAktører.minBy { it.id!! }
 
+    fun finnDuplikater(): List<String> {
+        return aktørRepository.finnDuplikateIdenter()
+    }
+
     /**
      * Rydd opp duplikate aktører ved å rydde de som deler samme ident.
      * Beholder den aktøren som sist ble oppdatert, og fjerner resten.
