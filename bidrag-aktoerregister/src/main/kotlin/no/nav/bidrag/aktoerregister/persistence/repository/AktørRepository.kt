@@ -4,6 +4,7 @@ import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import java.sql.Timestamp
 
 interface AktørRepository : JpaRepository<Aktør, String> {
@@ -19,4 +20,22 @@ interface AktørRepository : JpaRepository<Aktør, String> {
     fun findByAktørIdent(aktørIdent: String): Aktør?
 
     fun deleteAktørByAktørIdent(aktørIdent: String)
+
+    @Query(
+        value = """
+            WITH alle_identer AS (
+                SELECT id AS aktoer_id, aktoer_ident AS ident
+                FROM aktoer
+                UNION
+                SELECT aktoer_id, tidligere_aktoer_ident AS ident
+                FROM tidligere_identer
+            )
+            SELECT ident
+            FROM alle_identer
+            GROUP BY ident
+            HAVING COUNT(DISTINCT aktoer_id) > 1
+        """,
+        nativeQuery = true,
+    )
+    fun finnDuplikateIdenter(): List<String>
 }

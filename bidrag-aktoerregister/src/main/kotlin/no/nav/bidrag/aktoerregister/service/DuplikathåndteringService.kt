@@ -7,6 +7,7 @@ import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.HendelseRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.TidligereIdenterRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -25,10 +26,15 @@ class DuplikathåndteringService(
     fun finnAlleMatchendeAktører(tidligereIdenter: Set<String>): List<Aktør> {
         if (tidligereIdenter.isEmpty()) return emptyList()
 
-        return tidligereIdenter
-            .mapNotNull { ident ->
-                aktørRepository.findByAktørIdent(ident)
-            }
+        val aktørerFraAktørIdent = tidligereIdenter.mapNotNull { ident ->
+            aktørRepository.findByAktørIdent(ident)
+        }
+
+        val aktørerFraTidligereIdenter = tidligereIdenter.flatMap { ident ->
+            tidligereIdenterRepository.findByTidligereAktoerIdent(ident).mapNotNull { it.aktør }
+        }
+
+        return (aktørerFraAktørIdent + aktørerFraTidligereIdenter)
             .distinctBy { it.id }
             .sortedBy { it.id }
     }
@@ -38,6 +44,41 @@ class DuplikathåndteringService(
      * Returnerer den eldste aktøren (laveste id) som den primære.
      */
     fun velgPrimærAktør(matchendeAktører: List<Aktør>): Aktør = matchendeAktører.minBy { it.id!! }
+
+    /**
+     * Rydd opp duplikate aktører ved å rydde de som deler samme ident.
+     * Beholder den aktøren som sist ble oppdatert, og fjerner resten.
+     */
+    @Transactional
+    fun ryddOppDuplikater() {
+        val duplikateIdenter = aktørRepository.finnDuplikateIdenter()
+        if (duplikateIdenter.isEmpty()) {
+            LOGGER.info { "Ingen duplikate identer funnet for opprydding." }
+            return
+        }
+
+        val behandledeAktører = mutableSetOf<Int>()
+
+        for (ident in duplikateIdenter) {
+            val matchendeAktører = finnAlleMatchendeAktører(setOf(ident))
+                .filter { it.id!! !in behandledeAktører }
+
+            if (matchendeAktører.size > 1) {
+                // Beholder den nyest oppdaterte aktøren
+                val primærAktør = velgSistOppdaterteAktør(matchendeAktører)
+
+                LOGGER.info {
+                    "Rydder opp i duplikate aktører for ident. Beholder aktør id: ${primærAktør.id} " +
+                        "sist endret: ${primærAktør.sistEndret}. Duplikater: ${matchendeAktører.filter { it.id != primærAktør.id }.map { it.id }}"
+                }
+
+                slettDuplikater(primærAktør, matchendeAktører)
+                behandledeAktører.addAll(matchendeAktører.map { it.id!! })
+            }
+        }
+    }
+
+    fun velgSistOppdaterteAktør(matchendeAktører: List<Aktør>): Aktør = matchendeAktører.maxBy { it.sistEndret?.time ?: it.id!!.toLong() }
 
     /**
      * Sletter alle duplikat-aktører bortsett fra den primære.

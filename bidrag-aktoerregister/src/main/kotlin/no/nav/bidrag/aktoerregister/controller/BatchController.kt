@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import no.nav.bidrag.aktoerregister.batch.person.PersonBatch
 import no.nav.bidrag.aktoerregister.batch.samhandler.SamhandlerBatch
+import no.nav.bidrag.aktoerregister.service.DuplikathåndteringService
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,7 +16,11 @@ private val LOGGER = KotlinLogging.logger {}
 
 @RestController
 @Protected
-class BatchController(private val samhandlerBatch: SamhandlerBatch, private val personBatch: PersonBatch) {
+class BatchController(
+    private val samhandlerBatch: SamhandlerBatch,
+    private val personBatch: PersonBatch,
+    private val duplikathåndteringService: DuplikathåndteringService,
+) {
 
     @Operation(
         summary = "Start kjøring av Samhandler batch.",
@@ -48,6 +53,16 @@ class BatchController(private val samhandlerBatch: SamhandlerBatch, private val 
                 LOGGER.error(e) { "Manuell start av batchen feilet med følgende feilkode: ${e.message}" }
             }
         }
+        return ResponseEntity.ok().build<Any>()
+    }
+
+    @Operation(
+        summary = "Opprydding av duplikate aktører.",
+        description = "Opprydding av duplikate aktører.",
+    )
+    @PostMapping("/duplikatopprydding")
+    fun duplikathåndtering(): ResponseEntity<*> {
+        duplikathåndteringService.ryddOppDuplikater()
         return ResponseEntity.ok().build<Any>()
     }
 }

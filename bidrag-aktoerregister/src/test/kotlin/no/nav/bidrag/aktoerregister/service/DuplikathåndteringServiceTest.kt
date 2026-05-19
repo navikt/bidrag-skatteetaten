@@ -192,9 +192,9 @@ class DuplikathåndteringServiceTest {
             val duplikat1 = opprettAktørMedRelasjoner(id = 2, ident = "67890", antallHendelser = 1, antallTidligereIdenter = 0)
             val duplikat2 = opprettAktørMedRelasjoner(id = 3, ident = "11111", antallHendelser = 3, antallTidligereIdenter = 2)
 
-            every { hendelseRepository.delete(any()) } just Runs
-            every { tidligereIdenterRepository.delete(any()) } just Runs
-            every { aktørRepository.delete(any()) } just Runs
+            every { hendelseRepository.delete(any() as Hendelse) } just Runs
+            every { tidligereIdenterRepository.delete(any() as TidligereIdenter) } just Runs
+            every { aktørRepository.delete(any() as Aktør) } just Runs
             every { entityManager.flush() } just Runs
 
             duplikathåndteringService.slettDuplikater(primærAktør, listOf(primærAktør, duplikat1, duplikat2))
@@ -219,9 +219,9 @@ class DuplikathåndteringServiceTest {
             val primærAktør = opprettAktør(id = 1, ident = "12345")
             val duplikatAktør = opprettAktør(id = 2, ident = "67890")
 
-            every { hendelseRepository.delete(any()) } just Runs
-            every { tidligereIdenterRepository.delete(any()) } just Runs
-            every { aktørRepository.delete(any()) } just Runs
+            every { hendelseRepository.delete(any() as Hendelse) } just Runs
+            every { tidligereIdenterRepository.delete(any() as TidligereIdenter) } just Runs
+            every { aktørRepository.delete(any() as Aktør) } just Runs
             every { entityManager.flush() } just Runs
 
             duplikathåndteringService.slettDuplikater(primærAktør, listOf(primærAktør, duplikatAktør))
@@ -239,9 +239,9 @@ class DuplikathåndteringServiceTest {
         fun `skal ikke slette primær aktør selv om den er i listen`() {
             val primærAktør = opprettAktørMedRelasjoner(id = 1, ident = "12345", antallHendelser = 5, antallTidligereIdenter = 3)
 
-            every { hendelseRepository.delete(any()) } just Runs
-            every { tidligereIdenterRepository.delete(any()) } just Runs
-            every { aktørRepository.delete(any()) } just Runs
+            every { hendelseRepository.delete(any() as Hendelse) } just Runs
+            every { tidligereIdenterRepository.delete(any() as TidligereIdenter) } just Runs
+            every { aktørRepository.delete(any() as Aktør) } just Runs
             every { entityManager.flush() } just Runs
 
             duplikathåndteringService.slettDuplikater(primærAktør, listOf(primærAktør))
@@ -267,9 +267,10 @@ class DuplikathåndteringServiceTest {
             every { aktørRepository.findByAktørIdent(genererFødselsnummer()) } returns null
             every { aktørRepository.findByAktørIdent(ident1) } returns aktør1
             every { aktørRepository.findByAktørIdent(ident2) } returns aktør2
-            every { hendelseRepository.delete(any()) } just Runs
-            every { tidligereIdenterRepository.delete(any()) } just Runs
-            every { aktørRepository.delete(any()) } just Runs
+            every { tidligereIdenterRepository.findByTidligereAktoerIdent(any()) } returns emptyList()
+            every { hendelseRepository.delete(any() as Hendelse) } just Runs
+            every { tidligereIdenterRepository.delete(any() as TidligereIdenter) } just Runs
+            every { aktørRepository.delete(any() as Aktør) } just Runs
             every { entityManager.flush() } just Runs
 
             // 1. Finn alle matchende aktører
