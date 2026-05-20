@@ -8,6 +8,7 @@ import no.nav.bidrag.aktoerregister.batch.samhandler.SamhandlerBatch
 import no.nav.bidrag.aktoerregister.service.DuplikathåndteringService
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.CompletableFuture
@@ -60,7 +61,7 @@ class BatchController(
         summary = "Henter duplikate aktører.",
         description = "Henter duplikate aktører.",
     )
-    @PostMapping("/duplikater")
+    @GetMapping("/duplikater")
     fun finnDuplikater(): ResponseEntity<*> {
         return ResponseEntity.ok().body(duplikathåndteringService.finnDuplikater())
     }
