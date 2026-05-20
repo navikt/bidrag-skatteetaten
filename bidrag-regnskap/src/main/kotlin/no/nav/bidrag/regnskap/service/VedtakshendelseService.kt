@@ -26,6 +26,7 @@ private val objectMapper =
 @Service
 class VedtakshendelseService(
     private val oppdragService: OppdragService,
+    private val oppdragsperiodeService: OppdragsperiodeService,
     private val kravService: KravService,
     private val persistenceService: PersistenceService,
     private val identUtils: IdentUtils,
@@ -39,6 +40,11 @@ class VedtakshendelseService(
         }
 
         val vedtakHendelse = mapVedtakHendelse(hendelse)
+
+        if (oppdragsperiodeService.hentAlleOppdragsperiodeMedVedtaksId(vedtakHendelse.id).isNotEmpty()) {
+            LOGGER.warn { "VedtakHendelse med vedtakid: ${vedtakHendelse.id} er allerede behandlet. Ignorerer hendelse." }
+            return emptyList()
+        }
 
         LOGGER.info { "Behandler vedakHendelse for vedtakid: ${vedtakHendelse.id}" }
 
