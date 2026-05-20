@@ -62,8 +62,7 @@ class BatchController(
     )
     @PostMapping("/duplikater")
     fun finnDuplikater(): ResponseEntity<*> {
-        duplikathåndteringService.finnDuplikater()
-        return ResponseEntity.ok().build<Any>()
+        return ResponseEntity.ok().body(duplikathåndteringService.finnDuplikater())
     }
 
     @Operation(
