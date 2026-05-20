@@ -29,6 +29,7 @@ import no.nav.bidrag.regnskap.persistence.entity.Oppdrag
 import no.nav.bidrag.regnskap.persistence.entity.Oppdragsperiode
 import no.nav.bidrag.regnskap.service.KravService
 import no.nav.bidrag.regnskap.service.PersistenceService
+import no.nav.bidrag.regnskap.service.VedtakshendelseService
 import no.nav.bidrag.regnskap.utils.TestData
 import no.nav.bidrag.transport.behandling.vedtak.VedtakHendelse
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -115,6 +116,9 @@ internal class VedtakshendelseListenerIT {
 
     @Autowired
     private lateinit var persistenceService: PersistenceService
+
+    @Autowired
+    private lateinit var vedtakshendelseService: VedtakshendelseService
 
     @Autowired
     private lateinit var kravService: KravService
@@ -819,6 +823,22 @@ internal class VedtakshendelseListenerIT {
         )
 
         skrivTilTestdatafil(listOf(kontering), "Særbidrag")
+    }
+
+    @Test
+    @Order(26)
+    fun `skal ikke behandle samme vedtakshendelse to ganger for å sikre idempotens`() {
+        val vedtakFilString = hentTestfil("gebyrSkyldner.json")
+
+        val antallKonteringerSjekkFør = persistenceService.konteringRepository.count()
+        val antallOppdragsperioderSjekkFør = persistenceService.oppdragsperiodeRepository.count()
+
+        // gebyrSkyldner.json ble behandlet i Test 1. Den skal dermed bli ignorert og returnere tom liste.
+        val opprettedeOppdrag = vedtakshendelseService.behandleHendelse(vedtakFilString)
+
+        opprettedeOppdrag shouldHaveSize 0
+        persistenceService.konteringRepository.count() shouldBe antallKonteringerSjekkFør
+        persistenceService.oppdragsperiodeRepository.count() shouldBe antallOppdragsperioderSjekkFør
     }
 
     fun assertStønader(

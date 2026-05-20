@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.verify
 import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
@@ -30,6 +31,9 @@ class VedtakshendelseServiceTest {
 
     @MockK(relaxed = true)
     private lateinit var persistenceService: PersistenceService
+
+    @MockK(relaxed = true)
+    private lateinit var oppdragsperiodeService: OppdragsperiodeService
 
     @MockK(relaxed = true)
     private lateinit var identUtils: IdentUtils
@@ -128,6 +132,19 @@ class VedtakshendelseServiceTest {
     fun `Skal ikke lese hendelse om det finnes aktivt driftsavvik`() {
         every { driftsavvikService.harAktivtDriftsavvik(true) } returns true
         assertThrows<PåløpException> { vedtakshendelseService.behandleHendelse(opprettVedtakshendelse()) }
+    }
+
+    @Test
+    fun `Skal ikke behandle hendelse om den allerede er behandlet`() {
+        val hendelse = opprettVedtakshendelse()
+
+        every { oppdragsperiodeService.hentAlleOppdragsperiodeMedVedtaksId(123) } returns listOf(mockk())
+
+        val resultat = vedtakshendelseService.behandleHendelse(hendelse)
+
+        resultat shouldHaveSize 0
+        verify(exactly = 0) { oppdragService.lagreHendelse(any()) }
+        verify(exactly = 0) { oppdragService.lagreHendelse(any(), any()) }
     }
 
     private fun opprettVedtakshendelse(): String = """
