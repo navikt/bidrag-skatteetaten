@@ -23,7 +23,7 @@
         <kotlin.version>2.3.21</kotlin.version>
         <bidrag-felles.version>2026.05.13.140439-SB4</bidrag-felles.version>
         <jackson.version>2.21.2</jackson.version>
-        <kotest.version>6.0.4</kotest.version>
+        <kotest.version>6.1.11</kotest.version>
         <ktlint.version>1.8.0</ktlint.version>
         <mockk.version>1.14.6</mockk.version>
         <springmockk.version>4.0.2</springmockk.version>
