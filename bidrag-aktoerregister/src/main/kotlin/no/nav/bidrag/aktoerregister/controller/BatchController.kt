@@ -62,9 +62,7 @@ class BatchController(
         description = "Henter duplikate aktører.",
     )
     @GetMapping("/duplikater")
-    fun finnDuplikater(): ResponseEntity<*> {
-        return ResponseEntity.ok().body(duplikathåndteringService.finnDuplikater())
-    }
+    fun finnDuplikater(): ResponseEntity<*> = ResponseEntity.ok().body(duplikathåndteringService.finnDuplikater())
 
     @Operation(
         summary = "Opprydding av duplikate aktører.",
