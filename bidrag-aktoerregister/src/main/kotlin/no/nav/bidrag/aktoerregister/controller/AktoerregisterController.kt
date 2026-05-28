@@ -12,6 +12,7 @@ import no.nav.bidrag.aktoerregister.dto.HendelseDTO
 import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
 import no.nav.bidrag.aktoerregister.service.AktørService
 import no.nav.bidrag.aktoerregister.service.HendelseService
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.transport.samhandler.SamhandlerSøk
 import no.nav.bidrag.transport.samhandler.SamhandlersøkeresultatDto
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -46,14 +47,14 @@ class AktoerregisterController(
     )
     @PostMapping(path = ["/aktoer"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> = try {
-        LOGGER.info { "Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}" }
+        secureLogger.info { "Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}" }
         val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
         ResponseEntity.ok(aktoer)
     } catch (e: AktørNotFoundException) {
-        LOGGER.info { "Aktør ${request.aktoerId} ikke funnet." }
+        secureLogger.info { "Aktør ${request.aktoerId} ikke funnet." }
         throw ResponseStatusException(HttpStatus.NOT_FOUND, "Finner ingen aktør med oppgitt ident", e)
     } catch (e: Exception) {
-        LOGGER.error(e) { "Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}" }
+        secureLogger.error(e) { "Feil ved henting av aktør ${request.aktoerId}. Feilmelding: ${e.message}" }
         throw ResponseStatusException(INTERNAL_SERVER_ERROR, "Intern tjenestefeil. Feil ved henting av aktør. Prøv igjen senere.", e)
     }
 

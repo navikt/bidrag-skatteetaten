@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.util.IdentUtils
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.enums.vedtak.Beslutningstype
 import no.nav.bidrag.domene.enums.vedtak.Innkrevingstype
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
@@ -68,7 +69,7 @@ class VedtakshendelseService(
     fun mapVedtakHendelse(hendelse: String): VedtakHendelse = try {
         objectMapper.readValue(hendelse, VedtakHendelse::class.java)
     } finally {
-        LOGGER.debug { "${"Leser hendelse: {}"} $hendelse" }
+        secureLogger.debug { "${"Leser hendelse: {}"} $hendelse" }
     }
 
     private fun opprettOppdragForStønadsending(vedtakHendelse: VedtakHendelse, stønadsendring: Stønadsendring): Int? {
@@ -99,10 +100,10 @@ class VedtakshendelseService(
     private fun erInnkrevingOgEndring(hendelsestype: String, innkreving: Innkrevingstype, beslutningstype: Beslutningstype): Boolean {
         val erInnkrevingOgEndring = innkreving == Innkrevingstype.MED_INNKREVING && beslutningstype == Beslutningstype.ENDRING
         return if (erInnkrevingOgEndring) {
-            LOGGER.debug { "$hendelsestype har innkreving og er en endring. Lagrer hendelse." }
+            secureLogger.debug { "$hendelsestype har innkreving og er en endring. Lagrer hendelse." }
             true
         } else {
-            LOGGER.info { "$hendelsestype har ikke innkreving eller er ikke en endring. Lagrer ikke.." }
+            secureLogger.info { "$hendelsestype har ikke innkreving eller er ikke en endring. Lagrer ikke.." }
             false
         }
     }

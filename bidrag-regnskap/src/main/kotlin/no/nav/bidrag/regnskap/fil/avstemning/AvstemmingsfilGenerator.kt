@@ -1,18 +1,18 @@
 package no.nav.bidrag.regnskap.fil.avstemning
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.regnskap.fil.overføring.FiloverføringTilElinKlient
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.regnskap.util.ByteArrayOutputStreamTilByteBuffer
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-private val LOGGER = LoggerFactory.getLogger(AvstemmingsfilGenerator::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Component
 class AvstemmingsfilGenerator(
@@ -21,7 +21,7 @@ class AvstemmingsfilGenerator(
 ) {
 
     fun skrivAvstemmingsfil(konteringer: List<Kontering>, now: LocalDate) {
-        LOGGER.info("Starter bygging av avstemningKontering- og avstemningSummeringsfil for $now.")
+        LOGGER.info { "Starter bygging av avstemningKontering- og avstemningSummeringsfil for $now." }
 
         val nowFormattert = now.format(DateTimeFormatter.ofPattern("yyMMdd")).toString()
         val avstemmingMappe = "avstemning/"
@@ -36,7 +36,7 @@ class AvstemmingsfilGenerator(
         val avstemningSummeringFil = opprettAvstemmingSummeringFil(summeringer)
         gcpFilBucket.lagreFil(avstemmingMappe + avstemmingSummeringFilnavn, avstemningSummeringFil)
 
-        LOGGER.info("AvstemmingKontering- og avstemmingSummeringsfil er ferdig skrevet med ${konteringer.size} konteringer.")
+        LOGGER.info { "AvstemmingKontering- og avstemmingSummeringsfil er ferdig skrevet med ${konteringer.size} konteringer." }
 
         filoverføringTilElinKlient.lastOppFilTilFilsluse(avstemmingMappe, avstemmingKonteringFilnavn)
         filoverføringTilElinKlient.lastOppFilTilFilsluse(avstemmingMappe, avstemmingSummeringFilnavn)
@@ -86,7 +86,7 @@ class AvstemmingsfilGenerator(
             )
 
             if (index + 1 % 100 == 0) {
-                LOGGER.info("Påløpskjøring: Har skrevet $index av ${konteringer.size} konteringer til avstemningsfil...")
+                LOGGER.info { "Påløpskjøring: Har skrevet $index av ${konteringer.size} konteringer til avstemningsfil..." }
             }
 
             transaksjonskodeSummering.sum += kontering.oppdragsperiode!!.beløp

@@ -1,6 +1,6 @@
 package no.nav.bidrag.aktoerregister.consumer
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Personident
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
-
-private val LOGGER = KotlinLogging.logger {}
 
 @Service
 class PersonConsumer(
@@ -31,10 +29,10 @@ class PersonConsumer(
                 UriComponentsBuilder.fromUri(url).path(PERSON_PATH).build().toUri(),
                 PersonRequest(Personident(personIdent.verdi)),
             )
-            LOGGER.debug { "${"Hentet person med id: {} fra bidrag-person: {}"} ${personIdent.verdi} $response" }
+            secureLogger.debug { "${"Hentet person med id: {} fra bidrag-person: {}"} ${personIdent.verdi} $response" }
             return response
         } catch (e: Exception) {
-            LOGGER.error(e) { "Noe gikk galt i kallet mot bidrag-person for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}" }
+            secureLogger.error(e) { "Noe gikk galt i kallet mot bidrag-person for ident: ${personIdent.verdi}. Svaret fra bidrag-person var: ${e.message}" }
             throw e
         }
     }

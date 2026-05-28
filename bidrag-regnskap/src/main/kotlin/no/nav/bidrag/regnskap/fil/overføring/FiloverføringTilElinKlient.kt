@@ -3,13 +3,13 @@ package no.nav.bidrag.regnskap.fil.overføring
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.service.slack.SlackService
 import no.nav.bidrag.regnskap.config.FiloverføringTilElinConfig
 import no.nav.bidrag.regnskap.persistence.bucket.GcpFilBucket
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
-private val LOGGER = LoggerFactory.getLogger(FiloverføringTilElinKlient::class.java)
+private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class FiloverføringTilElinKlient(
@@ -29,10 +29,10 @@ class FiloverføringTilElinKlient(
 
     fun lastOppFilTilFilsluse(filmappe: String, filnavn: String) {
         if (!config.skalOverforeFil) {
-            LOGGER.info("Miljøet er konfigurert til å ikke overføre fil til SFTP. Fil blir derfor kun lastet opp til bucket.")
+            LOGGER.info { "Miljøet er konfigurert til å ikke overføre fil til SFTP. Fil blir derfor kun lastet opp til bucket." }
             return
         }
-        LOGGER.info("Start oppkobling mot filsluse...")
+        LOGGER.info { "Start oppkobling mot filsluse..." }
         var session: Session? = null
         val channel: ChannelSftp?
         try {
@@ -42,11 +42,11 @@ class FiloverføringTilElinKlient(
 
             channel = session.openChannel(FiloverføringTilElinConfig.JSCH_CHANNEL_TYPE_SFTP) as ChannelSftp
             channel.connect()
-            LOGGER.info("Oppkobling mot filsluse var vellykket!")
-            LOGGER.info("Starter opplasting av fil: $filnavn fra GCP-bucket...")
+            LOGGER.info { "Oppkobling mot filsluse var vellykket!" }
+            LOGGER.info { "Starter opplasting av fil: $filnavn fra GCP-bucket..." }
             channel.cd(config.directory)
             channel.put(gcpFilBucket.hentFil(filmappe + filnavn), filnavn)
-            LOGGER.info("Fil: $filnavn har blitt lastet opp på filsluse!")
+            LOGGER.info { "Fil: $filnavn har blitt lastet opp på filsluse!" }
         } catch (e: Exception) {
             slackService.sendMelding(
                 ":Warning: Noe gikk galt ved overføring av ${filmappe + filnavn} til ELIN! :Warning:" +
