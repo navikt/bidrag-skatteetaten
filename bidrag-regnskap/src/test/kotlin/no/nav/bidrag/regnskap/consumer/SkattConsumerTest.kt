@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
 import java.net.URI
 
 class SkattConsumerTest {
@@ -53,11 +54,10 @@ class SkattConsumerTest {
         }
         every { objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(any()) } returns "{}"
         every {
-            restTemplate.exchange(
+            restTemplate.exchange<String>(
                 expectedUri,
                 HttpMethod.POST,
                 any(),
-                String::class.java,
             )
         } returns expectedResponse
 
@@ -65,13 +65,12 @@ class SkattConsumerTest {
 
         assertEquals(expectedResponse, response)
         verify {
-            restTemplate.exchange(
+            restTemplate.exchange<String>(
                 expectedUri,
                 HttpMethod.POST,
                 match {
                     it.body == kravliste && (it.headers[HttpHeaders.AUTHORIZATION]?.get(0) == "Bearer mockedToken")
                 },
-                String::class.java,
             )
         }
     }
