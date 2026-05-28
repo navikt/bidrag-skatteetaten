@@ -1,14 +1,12 @@
 package no.nav.bidrag.regnskap.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.regnskap.consumer.BidragReskontroConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import org.springframework.stereotype.Service
-
-private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class ReskontroService(
@@ -30,16 +28,16 @@ class ReskontroService(
             try {
                 transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
             } catch (e: Exception) {
-                LOGGER.error(e) { "Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer for konteringer: $konteringer" }
+                secureLogger.error(e) { "Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer for konteringer: $konteringer" }
                 feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
                 feilmeldinger[sisteReferansekode]?.add("Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
                 return@forEach
             }
             if (transaksjoner == null || transaksjoner.transaksjoner.isEmpty()) {
                 if (erAlleForskudd(konteringer)) {
-                    LOGGER.info { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer, men alle er forskudd som ikke finnes i reskontro før om en uke." }
+                    secureLogger.info { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer, men alle er forskudd som ikke finnes i reskontro før om en uke." }
                 } else {
-                    LOGGER.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
+                    secureLogger.warn { "Fant ingen transaksjoner i reskontro for sak: $saksnummer for konteringer: $konteringer" }
                     feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())
                     feilmeldinger[sisteReferansekode]?.add("Det finnes ingen transaksjoner i reskontro for sak: $saksnummer, vedtak: ${konteringer.first().vedtakId}.\n")
                 }

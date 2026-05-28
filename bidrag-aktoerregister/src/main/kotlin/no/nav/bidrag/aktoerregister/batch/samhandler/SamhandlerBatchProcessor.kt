@@ -24,10 +24,10 @@ class SamhandlerBatchProcessor(
                 AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED)
             }
     } catch (e: AktørNotFoundException) {
-        LOGGER.warn(e) { "Samhandler: ${aktør.aktørIdent} finnes ikke. Feilmelding: ${e.message}" }
+        LOGGER.warn(e) { "Samhandler: ${aktør.id} finnes ikke. Feilmelding: ${e.message}" }
         null
     } catch (e: Exception) {
-        LOGGER.error(e) { "Samhandler: ${aktør.aktørIdent} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}" }
+        LOGGER.error(e) { "Samhandler: ${aktør.id} feilet i SamhandlerBatchProcessor. Feilmelding: ${e.message}" }
         null
     }
 }

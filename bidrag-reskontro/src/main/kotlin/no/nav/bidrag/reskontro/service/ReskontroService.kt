@@ -1,6 +1,6 @@
 package no.nav.bidrag.reskontro.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Organisasjonsnummer
 import no.nav.bidrag.domene.ident.Personident
@@ -24,8 +24,6 @@ import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonDto
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-
-private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsumer) {
@@ -96,7 +94,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return bidragssakMedSkyldnerDto
         } catch (e: Exception) {
-            LOGGER.error { "Feil ved opprettelse av BidragssakMedSkyldnerDto for innkrevingssak på person. Respons fra Skatt: $innkrevingssak" }
+            secureLogger.error { "Feil ved opprettelse av BidragssakMedSkyldnerDto for innkrevingssak på person. Respons fra Skatt: $innkrevingssak" }
             throw e
         }
     }
@@ -129,7 +127,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return bidragssakDto
         } catch (e: Exception) {
-            LOGGER.error { "Feil ved opprettelse av BidragssakDto for innkrevingssak på sak. Respons fra Skatt: $sak" }
+            secureLogger.error { "Feil ved opprettelse av BidragssakDto for innkrevingssak på sak. Respons fra Skatt: $sak" }
             throw e
         }
     }
@@ -180,7 +178,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return innkrevingssaksinformasjonDto
         } catch (e: Exception) {
-            LOGGER.error { "Feil ved opprettelse av InnkrevingssaksinformasjonDto for informasjon om innkrevingssaken. Respons fra Skatt: $innkrevingsinformasjon" }
+            secureLogger.error { "Feil ved opprettelse av InnkrevingssaksinformasjonDto for informasjon om innkrevingssaken. Respons fra Skatt: $innkrevingsinformasjon" }
             throw e
         }
     }
@@ -220,7 +218,7 @@ class ReskontroService(private val skattReskontroConsumer: SkattReskontroConsume
             )
             return transaksjonerDto
         } catch (e: Exception) {
-            LOGGER.error(e) { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
+            secureLogger.error(e) { "Feil ved opprettelse av TransaksjonDto for transaksjoner. Respons fra Skatt: $transaksjoner" }
             throw e
         }
     }

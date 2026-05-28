@@ -24,7 +24,7 @@ class PersonBatchProcessor(
                 AktørBatchProcessorResult(aktør, it, AktørStatus.UPDATED, originalIdent)
             }
     } catch (e: Exception) {
-        LOGGER.error(e) { "Person: ${aktør.aktørIdent} feilet i PersonBatchProcessor. Feilmelding: ${e.message}" }
+        LOGGER.error(e) { "Person: ${aktør.id} feilet i PersonBatchProcessor. Feilmelding: ${e.message}" }
         null
     }
 }

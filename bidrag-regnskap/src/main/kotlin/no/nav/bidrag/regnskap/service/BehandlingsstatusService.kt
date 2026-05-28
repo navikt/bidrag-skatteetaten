@@ -1,14 +1,12 @@
 package no.nav.bidrag.regnskap.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.enums.regnskap.behandlingsstatus.Batchstatus
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-
-private val LOGGER = KotlinLogging.logger { }
 
 @Service
 class BehandlingsstatusService(
@@ -32,7 +30,7 @@ class BehandlingsstatusService(
                 if (behandlingsstatusResponse.batchStatus == Batchstatus.Done) {
                     val feilmeldingFraReskontro = reskontroService.sammenlignOversendteKonteringerMedReskontro(mapOf(batchUid to konteringer))
                     if (feilmeldingFraReskontro.isNotEmpty()) {
-                        LOGGER.error { "Det finnes avvik mellom oversendte konteringer som har fått DONE status fra skatt og det som ligger i reskontro for batchUid $batchUid: $feilmeldingFraReskontro" }
+                        secureLogger.error { "Det finnes avvik mellom oversendte konteringer som har fått DONE status fra skatt og det som ligger i reskontro for batchUid $batchUid: $feilmeldingFraReskontro" }
                     }
                     behandleVellykkedeKonteringer(konteringer)
                 } else {

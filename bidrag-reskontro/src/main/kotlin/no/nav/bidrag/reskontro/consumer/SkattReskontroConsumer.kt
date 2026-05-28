@@ -1,7 +1,7 @@
 package no.nav.bidrag.reskontro.consumer
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
@@ -23,8 +23,6 @@ import org.springframework.web.client.exchange
 import org.springframework.web.client.postForEntity
 import java.net.URI
 
-private val LOGGER = KotlinLogging.logger {}
-
 @Service
 class SkattReskontroConsumer(
     @param:Value($$"${SKATT_URL}") private val skattUrl: String,
@@ -45,7 +43,7 @@ class SkattReskontroConsumer(
                 ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Kaller hent bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+            secureLogger.debug { "Kaller hent bidragssak for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -73,14 +71,14 @@ class SkattReskontroConsumer(
     private fun loggOgKastSkattTimeoutException(
         melding: String,
     ): Nothing {
-        LOGGER.error { melding }
+        secureLogger.error { melding }
         throw TimeoutFraSkattException(melding)
     }
 
     private fun loggOgKastSkattIngenDataException(
         melding: String,
     ): Nothing {
-        LOGGER.info { melding }
+        secureLogger.info { melding }
         throw IngenDataFraSkattException(melding)
     }
 
@@ -88,7 +86,7 @@ class SkattReskontroConsumer(
         melding: String,
         e: Exception,
     ): Nothing {
-        LOGGER.error { melding }
+        secureLogger.error { melding }
         throw e
     }
 
@@ -100,7 +98,7 @@ class SkattReskontroConsumer(
                 ReskontroConsumerInput(aksjonskode = 2, fodselsOrgnr = person.verdi),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Kaller hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response. " }
+            secureLogger.debug { "Kaller hent bidragssaker for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response. " }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -139,7 +137,7 @@ class SkattReskontroConsumer(
                 ),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Kaller hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+            secureLogger.debug { "Kaller hent transaksjoner for sak: $saksnummer.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -178,7 +176,7 @@ class SkattReskontroConsumer(
                 ),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Kaller hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+            secureLogger.debug { "Kaller hent transaksjoner for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -216,7 +214,7 @@ class SkattReskontroConsumer(
                 ),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+            secureLogger.debug { "Kaller hent transaksjoner for transaksjonsId: $transaksjonsid.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -252,7 +250,7 @@ class SkattReskontroConsumer(
                 ReskontroConsumerInput(aksjonskode = 6, fodselsOrgnr = person.verdi),
             )
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.debug { "Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+            secureLogger.debug { "Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
             val elapsed = System.currentTimeMillis() - startTime
@@ -295,7 +293,7 @@ class SkattReskontroConsumer(
             ),
         )
         val elapsed = System.currentTimeMillis() - startTime
-        LOGGER.info { "Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
+        secureLogger.info { "Response på endre RM for sak: NyRM: ${nyRm.verdi} i sak $saksnummer med barn: ${barn.verdi}.\nTidsbruk: ${elapsed}ms.\nFra skatt: $response." }
         return validerOutput(response)
     }
 

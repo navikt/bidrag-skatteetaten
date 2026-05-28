@@ -1,6 +1,7 @@
 package no.nav.bidrag.regnskap.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
@@ -49,7 +50,7 @@ class PersistenceService(
     }
 
     fun hentOppdragPaUnikeIdentifikatorer(stønadType: String, kravhaverIdent: String?, skyldnerIdent: String, sakId: String): Oppdrag? {
-        LOGGER.debug { "Henter oppdrag med stønadType: $stønadType, kravhaverIdent: $kravhaverIdent, skyldnerIdent: $skyldnerIdent, sakId: $sakId" }
+        secureLogger.debug { "Henter oppdrag med stønadType: $stønadType, kravhaverIdent: $kravhaverIdent, skyldnerIdent: $skyldnerIdent, sakId: $sakId" }
         return oppdragRepository.finnOppdragMedStønadTypeKravhanderSkylderOgSaksnummer(
             stønadType,
             kravhaverIdent,

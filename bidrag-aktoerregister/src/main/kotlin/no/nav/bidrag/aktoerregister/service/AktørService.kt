@@ -11,6 +11,7 @@ import no.nav.bidrag.aktoerregister.exception.AktørNotFoundException
 import no.nav.bidrag.aktoerregister.persistence.entities.Aktør
 import no.nav.bidrag.aktoerregister.persistence.repository.AktørRepository
 import no.nav.bidrag.aktoerregister.persistence.repository.TidligereIdenterRepository
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.transport.samhandler.SamhandlerSøk
 import no.nav.bidrag.transport.samhandler.SamhandlersøkeresultatDto
@@ -127,7 +128,7 @@ class AktørService(
         val matchendeAktører = tidligereIdenter.mapNotNull { it.aktør }.distinctBy { it.id }
 
         if (matchendeAktører.size > 1) {
-            LOGGER.warn {
+            secureLogger.warn {
                 "Fant ${matchendeAktører.size} aktører med tidligere ident ${aktørIdent.verdi}. " +
                     "Aktør-IDer: ${matchendeAktører.map { it.id }.joinToString(", ")}. " +
                     "Velger eldste aktør (id=${matchendeAktører.minBy { it.id!! }.id})."
@@ -146,7 +147,7 @@ class AktørService(
             if (aktør.aktørIdent != nyAktør.aktørIdent) {
                 val duplikatAktør = hentAktørFraDatabase(Ident(nyAktør.aktørIdent)).first
                 if (duplikatAktør != null) {
-                    LOGGER.info { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
+                    secureLogger.warn { "Fant duplikat aktør for ident: ${nyAktør.aktørIdent}. Starter duplikathåndtering." }
                     val matchendeAktører = listOf(primærAktør, duplikatAktør)
                     primærAktør = duplikatHåndteringService.velgPrimærAktør(matchendeAktører)
                     duplikatHåndteringService.slettDuplikater(primærAktør, matchendeAktører)
@@ -169,10 +170,10 @@ class AktørService(
             // Opprett hendelser for endringene
             hendelseService.opprettHendelserPåAktør(primærAktør, originalIdent, endringer)
 
-            LOGGER.info { "Lagrer aktør: ${primærAktør.aktørIdent}" }
+            secureLogger.debug { "Lagrer aktør: ${primærAktør.aktørIdent}" }
             aktørRepository.save(primærAktør)
         } catch (e: Exception) {
-            LOGGER.error(e) {
+            secureLogger.error(e) {
                 "Ukjent feil for ident: ${aktør.aktørIdent}. Original ident: $originalIdent. " +
                     "\nFeil: ${e.message} \nStacktrace: ${e.stackTraceToString()}"
             }
@@ -189,7 +190,7 @@ class AktørService(
             val felter = aktørendringstracker.trackNyAktør(aktør)
             hendelseService.opprettHendelserPåAktør(aktør, null, felter)
         } catch (e: DataIntegrityViolationException) {
-            LOGGER.error(e) { "DataIntegrityViolationException for ident: ${aktør.aktørIdent}. \nFeil: $e " }
+            secureLogger.error(e) { "DataIntegrityViolationException for ident: ${aktør.aktørIdent}. \nFeil: $e " }
             throw e
         }
     }

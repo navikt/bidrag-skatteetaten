@@ -2,6 +2,7 @@ package no.nav.bidrag.regnskap.hendelse.kafka.vedtak
 
 import com.fasterxml.jackson.core.JacksonException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.regnskap.controller.KafkaOffsettController
 import no.nav.bidrag.regnskap.service.VedtakshendelseService
 import org.apache.kafka.common.TopicPartition
@@ -34,7 +35,7 @@ class VedtakshendelseListener(
         acknowledgment: Acknowledgment,
     ) {
         try {
-            LOGGER.info { "Starter behandling av vedtakhendelse med offset: $offset. Hendelse: $hendelse" }
+            secureLogger.info { "Starter behandling av vedtakhendelse med offset: $offset. Hendelse: $hendelse" }
 
             if (kafkaOffsettController.skalHoppeOverNesteMelding()) {
                 hoppOverHendele(offset, acknowledgment)
@@ -56,7 +57,7 @@ class VedtakshendelseListener(
                 acknowledgment.acknowledge()
             }
         } catch (e: JacksonException) {
-            LOGGER.error(e) {
+            secureLogger.error(e) {
                 "Mapping av hendelse feilet for kafkamelding med offsett: $offset, topic: $topic, recieved_partition: $partition, groupId: $groupId " +
                     "\n\nHendelse: $hendelse"
             }
