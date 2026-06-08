@@ -68,6 +68,6 @@ class HendelseService(
         nyPersonident: Personident,
         oppdrag: Oppdrag,
     ) {
-        secureLogger.debug { "Personhendelse: $gammelIdent oppdatert til $nyPersonident for oppdragId: ${oppdrag.oppdragId}" }
+        secureLogger.info { "Personhendelse: $gammelIdent oppdatert til $nyPersonident for oppdragId: ${oppdrag.oppdragId}" }
     }
 }
