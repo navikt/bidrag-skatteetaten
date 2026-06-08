@@ -32,3 +32,9 @@ azure:
       - application: bidrag-automatisk-jobb-q1
         namespace: bidrag
         cluster: dev-gcp
+      - application: azure-token-generator
+        namespace: nais
+        cluster: dev-gcp
+      - application: bidrag-ui-feature
+        namespace: bidrag
+        cluster: dev-fss

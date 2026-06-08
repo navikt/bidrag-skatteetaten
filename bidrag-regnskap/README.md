@@ -256,6 +256,10 @@ NB: JWK-tokenet må omringes med tødler og alle eksisterende tødler må escape
 JWT-Token kan hentes ved hjelp at skriptet
 her: [hentJwtToken](https://github.com/navikt/bidrag-dev/blob/main/scripts/hentJwtToken.sh).
 
+### Token generator
+- https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp.bidrag.bidrag-regnskap-q1
+- https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp.bidrag.bidrag-regnskap-q2
+
 ### Live reload
 
 Med `spring-boot-devtools` har Spring støtte for live-reload av applikasjon. Dette betyr i praksis

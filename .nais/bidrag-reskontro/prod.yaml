@@ -32,3 +32,6 @@ azure:
       - application: bidrag-automatisk-jobb
         namespace: bidrag
         cluster: prod-gcp
+      - application: bidrag-ui
+        namespace: bidrag
+        cluster: prod-fss

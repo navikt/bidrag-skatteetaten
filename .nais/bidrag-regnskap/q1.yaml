@@ -62,3 +62,6 @@ azure:
       - application: bidrag-vedtak-q1
         namespace: bidrag
         cluster: dev-gcp
+      - application: azure-token-generator
+        namespace: nais
+        cluster: dev-gcp
