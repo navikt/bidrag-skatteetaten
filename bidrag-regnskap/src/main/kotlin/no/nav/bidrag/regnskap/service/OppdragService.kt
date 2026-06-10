@@ -3,10 +3,12 @@ package no.nav.bidrag.regnskap.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.util.IdentUtils
 import no.nav.bidrag.commons.util.SjekkForNyIdent
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.enums.vedtak.Engangsbeløptype
 import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
+import no.nav.bidrag.regnskap.consumer.BidragPersonConsumer
 import no.nav.bidrag.regnskap.consumer.BidragSakConsumer
 import no.nav.bidrag.regnskap.dto.patch.OppdaterUtsattTilDatoRequest
 import no.nav.bidrag.regnskap.dto.vedtak.Hendelse
@@ -25,6 +27,8 @@ class OppdragService(
     private val oppdragsperiodeService: OppdragsperiodeService,
     private val konteringService: KonteringService,
     private val bidragSakConsumer: BidragSakConsumer,
+    private val personhendelseService: PersonhendelseService,
+    private val bidragPersonConsumer: BidragPersonConsumer,
 ) {
 
     @Transactional
@@ -99,12 +103,41 @@ class OppdragService(
         if (hendelse.referanse != null && hendelse.omgjørVedtakId != null) {
             return persistenceService.hentOppdragPåReferanseOgOmgjørVedtakId(hendelse.referanse, hendelse.omgjørVedtakId)
         } else if (hendelse.referanse == null) {
-            return persistenceService.hentOppdragPaUnikeIdentifikatorer(
+            var oppdragPåUnikeIdentifikatorer = persistenceService.hentOppdragPaUnikeIdentifikatorer(
                 hendelse.type,
                 hendelse.kravhaverIdent,
                 hendelse.skyldnerIdent,
                 hendelse.sakId,
             )
+
+            if (oppdragPåUnikeIdentifikatorer == null) {
+                val kravhaversIdenter = hendelse.kravhaverIdent?.let { bidragPersonConsumer.hentAlleIdenterForPerson(it) } ?: emptyList()
+                val skyldnersIdenter = bidragPersonConsumer.hentAlleIdenterForPerson(hendelse.skyldnerIdent)
+
+                for (skyldner in skyldnersIdenter) {
+                    for (kravhaver in kravhaversIdenter) {
+                        secureLogger.info { "Søker oppdrag på historiske identer. Kravhaver: ${kravhaver.ident}, Skyldner: ${skyldner.ident}" }
+                        oppdragPåUnikeIdentifikatorer = persistenceService.hentOppdragPaUnikeIdentifikatorer(
+                            hendelse.type,
+                            kravhaver.ident,
+                            skyldner.ident,
+                            hendelse.sakId,
+                        )
+                        if (oppdragPåUnikeIdentifikatorer != null) {
+                            if (kravhaver.ident != hendelse.kravhaverIdent) {
+                                LOGGER.info { "Kravhaver har fått ny ident, forsøker å oppdatere eksisterende kravhavere før oppdrag hentes på nytt." }
+                                personhendelseService.oppdaterKravhaver(kravhaver.ident, hendelse.kravhaverIdent!!)
+                            }
+                            if (skyldner.ident != hendelse.skyldnerIdent) {
+                                LOGGER.info { "Skyldner har fått ny ident, forsøker å oppdatere eksisterende skyldnere før oppdrag hentes på nytt." }
+                                personhendelseService.oppdaterSkyldner(skyldner.ident, hendelse.skyldnerIdent)
+                            }
+                            return oppdragPåUnikeIdentifikatorer
+                        }
+                    }
+                }
+            }
+            return oppdragPåUnikeIdentifikatorer
         }
         return null
     }
@@ -129,6 +162,9 @@ class OppdragService(
             oppdrag.utsattTilDato = hendelse.utsattTilDato
         }
         oppdrag.mottakerIdent = hendelse.mottakerIdent
+        oppdrag.gjelderIdent = bidragSakConsumer.hentBmFraSak(hendelse.sakId)
+        oppdrag.kravhaverIdent = hendelse.kravhaverIdent
+        oppdrag.skyldnerIdent = hendelse.skyldnerIdent
     }
 
     @Transactional
