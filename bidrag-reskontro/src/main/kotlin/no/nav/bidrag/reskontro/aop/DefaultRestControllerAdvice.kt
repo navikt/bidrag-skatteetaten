@@ -45,7 +45,7 @@ class DefaultRestControllerAdvice {
         HttpStatus.NO_CONTENT,
         "Fant ingen data: ${exception.message}",
     ).apply {
-        title = "Ingen data fra Skatt"
+        title = "Ingen data fra Skatteetaten"
     }
 
     @ExceptionHandler(MaskinportenClientException::class)
@@ -64,9 +64,9 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Timeout mot skatt: ${exception.message}", exception)
         return ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_GATEWAY,
-            "Timeout mot skatt: ${exception.message}",
+            "Timeout ved kall mot Skatteetaten: ${exception.message}",
         ).apply {
-            title = "Timeout mot Skatt"
+            title = "Timeout ved kall mot Skatteetaten"
         }
     }
 
@@ -75,9 +75,9 @@ class DefaultRestControllerAdvice {
         LOGGER.error("Feil ved kall mot skatt: ${exception.message}", exception)
         return ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            "Feil ved kall mot skatt: ${exception.message}",
+            "Feil ved kall mot skatteetaten: ${exception.message}",
         ).apply {
-            title = "Feil mot Skatt"
+            title = "Feil ved kall mot Skatteetaten"
             exception.cause?.let { setProperty("cause", it.toString()) }
         }
     }
