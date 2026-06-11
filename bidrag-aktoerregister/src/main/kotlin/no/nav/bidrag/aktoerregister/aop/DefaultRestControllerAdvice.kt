@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpStatusCodeException
@@ -12,37 +12,52 @@ import org.springframework.web.server.ResponseStatusException
 
 private val LOGGER = KotlinLogging.logger {}
 
-private fun String?.sanitizeHeader(): String = this?.replace("\r", "")?.replace("\n", " ") ?: ""
-
 @RestControllerAdvice
 class DefaultRestControllerAdvice {
 
     @ExceptionHandler(HttpStatusCodeException::class)
-    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
+    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ProblemDetail {
         val errorMessage = getErrorMessage(exception)
         LOGGER.warn(exception) { errorMessage }
-        return ResponseEntity.status(exception.statusCode)
-            .build()
+        return ProblemDetail.forStatusAndDetail(
+            exception.statusCode,
+            errorMessage,
+        ).apply {
+            title = "Feil mot ekstern tjeneste"
+        }
     }
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException?): ResponseEntity<Any> {
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException?): ProblemDetail {
         LOGGER.warn(exception) { "Ugyldig eller manglende sikkerhetstoken" }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build()
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNAUTHORIZED,
+            "Ugyldig eller manglende sikkerhetstoken",
+        ).apply {
+            title = "Autentiseringsfeil"
+        }
     }
 
     @ExceptionHandler(ResponseStatusException::class)
-    fun handlerResponseStatusException(exception: ResponseStatusException): ResponseEntity<Any> {
+    fun handlerResponseStatusException(exception: ResponseStatusException): ProblemDetail {
         LOGGER.warn(exception) { exception.message }
-        return ResponseEntity.status(exception.statusCode).header(HttpHeaders.WARNING, exception.message.sanitizeHeader()).build()
+        return ProblemDetail.forStatusAndDetail(
+            exception.statusCode,
+            exception.message,
+        ).apply {
+            title = "Forespørselsfeil"
+        }
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleException(exception: Exception): ResponseEntity<Any> {
+    fun handleException(exception: Exception): ProblemDetail {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil")
-            .build()
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Det skjedde en ukjent feil: ${exception.message}",
+        ).apply {
+            title = "Ukjent feil"
+        }
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {

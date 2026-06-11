@@ -2,9 +2,8 @@ package no.nav.bidrag.elin.stub.aop
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -14,18 +13,24 @@ private val LOGGER = KotlinLogging.logger { }
 class DefaultRestControllerAdvice {
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<Any> {
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ProblemDetail {
         LOGGER.warn(exception) { "Ugyldig eller manglende sikkerhetstoken" }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .header(HttpHeaders.WARNING, "Ugyldig eller manglende sikkerhetstoken").build()
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNAUTHORIZED,
+            "Ugyldig eller manglende sikkerhetstoken",
+        ).apply {
+            title = "Autentiseringsfeil"
+        }
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleOtherExceptions(exception: Exception): ResponseEntity<Any> {
+    fun handleOtherExceptions(exception: Exception): ProblemDetail {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil")
-            .build()
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Det skjedde en ukjent feil: ${exception.message}",
+        ).apply {
+            title = "Ukjent feil"
+        }
     }
 }
