@@ -43,7 +43,7 @@ class DefaultRestControllerAdviceTest {
 
         val result = advice.handleIngenDataFraSkattException(exception)
 
-        result.status shouldBe HttpStatus.NO_CONTENT.value()
+        result.status shouldBe HttpStatus.NOT_FOUND.value()
         result.detail shouldContain "Ingen treff for saksnummer 123"
         result.title shouldBe "Ingen data fra Skatteetaten"
     }

@@ -42,7 +42,7 @@ class DefaultRestControllerAdvice {
 
     @ExceptionHandler(IngenDataFraSkattException::class)
     fun handleIngenDataFraSkattException(exception: IngenDataFraSkattException): ProblemDetail = ProblemDetail.forStatusAndDetail(
-        HttpStatus.NO_CONTENT,
+        HttpStatus.NOT_FOUND,
         "${exception.message}",
     ).apply {
         title = "Ingen data fra Skatteetaten"
