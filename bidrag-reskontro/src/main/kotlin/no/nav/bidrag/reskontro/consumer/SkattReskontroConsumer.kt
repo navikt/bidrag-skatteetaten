@@ -50,7 +50,7 @@ class SkattReskontroConsumer(
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen bidragssak for sak: $saksnummer.")
             } else {
-                loggOgKastException("Feil ved kall på hent bidragssaker for sak: $saksnummer.\n${e.message}.", e)
+                loggOgKastException("Feil ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}.", e)
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
@@ -162,7 +162,7 @@ class SkattReskontroConsumer(
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen transaksjoner for person: ${person.verdi}.")
             } else {
-                loggOgKastException("Feil ved kall på hent transaksjoner for person: ${person.verdi}.${e.message}.", e)
+                loggOgKastException("Feil ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}.", e)
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
