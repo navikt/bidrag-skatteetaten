@@ -6,6 +6,7 @@ import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerInput
 import no.nav.bidrag.reskontro.dto.consumer.ReskontroConsumerOutput
+import no.nav.bidrag.reskontro.exceptions.FeilMotSkattException
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.bidrag.reskontro.exceptions.TimeoutFraSkattException
 import org.springframework.beans.factory.annotation.Qualifier
@@ -87,7 +88,7 @@ class SkattReskontroConsumer(
         e: Exception,
     ): Nothing {
         secureLogger.error { melding }
-        throw e
+        throw FeilMotSkattException(melding, e.cause)
     }
 
     fun hentInnkrevningssakerPåPerson(person: Personident): ReskontroConsumerOutput {

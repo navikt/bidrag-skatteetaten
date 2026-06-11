@@ -1,6 +1,7 @@
 package no.nav.bidrag.reskontro.aop
 
 import no.nav.bidrag.commons.security.maskinporten.MaskinportenClientException
+import no.nav.bidrag.reskontro.exceptions.FeilMotSkattException
 import no.nav.bidrag.reskontro.exceptions.IngenDataFraSkattException
 import no.nav.bidrag.reskontro.exceptions.TimeoutFraSkattException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
@@ -65,6 +66,12 @@ class DefaultRestControllerAdvice {
     fun handleTimeoutFraSkattException(exception: TimeoutFraSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.BAD_GATEWAY)
         .header(HttpHeaders.WARNING, "Timeout mot skatt: ${exception.message.sanitizeHeader()}")
+        .build()
+
+    @ExceptionHandler(FeilMotSkattException::class)
+    fun handleFeilMotSkattException(exception: FeilMotSkattException): ResponseEntity<Any> = ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .header(HttpHeaders.WARNING, "Feil ved kall mot skatt: ${exception.message.sanitizeHeader()}, cause: ${exception.cause}")
         .build()
 
     @ExceptionHandler(Exception::class)
