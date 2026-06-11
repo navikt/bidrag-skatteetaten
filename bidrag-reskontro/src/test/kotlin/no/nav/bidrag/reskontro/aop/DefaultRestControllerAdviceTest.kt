@@ -45,7 +45,7 @@ class DefaultRestControllerAdviceTest {
 
         result.status shouldBe HttpStatus.NO_CONTENT.value()
         result.detail shouldContain "Ingen treff for saksnummer 123"
-        result.title shouldBe "Ingen data fra Skatt"
+        result.title shouldBe "Ingen data fra Skatteetaten"
     }
 
     @Test
@@ -67,7 +67,7 @@ class DefaultRestControllerAdviceTest {
 
         result.status shouldBe HttpStatus.BAD_GATEWAY.value()
         result.detail shouldContain "Timed out etter 30s"
-        result.title shouldBe "Timeout mot Skatt"
+        result.title shouldBe "Timeout ved kall mot Skatteetaten"
     }
 
     @Test
@@ -79,7 +79,7 @@ class DefaultRestControllerAdviceTest {
 
         result.status shouldBe HttpStatus.INTERNAL_SERVER_ERROR.value()
         result.detail shouldContain "Kall feilet"
-        result.title shouldBe "Feil mot Skatt"
+        result.title shouldBe "Feil ved kall mot Skatteetaten"
         result.properties?.get("cause").toString() shouldContain "Connection refused"
     }
 
