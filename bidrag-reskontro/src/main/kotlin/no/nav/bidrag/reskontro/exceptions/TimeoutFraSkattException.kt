@@ -1,3 +1,3 @@
 package no.nav.bidrag.reskontro.exceptions
 
-class TimeoutFraSkattException(message: String) : RuntimeException(message)
+class TimeoutFraSkattException(message: String?) : RuntimeException(message)

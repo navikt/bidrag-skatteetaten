@@ -23,7 +23,7 @@ class DefaultRestControllerAdviceTest {
 
         result.status shouldBe HttpStatus.BAD_GATEWAY.value()
         result.detail shouldContain "Bad Gateway"
-        result.title shouldBe "Feil mot ekstern tjeneste"
+        result.title shouldBe "Feil ved kall mot tjeneste"
     }
 
     @Test

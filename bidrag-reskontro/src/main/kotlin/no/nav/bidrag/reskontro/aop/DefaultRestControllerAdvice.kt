@@ -23,9 +23,9 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Det skjedde en feil ved kall mot ekstern tjeneste: ${exception.statusText}", exception)
         return ProblemDetail.forStatusAndDetail(
             exception.statusCode,
-            "Feil ved kall mot ekstern tjeneste: ${exception.statusText}",
+            "Feil ved kall mot tjeneste: ${exception.statusText}",
         ).apply {
-            title = "Feil mot ekstern tjeneste"
+            title = "Feil ved kall mot tjeneste"
         }
     }
 
@@ -43,7 +43,7 @@ class DefaultRestControllerAdvice {
     @ExceptionHandler(IngenDataFraSkattException::class)
     fun handleIngenDataFraSkattException(exception: IngenDataFraSkattException): ProblemDetail = ProblemDetail.forStatusAndDetail(
         HttpStatus.NO_CONTENT,
-        "Fant ingen data: ${exception.message}",
+        "${exception.message}",
     ).apply {
         title = "Ingen data fra Skatteetaten"
     }
@@ -64,7 +64,7 @@ class DefaultRestControllerAdvice {
         LOGGER.warn("Timeout mot skatt: ${exception.message}", exception)
         return ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_GATEWAY,
-            "Timeout ved kall mot Skatteetaten: ${exception.message}",
+            "${exception.message}",
         ).apply {
             title = "Timeout ved kall mot Skatteetaten"
         }
@@ -75,7 +75,7 @@ class DefaultRestControllerAdvice {
         LOGGER.error("Feil ved kall mot skatt: ${exception.message}", exception)
         return ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            "Feil ved kall mot skatteetaten: ${exception.message}",
+            "${exception.message}",
         ).apply {
             title = "Feil ved kall mot Skatteetaten"
             exception.cause?.let { setProperty("cause", it.toString()) }
