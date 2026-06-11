@@ -12,8 +12,11 @@ import no.nav.bidrag.domene.enums.vedtak.Stønadstype
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.generer.testdata.person.genererFødselsnummer
+import no.nav.bidrag.regnskap.consumer.BidragPersonConsumer
 import no.nav.bidrag.regnskap.consumer.BidragSakConsumer
 import no.nav.bidrag.regnskap.utils.TestData
+import no.nav.bidrag.transport.person.Identgruppe
+import no.nav.bidrag.transport.person.PersonidentDto
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -34,6 +37,12 @@ class OppdragServiceTest {
 
     @MockK(relaxed = true)
     private lateinit var bidragSakConsumer: BidragSakConsumer
+
+    @MockK(relaxed = true)
+    private lateinit var personhendelseService: PersonhendelseService
+
+    @MockK(relaxed = true)
+    private lateinit var bidragPersonConsumer: BidragPersonConsumer
 
     @InjectMockKs
     private lateinit var oppdragService: OppdragService
@@ -147,6 +156,124 @@ class OppdragServiceTest {
             oppdragService.oppdatererVerdierPåOppdrag(hendelse, oppdrag)
 
             oppdrag.utsattTilDato shouldBe null
+        }
+    }
+
+    @Nested
+    inner class HentOppdragMedNyIdent {
+
+        private fun personident(ident: String, historisk: Boolean) = PersonidentDto(ident = ident, historisk = historisk, gruppe = Identgruppe.FOLKEREGISTERIDENT)
+
+        @Test
+        fun `skal oppdatere kravhaver ident og hente oppdrag på nytt når kravhaver har fått ny ident`() {
+            val gammelKravhaver = genererFødselsnummer()
+            val nyKravhaver = genererFødselsnummer()
+            val skyldner = genererFødselsnummer()
+            val oppdrag = TestData.opprettOppdrag()
+            val hendelse = TestData.opprettHendelse(kravhaverIdent = nyKravhaver, skyldnerIdent = skyldner)
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(nyKravhaver) } returns listOf(personident(nyKravhaver, false), personident(gammelKravhaver, true))
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(skyldner) } returns listOf(personident(skyldner, false))
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), eq(nyKravhaver), any(), any()) } returns null
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), eq(gammelKravhaver), any(), any()) } returns oppdrag
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify { personhendelseService.oppdaterKravhaver(gammelKravhaver, nyKravhaver) }
+            verify(exactly = 0) { personhendelseService.oppdaterSkyldner(any(), any()) }
+        }
+
+        @Test
+        fun `skal oppdatere skyldner ident og hente oppdrag på nytt når skyldner har fått ny ident`() {
+            val gammelSkyldner = genererFødselsnummer()
+            val nySkyldner = genererFødselsnummer()
+            val kravhaver = genererFødselsnummer()
+            val oppdrag = TestData.opprettOppdrag()
+            val hendelse = TestData.opprettHendelse(kravhaverIdent = kravhaver, skyldnerIdent = nySkyldner)
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(kravhaver) } returns listOf(personident(kravhaver, false))
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(nySkyldner) } returns listOf(personident(nySkyldner, false), personident(gammelSkyldner, true))
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), eq(nySkyldner), any()) } returns null
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), eq(gammelSkyldner), any()) } returns oppdrag
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify { personhendelseService.oppdaterSkyldner(gammelSkyldner, nySkyldner) }
+            verify(exactly = 0) { personhendelseService.oppdaterKravhaver(any(), any()) }
+        }
+
+        @Test
+        fun `skal ikke oppdatere identer når oppdrag finnes på gjeldende identer i historikk`() {
+            val kravhaver = genererFødselsnummer()
+            val skyldner = genererFødselsnummer()
+            val oppdrag = TestData.opprettOppdrag()
+            val hendelse = TestData.opprettHendelse(kravhaverIdent = kravhaver, skyldnerIdent = skyldner)
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(kravhaver) } returns listOf(personident(kravhaver, false))
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(skyldner) } returns listOf(personident(skyldner, false))
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), any(), any()) } returnsMany listOf(null, oppdrag)
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify(exactly = 0) { personhendelseService.oppdaterKravhaver(any(), any()) }
+            verify(exactly = 0) { personhendelseService.oppdaterSkyldner(any(), any()) }
+        }
+
+        @Test
+        fun `skal ikke oppdatere identer når oppdrag ikke finnes på noen historiske identer`() {
+            val kravhaver = genererFødselsnummer()
+            val skyldner = genererFødselsnummer()
+            val hendelse = TestData.opprettHendelse(kravhaverIdent = kravhaver, skyldnerIdent = skyldner)
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(kravhaver) } returns listOf(personident(kravhaver, false))
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(skyldner) } returns listOf(personident(skyldner, false))
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), any(), any()) } returns null
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify(exactly = 0) { personhendelseService.oppdaterKravhaver(any(), any()) }
+            verify(exactly = 0) { personhendelseService.oppdaterSkyldner(any(), any()) }
+        }
+
+        @Test
+        fun `skal oppdatere både kravhaver og skyldner når begge har fått ny ident`() {
+            val gammelKravhaver = genererFødselsnummer()
+            val nyKravhaver = genererFødselsnummer()
+            val gammelSkyldner = genererFødselsnummer()
+            val nySkyldner = genererFødselsnummer()
+            val oppdrag = TestData.opprettOppdrag()
+            val hendelse = TestData.opprettHendelse(kravhaverIdent = nyKravhaver, skyldnerIdent = nySkyldner)
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(nyKravhaver) } returns listOf(personident(nyKravhaver, false), personident(gammelKravhaver, true))
+            every { bidragPersonConsumer.hentAlleIdenterForPerson(nySkyldner) } returns listOf(personident(nySkyldner, false), personident(gammelSkyldner, true))
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), any(), any()) } returns null
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), eq(gammelKravhaver), eq(gammelSkyldner), any()) } returns oppdrag
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify { personhendelseService.oppdaterKravhaver(gammelKravhaver, nyKravhaver) }
+            verify { personhendelseService.oppdaterSkyldner(gammelSkyldner, nySkyldner) }
+        }
+
+        @Test
+        fun `skal ikke søke på historiske identer eller kalle personhendelseService når oppdrag finnes på første forsøk`() {
+            val oppdrag = TestData.opprettOppdrag()
+            val hendelse = TestData.opprettHendelse()
+
+            every { oppdragsperiodeService.opprettNyOppdragsperiode(any(), any(), any()) } returns TestData.opprettOppdragsperiode()
+            every { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), any(), any()) } returns oppdrag
+
+            oppdragService.lagreHendelse(hendelse)
+
+            verify(exactly = 0) { personhendelseService.oppdaterKravhaver(any(), any()) }
+            verify(exactly = 0) { personhendelseService.oppdaterSkyldner(any(), any()) }
+            verify(exactly = 0) { bidragPersonConsumer.hentAlleIdenterForPerson(any()) }
+            verify(exactly = 1) { persistenceService.hentOppdragPaUnikeIdentifikatorer(any(), any(), any(), any()) }
         }
     }
 

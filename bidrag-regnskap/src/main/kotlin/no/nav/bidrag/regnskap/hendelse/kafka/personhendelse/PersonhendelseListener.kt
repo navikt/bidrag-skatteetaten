@@ -2,7 +2,7 @@ package no.nav.bidrag.regnskap.hendelse.kafka.personhendelse
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.commons.util.secureLogger
-import no.nav.bidrag.regnskap.service.HendelseService
+import no.nav.bidrag.regnskap.service.PersonhendelseService
 import no.nav.bidrag.transport.person.hendelse.Endringsmelding
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PersonhendelseListener(
-    private val hendelseService: HendelseService,
+    private val personhendelseService: PersonhendelseService,
     private val objectMapper: ObjectMapper,
 ) {
     @KafkaListener(
@@ -31,7 +31,7 @@ class PersonhendelseListener(
         secureLogger.debug { "Leser hendelse fra topic: $topic, offset: $offset, partition: $partition, groupId: $groupId" }
 
         val endringsmelding = deserialiserEndringsmelding(hendelse)
-        hendelseService.behandlePersonhendelse(endringsmelding)
+        personhendelseService.behandlePersonhendelse(endringsmelding)
         acknowledgment.acknowledge()
     }
 
