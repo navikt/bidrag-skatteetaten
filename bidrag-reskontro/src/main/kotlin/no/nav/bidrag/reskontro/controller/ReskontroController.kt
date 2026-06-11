@@ -42,10 +42,8 @@ class ReskontroController(
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
         summary = "Hent innkrevingssak på bidragssak",
-        description = """
-            Henter innkrevingssaksinformasjon fra ELIN for én enkelt bidragssak identifisert med saksnummer.
-            Returnerer gjeldsinformasjon per barn i saken, inkludert rest gjeld offentlig og privat.
-        """,
+        description = "Henter innkrevingssaksinformasjon fra ELIN for én enkelt bidragssak identifisert med saksnummer." +
+            "Returnerer gjeldsinformasjon per barn i saken, inkludert rest gjeld offentlig og privat.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -91,10 +89,8 @@ class ReskontroController(
     @PostMapping("/innkrevningssak/person")
     @Operation(
         summary = "Hent innkrevingssaker på person",
-        description = """
-            Henter alle innkrevingssaker fra ELIN som er knyttet til en persons fødselsnummer eller D-nummer.
-            Returnerer skyldnerinformasjon samt gjeldsinformasjon per bidragssak og per barn i saken.
-        """,
+        description = "Henter alle innkrevingssaker fra ELIN som er knyttet til en persons fødselsnummer eller D-nummer." +
+            "Returnerer skyldnerinformasjon samt gjeldsinformasjon per bidragssak og per barn i saken.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -140,10 +136,8 @@ class ReskontroController(
     @PostMapping("/transaksjoner/bidragssak")
     @Operation(
         summary = "Hent transaksjoner på bidragssak",
-        description = """
-            Henter alle transaksjoner fra ELIN som er registrert på en bidragssak identifisert med saksnummer.
-            Transaksjonene inkluderer beløp, transaksjonskode, periode og involvert skyldner/mottaker.
-        """,
+        description = "Henter alle transaksjoner fra ELIN som er registrert på en bidragssak identifisert med saksnummer." +
+            "Transaksjonene inkluderer beløp, transaksjonskode, periode og involvert skyldner/mottaker.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -189,10 +183,8 @@ class ReskontroController(
     @PostMapping("/transaksjoner/person")
     @Operation(
         summary = "Hent transaksjoner på person",
-        description = """
-            Henter alle transaksjoner fra ELIN som er knyttet til en persons fødselsnummer eller D-nummer.
-            Transaksjonene inkluderer beløp, transaksjonskode, periode og involvert skyldner/mottaker.
-        """,
+        description = "Henter alle transaksjoner fra ELIN som er knyttet til en persons fødselsnummer eller D-nummer." +
+            "Transaksjonene inkluderer beløp, transaksjonskode, periode og involvert skyldner/mottaker.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -238,10 +230,8 @@ class ReskontroController(
     @GetMapping("/transaksjoner/transaksjonsid")
     @Operation(
         summary = "Hent transaksjoner på transaksjons-ID",
-        description = """
-            Henter én eller flere transaksjoner fra ELIN basert på en unik transaksjons-ID.
-            Brukes typisk for å slå opp detaljer om en kjent transaksjon.
-        """,
+        description = "Henter én eller flere transaksjoner fra ELIN basert på en unik transaksjons-ID." +
+            "Brukes typisk for å slå opp detaljer om en kjent transaksjon.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -290,10 +280,8 @@ class ReskontroController(
     @PostMapping("/innkrevingsinformasjon")
     @Operation(
         summary = "Hent innkrevingssaksinformasjon på person",
-        description = """
-            Henter detaljert informasjon om innkrevingssaken knyttet til en persons fødselsnummer eller D-nummer.
-            Inkluderer skyldnerinformasjon, gjeldende betalingsordning, eventuell ny betalingsordning og sakshistorikk.
-        """,
+        description = "Henter detaljert informasjon om innkrevingssaken knyttet til en persons fødselsnummer eller D-nummer." +
+            "Inkluderer skyldnerinformasjon, gjeldende betalingsordning, eventuell ny betalingsordning og sakshistorikk.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -340,10 +328,8 @@ class ReskontroController(
     @PatchMapping("/endreRmForSak")
     @Operation(
         summary = "Endre regnskapsmottaker (RM) for sak",
-        description = """
-            Oppdaterer regnskapsmottaker (RM) for et barn i en bidragssak i ELIN.
-            Brukes når et barns fødselsnummer skal byttes ut, f.eks. ved tildeling av nytt D-nummer.
-        """,
+        description = "Oppdaterer regnskapsmottaker (RM) for et barn i en bidragssak i ELIN." +
+            "Brukes når et barns fødselsnummer skal byttes ut, f.eks. ved tildeling av nytt D-nummer.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -381,10 +367,8 @@ class ReskontroController(
     @GetMapping("/transaksjonskoder")
     @Operation(
         summary = "Hent alle gyldige transaksjonskoder",
-        description = """
-            Returnerer en komplett liste over alle gyldige transaksjonskoder med tilhørende beskrivelse.
-            Kan brukes som oppslagsverk for å tolke transaksjonskoder i andre responser.
-        """,
+        description = "Returnerer en komplett liste over alle gyldige transaksjonskoder med tilhørende beskrivelse." +
+            "Kan brukes som oppslagsverk for å tolke transaksjonskoder i andre responser.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
