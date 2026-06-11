@@ -71,7 +71,11 @@ class DefaultRestControllerAdvice {
     @ExceptionHandler(FeilMotSkattException::class)
     fun handleFeilMotSkattException(exception: FeilMotSkattException): ResponseEntity<Any> = ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .header(HttpHeaders.WARNING, "Feil ved kall mot skatt: ${exception.message.sanitizeHeader()}, cause: ${exception.cause}")
+        .header(
+            HttpHeaders.WARNING,
+            "Feil ved kall mot skatt: ${exception.message.sanitizeHeader()}" +
+                if (exception.cause != null) "\n${exception.cause}" else "",
+        )
         .build()
 
     @ExceptionHandler(Exception::class)
