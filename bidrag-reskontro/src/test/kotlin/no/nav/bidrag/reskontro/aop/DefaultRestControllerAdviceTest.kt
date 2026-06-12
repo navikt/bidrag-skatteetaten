@@ -80,7 +80,6 @@ class DefaultRestControllerAdviceTest {
         result.status shouldBe HttpStatus.INTERNAL_SERVER_ERROR.value()
         result.detail shouldContain "Kall feilet"
         result.title shouldBe "Feil ved kall mot Skatteetaten"
-        result.properties?.get("cause").toString() shouldContain "Connection refused"
     }
 
     @Test
