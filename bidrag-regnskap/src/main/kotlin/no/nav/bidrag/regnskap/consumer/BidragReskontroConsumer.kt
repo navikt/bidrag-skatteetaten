@@ -31,8 +31,8 @@ class BidragReskontroConsumer(
             SaksnummerRequest(Saksnummer(saksnummer)),
         )
     } catch (e: HttpStatusCodeException) {
-        val problem = e.getResponseBodyAs(ProblemDetail::class.java)
-        secureLogger.error(e) { "${problem?.title}: ${problem?.status} - ${problem?.detail}" }
+        val problem = runCatching { e.getResponseBodyAs(ProblemDetail::class.java) }.getOrNull()
+        secureLogger.error(e) { "${problem?.title ?: "Ukjent feil"}: ${problem?.status ?: e.statusCode.value()} - ${problem?.detail ?: e.responseBodyAsString}" }
         throw e
     }
 }

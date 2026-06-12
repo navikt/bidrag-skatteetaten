@@ -38,7 +38,7 @@ class DefaultRestControllerAdviceTest {
     }
 
     @Test
-    fun `skal returnere 204 ProblemDetail ved IngenDataFraSkattException`() {
+    fun `skal returnere 404 ProblemDetail ved IngenDataFraSkattException`() {
         val exception = IngenDataFraSkattException("Ingen treff for saksnummer 123")
 
         val result = advice.handleIngenDataFraSkattException(exception)
