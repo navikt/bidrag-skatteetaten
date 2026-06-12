@@ -76,6 +76,8 @@ class DefaultRestControllerAdvice {
         return ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "${exception.message}",
+        ).apply {
+            title = "Feil ved kall mot Skatteetaten"
             exception.cause?.let { setProperty("cause", it.javaClass.simpleName) }
         }
     }
