@@ -201,6 +201,11 @@ class OppslagOgOppdateringController(
                 content = [Content()],
             ),
             ApiResponse(
+                responseCode = "404",
+                description = "Fant ikke oppdrag med innsendt oppdragsId.",
+                content = [Content()],
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Uventet feil på server.",
                 content = [Content()],
