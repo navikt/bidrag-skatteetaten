@@ -10,6 +10,7 @@ springdoc:
     path: /
 
 spring.main.banner-mode: off
+spring.mvc.problemdetails.enabled: true
 management.metrics.distribution.percentiles-histogram.http.server.requests: true
 management.metrics.distribution.percentiles-histogram.http.client.requests: true
 ---

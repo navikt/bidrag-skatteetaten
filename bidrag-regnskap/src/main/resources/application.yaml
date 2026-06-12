@@ -89,6 +89,9 @@ no.nav.security.jwt:
     accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
 
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS}
     properties:

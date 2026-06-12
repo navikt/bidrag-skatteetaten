@@ -6,58 +6,74 @@ import no.nav.bidrag.regnskap.util.PåløpException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpStatusCodeException
 
 private val LOGGER = KotlinLogging.logger {}
 
-private fun String?.sanitizeHeader(): String = this?.replace("\r", "")?.replace("\n", " ") ?: ""
-
 @RestControllerAdvice
 class DefaultRestControllerAdvice {
 
     companion object {
-        private const val UNAUTHORIZED_MESSAGE = "Ugyldig eller manglende sikkerhetstoken"
-        private const val MASKINPORTEN_ERROR_MESSAGE = "Noe gikk galt ved kall til maskinporten"
-        private const val PÅLØP_ERROR_MESSAGE = "Ble stoppet grunnet påløp"
         private const val EXTERNAL_SERVICE_ERROR_PREFIX = "Det skjedde en feil ved kall mot ekstern tjeneste: "
     }
 
     @ExceptionHandler(HttpStatusCodeException::class)
-    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ResponseEntity<Any> {
+    fun handleHttpClientErrorException(exception: HttpStatusCodeException): ProblemDetail {
         val errorMessage = getErrorMessage(exception)
         LOGGER.warn(exception) { errorMessage }
-        return ResponseEntity.status(exception.statusCode)
-            .build()
+        return ProblemDetail.forStatusAndDetail(
+            exception.statusCode,
+            errorMessage,
+        ).apply {
+            title = "Feil mot ekstern tjeneste"
+        }
     }
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ResponseEntity<Any> {
-        LOGGER.warn(exception) { UNAUTHORIZED_MESSAGE }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.WARNING, UNAUTHORIZED_MESSAGE).build()
+    fun handleUnauthorizedException(exception: JwtTokenUnauthorizedException): ProblemDetail {
+        LOGGER.warn(exception) { "Ugyldig eller manglende sikkerhetstoken" }
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNAUTHORIZED,
+            "Ugyldig eller manglende sikkerhetstoken",
+        ).apply {
+            title = "Autentiseringsfeil"
+        }
     }
 
     @ExceptionHandler(MaskinportenClientException::class)
-    fun handleMaskinportenClientException(exception: MaskinportenClientException): ResponseEntity<Any> {
-        LOGGER.error(exception) { "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message}" }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "$MASKINPORTEN_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}").build()
+    fun handleMaskinportenClientException(exception: MaskinportenClientException): ProblemDetail {
+        LOGGER.error(exception) { "Noe gikk galt ved kall til maskinporten: ${exception.message}" }
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Noe gikk galt ved kall til maskinporten: ${exception.message}",
+        ).apply {
+            title = "Maskinporten-feil"
+        }
     }
 
     @ExceptionHandler(PåløpException::class)
-    fun handlePåløpException(exception: PåløpException): ResponseEntity<Any> {
-        LOGGER.error(exception) { "$PÅLØP_ERROR_MESSAGE: ${exception.message}" }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .header(HttpHeaders.WARNING, "$PÅLØP_ERROR_MESSAGE: ${exception.message.sanitizeHeader()}").build()
+    fun handlePåløpException(exception: PåløpException): ProblemDetail {
+        LOGGER.error(exception) { "Ble stoppet grunnet påløp: ${exception.message}" }
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.SERVICE_UNAVAILABLE,
+            "Ble stoppet grunnet påløp: ${exception.message}",
+        ).apply {
+            title = "Påløp pågår"
+        }
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleException(exception: Exception): ResponseEntity<Any> {
+    fun handleException(exception: Exception): ProblemDetail {
         LOGGER.warn(exception) { "Det skjedde en ukjent feil" }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "Det skjedde en ukjent feil").build()
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Det skjedde en ukjent feil: ${exception.message}",
+        ).apply {
+            title = "Ukjent feil"
+        }
     }
 
     private fun getErrorMessage(exception: HttpStatusCodeException): String {

@@ -19,6 +19,11 @@ maskinporten:
   privateKey: ${MASKINPORTEN_CLIENT_JWK}
   validInSeconds: 120 #120 er maks antall sekunder et maskinporten Jwt-token kan være gyldig.
 
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+
 management.metrics.distribution.percentiles-histogram.http.server.requests: true
 management.metrics.distribution.percentiles-histogram.http.client.requests: true
 bidrag.rest.read.timeout.seconds: 30

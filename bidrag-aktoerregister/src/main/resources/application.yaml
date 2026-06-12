@@ -1,4 +1,7 @@
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   batch:
     job:
       enabled: 'false'
