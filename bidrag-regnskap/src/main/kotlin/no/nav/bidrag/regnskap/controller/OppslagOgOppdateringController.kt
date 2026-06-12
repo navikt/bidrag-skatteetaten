@@ -1,6 +1,7 @@
 package no.nav.bidrag.regnskap.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -18,15 +19,17 @@ import no.nav.bidrag.regnskap.service.OppslagService
 import no.nav.security.token.support.core.api.Protected
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Protected
-@Tag(name = "Oppslag og oppdatering")
+@Tag(name = "Oppslag og oppdatering", description = "Oppslag og oppdatering av oppdrag, oppdragsperioder og konteringer i regnskapet.")
 class OppslagOgOppdateringController(
     private val oppslagService: OppslagService,
     private val oppdragService: OppdragService,
@@ -44,18 +47,28 @@ class OppslagOgOppdateringController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Returnerer oppdragets ID.",
-                content = [
-                    ((Content(schema = Schema(implementation = OppdragResponse::class)))),
-                ],
+                description = "Oppdrag med tilhørende oppdragsperioder og konteringer returnert.",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = OppdragResponse::class))],
+            ),
+            ApiResponse(responseCode = "204", description = "Ingen oppdrag funnet med oppgitt oppdragsId.", content = [Content()]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på oppdragId.",
+                content = [Content()],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Oppdraget finnes ikke.",
+                responseCode = "401",
+                description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
             ),
+            ApiResponse(responseCode = "500", description = "Uventet feil på server.", content = [Content()]),
         ],
     )
-    fun hentOppdrag(oppdragId: Int): ResponseEntity<*> {
+    fun hentOppdrag(
+        @Parameter(description = "ID for oppdraget som skal hentes.", required = true, example = "42")
+        @RequestParam(required = true)
+        oppdragId: Int,
+    ): ResponseEntity<*> {
         val oppdragResponse = oppslagService.hentOppdrag(oppdragId)
         return if (oppdragResponse != null) {
             ResponseEntity.ok(oppdragResponse)
@@ -78,17 +91,27 @@ class OppslagOgOppdateringController(
             ApiResponse(
                 responseCode = "200",
                 description = "Returnerer alt lagret for saken.",
-                content = [
-                    ((Content(schema = Schema(implementation = OppslagAvOppdragPåSakIdResponse::class)))),
-                ],
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = OppslagAvOppdragPåSakIdResponse::class))],
+            ),
+            ApiResponse(responseCode = "204", description = "Ingen data funnet for oppgitt sakId.", content = [Content()]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på sakId.",
+                content = [Content()],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Fant ingenting lagret på saken.",
+                responseCode = "401",
+                description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
             ),
+            ApiResponse(responseCode = "500", description = "Uventet feil på server.", content = [Content()]),
         ],
     )
-    fun hentSak(sakId: String): ResponseEntity<*> {
+    fun hentSak(
+        @Parameter(description = "Saksnummer for saken som skal hentes.", required = true, example = "2200001")
+        @RequestParam(required = true)
+        sakId: String,
+    ): ResponseEntity<*> {
         val sakReponse = oppslagService.hentPåSakId(sakId)
         return if (sakReponse != null) {
             ResponseEntity.ok(sakReponse)
@@ -102,7 +125,7 @@ class OppslagOgOppdateringController(
     @GetMapping("/utsatteOgFeiledeVedtak")
     @Operation(
         summary = "Hent alle utsatte vedtak for en sak",
-        description = "Operasjon for å hente alle utsatte vedtak for en sak.",
+        description = "Returnerer alle vedtak knyttet til saksnummeret som er utsatt (ikke prosessert ennå) eller har feilet under prosessering.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -110,17 +133,31 @@ class OppslagOgOppdateringController(
             ApiResponse(
                 responseCode = "200",
                 description = "Returnerer alle utsatte og feilede vedtak for saksnummeret.",
-                content = [
-                    (Content(schema = Schema(implementation = UtsatteOgFeiledeVedtak::class))),
-                ],
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = UtsatteOgFeiledeVedtak::class))],
             ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på saksnummer.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(responseCode = "500", description = "Uventet feil på server.", content = [Content()]),
         ],
     )
-    fun hentUtsatteOgFeiledeVedtakForSak(saksnummer: Saksnummer): ResponseEntity<*> = ResponseEntity.ok(oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer))
+    fun hentUtsatteOgFeiledeVedtakForSak(
+        @Parameter(description = "Saksnummeret det skal hentes utsatte og feilede vedtak for.", required = true, example = "2200001")
+        @RequestParam(required = true)
+        saksnummer: Saksnummer,
+    ): ResponseEntity<*> = ResponseEntity.ok(oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer))
 
     @GetMapping("/oppdrag/utsatte")
     @Operation(
-        summary = "Henter alle utsatte oppdrag.",
+        summary = "Henter alle utsatte oppdrag",
+        description = "Returnerer alle oppdrag med en fremtidig utsatt-til-dato, dvs. oppdrag som er satt på vent.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
@@ -128,27 +165,44 @@ class OppslagOgOppdateringController(
             ApiResponse(
                 responseCode = "200",
                 description = "Henter alle utsatte oppdrag.",
-                content = [(Content(schema = Schema(implementation = UtsatteOppdragResponse::class)))],
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = UtsatteOppdragResponse::class))],
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(responseCode = "500", description = "Uventet feil på server.", content = [Content()]),
         ],
     )
     fun hentAlleUtsatteOppdrag(): ResponseEntity<*> = ResponseEntity.ok(oppslagService.hentAlleUtsatteOppdrag())
 
     @PostMapping("oppdrag/utsatte")
     @Operation(
-        summary = "Oppdaterer utsatt til dato for et oppdrag.",
+        summary = "Oppdaterer utsatt til dato for et oppdrag",
+        description = "Oppdaterer utsatt-til-dato for et oppdrag. Oppdrag med utsatt-til-dato i fortiden vil behandles ved neste kjøring.",
         security = [SecurityRequirement(name = "bearer-key")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Oppdatert utsatt til dato for oppdrag. Returnerer oppdragsid.",
-                content = [(Content(schema = Schema(implementation = Int::class)))],
+                description = "Utsatt-til-dato ble oppdatert. Returnerer oppdragsId.",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Int::class))],
             ),
             ApiResponse(
-                responseCode = "404",
-                description = "Fant ikke oppdrag med angitt oppdragsid.",
+                responseCode = "400",
+                description = "Ugyldig forespørsel.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Uventet feil på server.",
                 content = [Content()],
             ),
         ],

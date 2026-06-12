@@ -2,10 +2,14 @@ package no.nav.bidrag.aktoerregister.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.bidrag.aktoerregister.dto.AktoerDTO
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
 import no.nav.bidrag.aktoerregister.dto.HendelseDTO
@@ -26,27 +30,67 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 
 private val LOGGER = KotlinLogging.logger {}
 
 @RestController
 @ProtectedWithClaims(issuer = "maskinporten", claimMap = ["scope=nav:bidrag:aktoerregister.read"])
+@Tag(
+    name = "Aktørregister",
+    description = "Endepunkter for oppslag og forvaltning av aktører (personer og samhandlere) og hendelser i aktørregisteret.",
+)
 class AktoerregisterController(
     private val aktørService: AktørService,
     private val hendelseService: HendelseService,
 ) {
 
     @Operation(
-        summary = "Hent informasjon om gitt aktør.",
-        description = "For personer returneres kun kontonummer. For andre typer aktører leveres også navn og adresse.",
+        summary = "Hent informasjon om aktør",
+        description = "Henter aktørinformasjon basert på identtype og ident. For personer returneres kun kontonummer. For samhandlere/organisasjoner returneres også navn og adresse. Sett `tvingOppdatering=true` for å tvinge et nytt oppslag mot kildesystem.",
+        security = [SecurityRequirement(name = "maskinporten")],
     )
     @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Aktøren ble funnet."),
-        ApiResponse(responseCode = "400", description = "Gitt identtype eller ident er ugyldig.", content = [Content()]),
-        ApiResponse(responseCode = "404", description = "Ingen aktør med gitt identtype og ident ble funnet.", content = [Content()]),
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Aktørinformasjon returnert.",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = AktoerDTO::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på identtype eller ident.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Maskinporten-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen aktør med gitt identtype og ident ble funnet.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Uventet feil på server.",
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping(path = ["/aktoer"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun hentAktoer(@RequestBody request: AktoerIdDTO, @RequestParam(required = false) tvingOppdatering: Boolean = false): ResponseEntity<AktoerDTO> = try {
+    fun hentAktoer(
+        @SwaggerRequestBody(description = "Aktørident og identtype det skal gjøres oppslag på.", required = true)
+        @RequestBody request: AktoerIdDTO,
+        @Parameter(
+            description = "Tving oppdatering av aktøren mot kildesystem uavhengig av cache.",
+            required = false,
+            example = "false",
+        )
+        @RequestParam(required = false)
+        tvingOppdatering: Boolean = false,
+    ): ResponseEntity<AktoerDTO> = try {
         secureLogger.info { "Kall mot /aktoer for å hente ut aktør: Type: ${request.identtype.name} Id: ${request.aktoerId}" }
         val aktoer = aktørService.hentAktoer(request, tvingOppdatering)
         ResponseEntity.ok(aktoer)
@@ -59,18 +103,53 @@ class AktoerregisterController(
     }
 
     @Operation(
-        summary = "Tilbyr en liste over aktøroppdateringer.",
-        description = "Ingen informasjon om aktøren leveres av denne tjenesten utover aktørIden\n." +
+        summary = "Hent aktørhendelser fra sekvensnummer",
+        description = "Ingen informasjon om aktøren leveres av denne tjenesten utover aktørIden.\n" +
             "Hendelsene legges inn med stigende sekvensnummer. Klienten må selv ta vare på hvilke sekvensnummer som sist er behandlet, og be om å få hendelser fra det neste sekvensnummeret ved neste kall.\n" +
             "Dersom det ikke returneres noen hendelser er ingen av aktørene endret siden siste kall. Samme sekvensnummer må da benyttes i neste kall.\n\n" +
             "Nye hendelser vil alltid ha høyere sekvensnummer enn tidligere hendelser.\n" +
             "Det kan forekomme hull i sekvensnummer-rekken.\n" +
             "Dersom det kommer en hendelse for en aktør med tidligere hendelser (lavere sekvensnummer) er det ikke garantert at de tidligere hendelsene ikke returneres.",
+        security = [SecurityRequirement(name = "maskinporten")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Aktørhendelser returnert.",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = ArraySchema(schema = Schema(implementation = HendelseDTO::class)))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på fraSekvensnummer eller antall.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Maskinporten-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Uventet feil på server.",
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping(path = ["/hendelser"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentHendelser(
+        @Parameter(
+            description = "Sekvensnummer å starte fra (inklusivt). Bruk 0 for å starte fra begynnelsen.",
+            required = false,
+            example = "0",
+        )
         @RequestParam(name = "fraSekvensnummer", defaultValue = "0")
         fraSekvensnummer: Int = 0,
+        @Parameter(
+            description = "Maks antall hendelser som returneres per kall.",
+            required = false,
+            example = "1000",
+        )
         @RequestParam(name = "antall", defaultValue = "1000")
         antall: Int = 1000,
     ): ResponseEntity<List<HendelseDTO>> = try {
@@ -81,25 +160,73 @@ class AktoerregisterController(
     }
 
     @Operation(
-        summary = "Avmelder gitt aktør.",
-        description = "Avmelder aktøren fra aktørregisteret. Hendelser vil ikke lenger bli opprettet på denne aktøren.",
+        summary = "Avmeld aktør fra aktørregisteret",
+        description = "Avmelder aktøren slik at det ikke lenger genereres hendelser for den. Aktøren fjernes fra aktørregisteret.",
+        security = [SecurityRequirement(name = "maskinporten")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Aktøren ble avmeldt."),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på identtype eller ident.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Maskinporten-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Uventet feil på server.",
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping(path = ["/avmelding"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Aktøren ble avmeldt."),
-        ApiResponse(responseCode = "400", description = "Gitt identtype eller ident er ugyldig.", content = [Content()]),
-    )
-    fun avmeldAktør(@RequestBody request: AktoerIdDTO): ResponseEntity<Any> = try {
+    fun avmeldAktør(
+        @SwaggerRequestBody(description = "Aktørident og identtype for aktøren som skal avmeldes.", required = true)
+        @RequestBody request: AktoerIdDTO,
+    ): ResponseEntity<Any> = try {
         aktørService.slettAktoer(request)
         ResponseEntity.ok().build()
     } catch (_: AktørNotFoundException) {
         ResponseEntity.notFound().build()
     }
 
-    @PostMapping("/samhandlersok")
+    @PostMapping("/samhandlersok", produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
-        description = "Søker etter samhandlere.",
-        security = [SecurityRequirement(name = "bearer-key")],
+        summary = "Søk etter samhandlere",
+        description = "Søker etter samhandlere basert på navn, organisasjonsnummer eller annen identifikasjon.",
+        security = [SecurityRequirement(name = "maskinporten")],
     )
-    fun samhandlerSøk(samhandlerSøk: SamhandlerSøk): SamhandlersøkeresultatDto = aktørService.samhandlerSøk(samhandlerSøk)
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Samhandlersøk returnert.",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = SamhandlersøkeresultatDto::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ugyldig forespørsel – f.eks. manglende eller feil format på søkekriteriene.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Manglende eller ugyldig Maskinporten-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Uventet feil på server.",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun samhandlerSøk(
+        @SwaggerRequestBody(description = "Søkekriterier for samhandlersøk.", required = true)
+        @RequestBody samhandlerSøk: SamhandlerSøk,
+    ): SamhandlersøkeresultatDto = aktørService.samhandlerSøk(samhandlerSøk)
 }
