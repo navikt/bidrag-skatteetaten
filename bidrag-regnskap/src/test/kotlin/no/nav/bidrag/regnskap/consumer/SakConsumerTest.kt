@@ -71,7 +71,6 @@ internal class SakConsumerTest {
         Saksnummer("123"),
         Bidragssakstatus.NY,
         Sakskategori.NASJONAL,
-        erParagraf19 = false,
         begrensetTilgang = false,
         opprettetDato = LocalDate.now(),
         levdeAdskilt = false,

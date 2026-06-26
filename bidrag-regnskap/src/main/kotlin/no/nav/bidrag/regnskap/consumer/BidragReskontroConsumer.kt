@@ -22,7 +22,7 @@ class BidragReskontroConsumer(
     private val bidragReskontroUri
         get() = UriComponentsBuilder.fromUri(uri)
 
-    fun hentTransasksjonerForSak(saksnummer: String): TransaksjonerDto? = try {
+    fun hentTransaksjonerForSak(saksnummer: String): TransaksjonerDto? = try {
         postForEntity<TransaksjonerDto>(
             bidragReskontroUri
                 .pathSegment("transaksjoner/bidragssak")

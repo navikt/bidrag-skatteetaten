@@ -41,7 +41,7 @@ class ReskontroServiceTest {
         )
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns null
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns null
 
         val result = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
@@ -109,7 +109,7 @@ class ReskontroServiceTest {
         val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto, transaksjonDto2))
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering, kontering2))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns transaksjonerDto
 
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
@@ -153,7 +153,7 @@ class ReskontroServiceTest {
         val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto))
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns transaksjonerDto
 
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
@@ -197,7 +197,7 @@ class ReskontroServiceTest {
         val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto))
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns transaksjonerDto
 
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
@@ -240,7 +240,7 @@ class ReskontroServiceTest {
         val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto))
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns transaksjonerDto
 
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
@@ -284,7 +284,7 @@ class ReskontroServiceTest {
         val transaksjonerDto = TransaksjonerDto(transaksjoner = listOf(transaksjonDto))
 
         val inputKonteringer = mapOf(referansekode to setOf(kontering))
-        every { bidragReskontroConsumer.hentTransasksjonerForSak(sakId) } returns transaksjonerDto
+        every { bidragReskontroConsumer.hentTransaksjonerForSak(sakId) } returns transaksjonerDto
 
         val resultat = reskontroService.sammenlignOversendteKonteringerMedReskontro(inputKonteringer)
 
