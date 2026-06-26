@@ -26,7 +26,7 @@ class ReskontroService(
 
             val transaksjoner: TransaksjonerDto?
             try {
-                transaksjoner = bidragReskontroConsumer.hentTransasksjonerForSak(saksnummer)
+                transaksjoner = bidragReskontroConsumer.hentTransaksjonerForSak(saksnummer)
             } catch (e: Exception) {
                 secureLogger.error(e) { "Klarte ikke hente transaksjoner fra reskontro for sak: $saksnummer for konteringer: $konteringer" }
                 feilmeldinger.putIfAbsent(sisteReferansekode, mutableSetOf())

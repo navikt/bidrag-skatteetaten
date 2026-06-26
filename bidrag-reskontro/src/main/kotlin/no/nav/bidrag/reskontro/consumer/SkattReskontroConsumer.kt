@@ -45,7 +45,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Kaller hent bidragssak for sak: $saksnummer.\nResponse fra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen bidragssak for sak: $saksnummer.")
@@ -54,7 +54,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}", e)
             } else {
                 loggOgKastException("Ukjent server-feil ved kall på hent bidragssaker for sak: $saksnummer. ${e.message}.", e)
             }
@@ -63,8 +63,9 @@ class SkattReskontroConsumer(
 
     private fun loggOgKastSkattTimeoutException(
         melding: String?,
+        e: Exception,
     ): Nothing {
-        secureLogger.error { melding }
+        secureLogger.error(e) { melding }
         throw TimeoutFraSkattException(melding)
     }
 
@@ -79,7 +80,7 @@ class SkattReskontroConsumer(
         melding: String?,
         e: Exception,
     ): Nothing {
-        secureLogger.error { melding }
+        secureLogger.error(e) { melding }
         throw FeilMotSkattException(melding, e.cause)
     }
 
@@ -92,7 +93,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Kaller hent bidragssaker for person: ${person.verdi}. Response fra skatt: $response. " }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent bidragssaker for person: ${person.verdi}. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen bidragssaker for person: ${person.verdi}.")
@@ -101,7 +102,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for person: ${person.verdi}. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent bidragssaker for person: ${person.verdi}. ${e.message}", e)
             } else {
                 loggOgKastException(
                     "Ukjent server-feil ved kall på hent bidragssaker for person: ${person.verdi}. ${e.message}.",
@@ -126,7 +127,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Kaller hent transaksjoner for sak: $saksnummer. Response fra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for sak: $saksnummer. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for sak: $saksnummer. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen transaksjoner for sak: $saksnummer.")
@@ -135,7 +136,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for sak: $saksnummer. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for sak: $saksnummer. ${e.message}", e)
             } else {
                 loggOgKastException("Ukjent server-feil ved kall på hent transaksjoner for sak: $saksnummer. ${e.message}.", e)
             }
@@ -157,7 +158,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Kaller hent transaksjoner for person: ${person.verdi}. Response fra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen transaksjoner for person: ${person.verdi}.")
@@ -166,7 +167,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}", e)
             } else {
                 loggOgKastException(
                     "Ukjent server-feil ved kall på hent transaksjoner for person: ${person.verdi}. ${e.message}.",
@@ -190,7 +191,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Kaller hent transaksjoner for transaksjonsId: $transaksjonsid. Response fra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen transaksjon for transaksjonsId: $transaksjonsid.")
@@ -202,7 +203,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid. ${e.message}", e)
             } else {
                 loggOgKastException("Ukjent server-feil ved kall på hent transaksjoner for transaksjonsId: $transaksjonsid. ${e.message}.", e)
             }
@@ -218,7 +219,7 @@ class SkattReskontroConsumer(
             secureLogger.debug { "Response på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.Response fra skatt: $response." }
             return validerOutput(response)
         } catch (e: ResourceAccessException) {
-            loggOgKastSkattTimeoutException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. ${e.message}")
+            loggOgKastSkattTimeoutException("Timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. ${e.message}", e)
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.NOT_FOUND) {
                 loggOgKastSkattIngenDataException("Fant ingen hentInformasjonOmInnkrevingssaken for person: ${person.verdi}.")
@@ -230,7 +231,7 @@ class SkattReskontroConsumer(
             }
         } catch (e: HttpServerErrorException) {
             if (e.statusCode == HttpStatus.GATEWAY_TIMEOUT) {
-                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. ${e.message}")
+                loggOgKastSkattTimeoutException("Gateway-timeout ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. ${e.message}", e)
             } else {
                 loggOgKastException(
                     "Ukjent server-feil ved kall på hentInformasjonOmInnkrevingssaken for person: ${person.verdi}. ${e.message}.",
