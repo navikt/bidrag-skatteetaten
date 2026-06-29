@@ -134,6 +134,7 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         query:
           plan_cache_max_size: 1024
           plan_parameter_metadata_max_size: 64
@@ -168,6 +169,7 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         query:
           plan_cache_max_size: 1024
           plan_parameter_metadata_max_size: 64
