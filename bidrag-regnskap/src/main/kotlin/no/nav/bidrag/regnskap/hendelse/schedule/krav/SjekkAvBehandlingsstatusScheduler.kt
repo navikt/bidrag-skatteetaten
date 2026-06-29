@@ -19,7 +19,7 @@ private val LOGGER = KotlinLogging.logger { }
 
 @Configuration
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
 class SjekkAvBehandlingsstatusScheduler(
     private val behandlingsstatusService: BehandlingsstatusService,
     private val kravSchedulerUtils: KravSchedulerUtils,

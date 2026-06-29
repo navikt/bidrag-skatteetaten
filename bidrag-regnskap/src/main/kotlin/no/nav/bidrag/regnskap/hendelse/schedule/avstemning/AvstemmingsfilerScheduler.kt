@@ -14,7 +14,7 @@ private val LOGGER = KotlinLogging.logger { }
 
 @Configuration
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
 class AvstemmingsfilerScheduler(
     private val avstemmingService: AvstemmingService,
 ) {
