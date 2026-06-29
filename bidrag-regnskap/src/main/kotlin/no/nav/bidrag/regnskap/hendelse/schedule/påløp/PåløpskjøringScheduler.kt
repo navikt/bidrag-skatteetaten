@@ -17,7 +17,7 @@ private val LOGGER = KotlinLogging.logger { }
 
 @Configuration
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "100m", defaultLockAtLeastFor = "2m")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT100M", defaultLockAtLeastFor = "PT2M")
 class PåløpskjøringScheduler(
     private val persistenceService: PersistenceService,
     private val påløpskjøringService: PåløpskjøringService,

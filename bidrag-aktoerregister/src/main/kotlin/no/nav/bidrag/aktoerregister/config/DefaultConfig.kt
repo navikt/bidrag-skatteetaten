@@ -31,7 +31,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @Configuration
 @EnableScheduling
 @ConfigurationPropertiesScan
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
 @Import(CorrelationIdFilter::class, DefaultCorsFilter::class, UserMdcFilter::class)
 class DefaultConfig {
 
