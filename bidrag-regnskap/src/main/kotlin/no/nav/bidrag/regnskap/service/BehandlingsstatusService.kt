@@ -6,6 +6,8 @@ import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import no.nav.bidrag.regnskap.persistence.entity.Kontering
 import no.nav.bidrag.transport.regnskap.behandlingsstatus.BehandlingsstatusResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
@@ -19,48 +21,39 @@ class BehandlingsstatusService(
         .groupBy { it.sisteReferansekode!! }
         .mapValues { it.value.toSet() }
 
+    @Transactional
     fun hentBehandlingsstatusForIkkeGodkjenteKonteringer(
         konteringerSomIkkeHarFåttGodkjentBehandlingsstatus: Map<String, Set<Kontering>>,
     ): Map<String, String> {
         val feilmeldinger = hashMapOf<String, String>()
-        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.forEach { (batchUid, konteringer) ->
-            try {
-                val behandlingsstatusResponse = hentBehandlingsstatus(batchUid)
-
-                if (behandlingsstatusResponse.batchStatus == Batchstatus.Done) {
-                    val feilmeldingFraReskontro = reskontroService.sammenlignOversendteKonteringerMedReskontro(mapOf(batchUid to konteringer))
-                    if (feilmeldingFraReskontro.isNotEmpty()) {
-                        secureLogger.error { "Det finnes avvik mellom oversendte konteringer som har fått DONE status fra skatt og det som ligger i reskontro for batchUid $batchUid: $feilmeldingFraReskontro" }
-                    }
-                    behandleVellykkedeKonteringer(konteringer)
-                } else {
-                    behandleFeiledeKonteringer(
-                        feilmeldinger,
-                        batchUid,
-                        konteringer,
-                        "Behandling av konteringer for batchuid $batchUid har feilet: $behandlingsstatusResponse\n",
-                    )
-                }
-            } catch (e: Exception) {
-                behandleFeiledeKonteringer(
-                    feilmeldinger,
-                    batchUid,
-                    konteringer,
-                    "Behandling av konteringer for batchuid $batchUid har feilet og kastet exception!: ${e.message}\n",
-                )
-            }
+        konteringerSomIkkeHarFåttGodkjentBehandlingsstatus.forEach { (batchUid, _) ->
+            behandleBatchUid(batchUid)?.let { feilmeldinger[batchUid] = it }
         }
         return feilmeldinger
     }
 
-    private fun behandleFeiledeKonteringer(
-        feilmeldinger: HashMap<String, String>,
-        batchUid: String,
-        konteringer: Set<Kontering>,
-        feilmelding: String,
-    ) {
-        feilmeldinger[batchUid] = feilmelding
-        settFeiledeKonteringerForAlleOppdragKnyttetTilKonteringer(konteringer, true)
+    // Hver batchUid behandles og committes i sin egen transaksjon, slik at allerede ferdigbehandlede
+    // batcher beholdes selv om jobben avbrytes (krasj eller lås-timeout) før alle er ferdige.
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun behandleBatchUid(batchUid: String): String? {
+        val managedKonteringer = persistenceService.konteringRepository.findAllBySisteReferansekode(batchUid).toSet()
+        try {
+            val behandlingsstatusResponse = hentBehandlingsstatus(batchUid)
+
+            if (behandlingsstatusResponse.batchStatus == Batchstatus.Done) {
+                val feilmeldingFraReskontro = reskontroService.sammenlignOversendteKonteringerMedReskontro(mapOf(batchUid to managedKonteringer))
+                if (feilmeldingFraReskontro.isNotEmpty()) {
+                    secureLogger.error { "Det finnes avvik mellom oversendte konteringer som har fått DONE status fra skatt og det som ligger i reskontro for batchUid $batchUid: $feilmeldingFraReskontro" }
+                }
+                behandleVellykkedeKonteringer(managedKonteringer)
+                return null
+            }
+            settFeiledeKonteringerForAlleOppdragKnyttetTilKonteringer(managedKonteringer, true)
+            return "Behandling av konteringer for batchuid $batchUid har feilet: $behandlingsstatusResponse\n"
+        } catch (e: Exception) {
+            settFeiledeKonteringerForAlleOppdragKnyttetTilKonteringer(managedKonteringer, true)
+            return "Behandling av konteringer for batchuid $batchUid har feilet og kastet exception!: ${e.message}\n"
+        }
     }
 
     fun behandleVellykkedeKonteringer(
@@ -91,6 +84,7 @@ class BehandlingsstatusService(
             .none { it.behandlingsstatusOkTidspunkt == null }
     }
 
+    @Transactional
     fun hentBehandlingsstatusForIkkeGodkjenteKonteringerForReferansekode(sisteReferanser: List<String>): Map<String, String> = hentBehandlingsstatusForIkkeGodkjenteKonteringer(hentKonteringerMedIkkeGodkjentBehandlingsstatus(sisteReferanser))
 
     private fun hentKonteringer(sisteReferanser: List<String>): List<Kontering> = if (sisteReferanser.isEmpty()) {

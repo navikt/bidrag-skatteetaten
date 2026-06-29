@@ -68,6 +68,7 @@ class BehandlingsstatusServiceTest {
         oppdragsperiode.konteringer = listOf(kontering)
         oppdrag.oppdragsperioder = listOf(oppdragsperiode)
         val konteringer = mutableSetOf(kontering)
+        every { persistenceService.konteringRepository.findAllBySisteReferansekode(batchUid) } returns listOf(kontering)
         val behandlingsstatusResponse = BehandlingsstatusResponse(emptyList(), Batchstatus.Done, batchUid, 1, 0, 1)
 
         every { skattConsumer.sjekkBehandlingsstatus(batchUid).body } returns behandlingsstatusResponse
@@ -93,6 +94,7 @@ class BehandlingsstatusServiceTest {
         oppdragsperiode.konteringer = listOf(kontering)
         oppdrag.oppdragsperioder = listOf(oppdragsperiode)
         val konteringer = mutableSetOf(kontering)
+        every { persistenceService.konteringRepository.findAllBySisteReferansekode(batchUid) } returns listOf(kontering)
         val behandlingsstatusResponse = BehandlingsstatusResponse(emptyList(), Batchstatus.Failed, batchUid, 1, 1, 0)
 
         every { skattConsumer.sjekkBehandlingsstatus(batchUid).body } returns behandlingsstatusResponse
@@ -121,6 +123,7 @@ class BehandlingsstatusServiceTest {
         oppdragsperiode.konteringer = listOf(kontering)
         oppdrag.oppdragsperioder = listOf(oppdragsperiode)
         val konteringer = mutableSetOf(kontering)
+        every { persistenceService.konteringRepository.findAllBySisteReferansekode(batchUid) } returns listOf(kontering)
 
         every { skattConsumer.sjekkBehandlingsstatus(batchUid).body } throws RuntimeException("Simulert feil")
 

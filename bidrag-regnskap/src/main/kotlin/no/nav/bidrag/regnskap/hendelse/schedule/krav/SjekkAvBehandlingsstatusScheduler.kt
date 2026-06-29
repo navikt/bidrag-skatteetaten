@@ -55,7 +55,9 @@ class SjekkAvBehandlingsstatusScheduler(
         }
 
         val feiledeOverføringer: Map<String, String> =
-            behandlingsstatusService.hentBehandlingsstatusForIkkeGodkjenteKonteringer(ikkeGodkjenteKonteringer)
+            ikkeGodkjenteKonteringer.mapNotNull { (batchUid, _) ->
+                behandlingsstatusService.behandleBatchUid(batchUid)?.let { batchUid to it }
+            }.toMap()
 
         loggBatchUiderSomFremdelesFeiler(ikkeGodkjenteKonteringer)
 

@@ -34,6 +34,8 @@ interface KonteringRepository : JpaRepository<Kontering, Int> {
 
     fun findAllByBehandlingsstatusOkTidspunktIsNull(): List<Kontering>
 
+    fun findAllBySisteReferansekode(sisteReferansekode: String): List<Kontering>
+
     @Query(
         value = """
         SELECT new no.nav.bidrag.transport.regnskap.avstemning.SumPrSak(

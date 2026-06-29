@@ -77,7 +77,8 @@ class KravService(
         }
     }
 
-    private fun validerOppdragForFeiledeOverføringer(oppdragListe: List<Oppdrag>): Boolean {
+    @Transactional
+    fun validerOppdragForFeiledeOverføringer(oppdragListe: List<Oppdrag>): Boolean {
         oppdragListe.forEach { oppdrag ->
             if (harOppdragFeiledeOverføringer(oppdrag)) {
                 val feiledeOverføringer =
