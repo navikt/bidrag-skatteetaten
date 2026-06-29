@@ -33,6 +33,11 @@ class SjekkAvBehandlingsstatusScheduler(
     @Transactional
     fun skedulertSjekkAvBehandlingsstatus() {
         LockAssert.assertLocked()
+        kjørSjekkAvBehandlingsstatus()
+    }
+
+    @Transactional
+    fun kjørSjekkAvBehandlingsstatus() {
         LOGGER.info { "Starter schedulert sjekk av behandlingsstatus for allerede overførte konteringer." }
         if (kravSchedulerUtils.harAktivtDriftsavvik()) {
             LOGGER.warn { "Det finnes aktive driftsavvik. Starter derfor ikke sjekk av behandlingsstatus." }

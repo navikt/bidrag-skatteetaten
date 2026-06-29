@@ -112,7 +112,7 @@ class PåløpskjøringService(
         overførFil: Boolean,
     ) {
         // Sørger for at alle oversendte konteringer får sjekket behandlingsstatus før vi starter med påløpet
-        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        sjekkAvBehandlingsstatusScheduler.kjørSjekkAvBehandlingsstatus()
         validerDriftsavvik(påløp, schedulertKjøring)
         ventPåDriftsavvikCacheUtløp(påløp)
         persistenceService.registrerPåløpStartet(påløp.påløpId!!, LocalDateTime.now())

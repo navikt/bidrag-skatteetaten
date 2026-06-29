@@ -82,7 +82,7 @@ class BehandlingsstatusController(
         ],
     )
     fun startSkedulertSjekkAvBehandlingsstatus(): ResponseEntity<Any> {
-        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        sjekkAvBehandlingsstatusScheduler.kjørSjekkAvBehandlingsstatus()
         return ResponseEntity.ok().build()
     }
 

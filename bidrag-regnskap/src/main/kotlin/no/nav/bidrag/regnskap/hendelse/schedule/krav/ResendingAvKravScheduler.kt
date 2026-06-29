@@ -42,7 +42,7 @@ class ResendingAvKravScheduler(
 
         // Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
         // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.
-        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        sjekkAvBehandlingsstatusScheduler.kjørSjekkAvBehandlingsstatus()
 
         val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = persistenceService.hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke()
 
@@ -70,7 +70,7 @@ class ResendingAvKravScheduler(
 
         // Kjører en sjekk av alle behandlingsstatuser før reset av de som fremdeles feiler.
         // Dette er for å unngå eventuelle nye krav som dukker opp rett før resending.
-        sjekkAvBehandlingsstatusScheduler.skedulertSjekkAvBehandlingsstatus()
+        sjekkAvBehandlingsstatusScheduler.kjørSjekkAvBehandlingsstatus()
 
         val konteringerSomIkkeHarFåttGodkjentBehandlingsstatus = persistenceService.hentAlleKonteringerUtenBehandlingsstatusOkUansettOmSendtEllerIkke()
 
