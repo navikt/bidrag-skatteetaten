@@ -2,6 +2,7 @@ package no.nav.bidrag.regnskap.service
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -220,6 +221,67 @@ class OppslagServiceTest {
             utsatteOgFeiledeVedtak.feiledeVedtak shouldHaveSize 1
             utsatteOgFeiledeVedtak.ikkeOversendteVedtak shouldHaveSize 0
             utsatteOgFeiledeVedtak.feiledeVedtak.first().feilmelding shouldBe feilmelding
+        }
+
+        @Test
+        fun `skal sette behandlingsstatus ok på alle konteringer som deler samme batchUid, ikke bare den første`() {
+            val now = LocalDateTime.now()
+            val generertReferansekode = UUID.randomUUID().toString()
+            val saksnummer = Saksnummer("123456789")
+            val oppdrag = TestData.opprettOppdrag(
+                sakId = saksnummer.verdi,
+                utsattTilDato = null,
+            )
+            val oppdragsperiode = TestData.opprettOppdragsperiode(
+                oppdrag = oppdrag,
+            )
+
+            // Simulerer en ny sak hvor flere måneder er sendt over i samme batch (samme sisteReferansekode)
+            val førsteMånedKontering = TestData.opprettKontering(
+                oppdragsperiode = oppdragsperiode,
+                overforingsperiode = YearMonth.now().minusMonths(2).toString(),
+            ).apply {
+                overføringstidspunkt = now
+                behandlingsstatusOkTidspunkt = null
+                sisteReferansekode = generertReferansekode
+            }
+            val andreMånedKontering = TestData.opprettKontering(
+                oppdragsperiode = oppdragsperiode,
+                overforingsperiode = YearMonth.now().minusMonths(1).toString(),
+            ).apply {
+                overføringstidspunkt = now
+                behandlingsstatusOkTidspunkt = null
+                sisteReferansekode = generertReferansekode
+            }
+            val tredjeMånedKontering = TestData.opprettKontering(
+                oppdragsperiode = oppdragsperiode,
+                overforingsperiode = YearMonth.now().toString(),
+            ).apply {
+                overføringstidspunkt = now
+                behandlingsstatusOkTidspunkt = null
+                sisteReferansekode = generertReferansekode
+            }
+            oppdragsperiode.konteringer = listOf(førsteMånedKontering, andreMånedKontering, tredjeMånedKontering)
+            oppdrag.oppdragsperioder = listOf(oppdragsperiode)
+
+            every { persistenceService.hentAlleOppdragPåSakId(saksnummer.verdi) } returns listOf(oppdrag)
+            every { skattConsumer.sjekkBehandlingsstatus(generertReferansekode) } returns ResponseEntity.ok(
+                BehandlingsstatusResponse(
+                    emptyList(),
+                    Batchstatus.Done,
+                    generertReferansekode,
+                    3,
+                    0,
+                    3,
+                ),
+            )
+
+            val utsatteOgFeiledeVedtak = oppslagService.hentUtsatteOgFeiledeVedtakForSak(saksnummer)
+
+            utsatteOgFeiledeVedtak.feiledeVedtak shouldHaveSize 0
+            førsteMånedKontering.behandlingsstatusOkTidspunkt shouldNotBe null
+            andreMånedKontering.behandlingsstatusOkTidspunkt shouldNotBe null
+            tredjeMånedKontering.behandlingsstatusOkTidspunkt shouldNotBe null
         }
 
         @Test

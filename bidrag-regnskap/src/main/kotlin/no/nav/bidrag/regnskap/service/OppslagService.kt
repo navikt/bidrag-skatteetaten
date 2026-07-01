@@ -83,18 +83,18 @@ class OppslagService(
         .filter { oppdragsperiode -> oppdragsperiode.konteringer.any { it.behandlingsstatusOkTidspunkt == null } }
         .flatMap { it.konteringer }
         .filter { it.sisteReferansekode != null }
-        .distinctBy { it.sisteReferansekode }
-        .map { kontering ->
-            val sjekkAvBehandlingsstatusResponse =
-                skattConsumer.sjekkBehandlingsstatus(kontering.sisteReferansekode!!).body
+        .groupBy { it.sisteReferansekode!! }
+        .mapNotNull { (sisteReferansekode, konteringerForBatch) ->
+            val sjekkAvBehandlingsstatusResponse = skattConsumer.sjekkBehandlingsstatus(sisteReferansekode).body
             var feilmelding: String? = null
             if (sjekkAvBehandlingsstatusResponse?.batchStatus == Batchstatus.Done) {
-                kontering.behandlingsstatusOkTidspunkt = LocalDateTime.now()
+                val now = LocalDateTime.now()
+                konteringerForBatch.forEach { it.behandlingsstatusOkTidspunkt = now }
             } else {
                 feilmelding = sjekkAvBehandlingsstatusResponse?.konteringFeil?.firstOrNull()?.feilmelding
             }
-            FeiledeVedtak(kontering.oppdragsperiode!!.vedtakId, feilmelding)
-        }.filter { it.feilmelding != null }
+            feilmelding?.let { FeiledeVedtak(konteringerForBatch.first().oppdragsperiode!!.vedtakId, it) }
+        }
 
     fun hentOppdragResponse(oppdrag: Oppdrag): OppdragResponse = OppdragResponse(
         oppdragId = oppdrag.oppdragId,
