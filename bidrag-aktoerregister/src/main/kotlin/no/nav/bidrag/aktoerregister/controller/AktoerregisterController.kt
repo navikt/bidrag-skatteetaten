@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.bidrag.aktoerregister.dto.AktoerDTO
 import no.nav.bidrag.aktoerregister.dto.AktoerIdDTO
@@ -48,7 +47,6 @@ class AktoerregisterController(
     @Operation(
         summary = "Hent informasjon om aktør",
         description = "Henter aktørinformasjon basert på identtype og ident. For personer returneres kun kontonummer. For samhandlere/organisasjoner returneres også navn og adresse. Sett `tvingOppdatering=true` for å tvinge et nytt oppslag mot kildesystem.",
-        security = [SecurityRequirement(name = "maskinporten")],
     )
     @ApiResponses(
         value = [
@@ -110,7 +108,6 @@ class AktoerregisterController(
             "Nye hendelser vil alltid ha høyere sekvensnummer enn tidligere hendelser.\n" +
             "Det kan forekomme hull i sekvensnummer-rekken.\n" +
             "Dersom det kommer en hendelse for en aktør med tidligere hendelser (lavere sekvensnummer) er det ikke garantert at de tidligere hendelsene ikke returneres.",
-        security = [SecurityRequirement(name = "maskinporten")],
     )
     @ApiResponses(
         value = [
@@ -162,7 +159,6 @@ class AktoerregisterController(
     @Operation(
         summary = "Avmeld aktør fra aktørregisteret",
         description = "Avmelder aktøren slik at det ikke lenger genereres hendelser for den. Aktøren fjernes fra aktørregisteret.",
-        security = [SecurityRequirement(name = "maskinporten")],
     )
     @ApiResponses(
         value = [
@@ -199,7 +195,6 @@ class AktoerregisterController(
     @Operation(
         summary = "Søk etter samhandlere",
         description = "Søker etter samhandlere basert på navn, organisasjonsnummer eller annen identifikasjon.",
-        security = [SecurityRequirement(name = "maskinporten")],
     )
     @ApiResponses(
         value = [
