@@ -8,24 +8,24 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class KontonummerDTO(
-    @Schema(description = "Norsk kontonummer, 11 siffer.")
+    @param:Schema(description = "Norsk kontonummer, 11 siffer.")
     val norskKontonr: String? = null,
 
-    @Schema(description = "IBAN angir kontonummeret på et internasjonalt format.")
+    @param:Schema(description = "IBAN angir kontonummeret på et internasjonalt format.")
     val iban: String? = null,
 
-    @Schema(description = "SWIFT angir banken på et internasjonalt format.")
+    @param:Schema(description = "SWIFT angir banken på et internasjonalt format.")
     val swift: String? = null,
 
-    @Schema(description = "Bankens navn.")
+    @param:Schema(description = "Bankens navn.")
     val bankNavn: String? = null,
 
-    @Schema(description = "Bankens landkode. TODO: Bestemme representasjon av land. 3-sifret land-kode?")
+    @param:Schema(description = "Bankens landkode. TODO: Bestemme representasjon av land. 3-sifret land-kode?")
     val bankLandkode: String? = null,
 
-    @Schema(description = "BankCode. Format varierer.")
+    @param:Schema(description = "BankCode. Format varierer.")
     val bankCode: String? = null,
 
-    @Schema(description = "Kontoens valuta.")
+    @param:Schema(description = "Kontoens valuta.")
     val valutaKode: String? = null,
 )

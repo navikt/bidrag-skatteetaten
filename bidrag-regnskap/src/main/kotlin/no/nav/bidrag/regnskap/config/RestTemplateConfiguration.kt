@@ -8,6 +8,8 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import no.nav.bidrag.regnskap.consumer.SkattConsumer
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder
+import org.springframework.boot.http.client.HttpClientSettings
 import org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,11 +19,11 @@ import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.http.client.observation.ClientRequestObservationConvention
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 import org.springframework.web.client.RestTemplate
 import java.io.IOException
+import java.time.Duration
 
 private val LOGGER = KotlinLogging.logger { }
 
@@ -40,7 +42,11 @@ class RestTemplateConfiguration {
         observationRestTemplateCustomizer: ObservationRestTemplateCustomizer,
     ): RestTemplate {
         val restTemplate = HttpHeaderRestTemplate()
-        restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()
+        restTemplate.requestFactory = ClientHttpRequestFactoryBuilder.httpComponents().build(
+            HttpClientSettings.defaults()
+                .withConnectTimeout(Duration.ofSeconds(30))
+                .withReadTimeout(Duration.ofSeconds(60)),
+        )
         restTemplate.withDefaultHeaders()
         restTemplate.addHeaderGenerator("Nav-Callid") { CorrelationId.fetchCorrelationIdForThread() }
         restTemplate.addHeaderGenerator("Nav-Consumer-Id") { naisAppName }
