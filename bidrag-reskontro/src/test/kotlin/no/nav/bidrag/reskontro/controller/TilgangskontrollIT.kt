@@ -65,12 +65,9 @@ class TilgangskontrollIT {
     @BeforeEach
     fun resetMocks() {
         clearMocks(tilgangClient, skattReskontroConsumer)
-        // Standard-oppførsel: tilgang nektet
         every { tilgangClient.harTilgangSaksnummer(any()) } returns false
         every { tilgangClient.harTilgangPerson(any()) } returns false
     }
-
-    // --- Slice 1: POST /innkrevningssak/bidragssak ---
 
     @Test
     fun `POST innkrevningssak bidragssak returnerer 403 når tilgangskontroll nekter tilgang`() {
@@ -96,8 +93,6 @@ class TilgangskontrollIT {
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    // --- Slice 2: POST /innkrevningssak/person ---
-
     @Test
     fun `POST innkrevningssak person returnerer 403 når tilgangskontroll nekter tilgang`() {
         val svar = httpHeaderTestRestTemplate.postForEntity<ProblemDetail>(
@@ -121,8 +116,6 @@ class TilgangskontrollIT {
 
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
-
-    // --- Slice 3: POST /transaksjoner/bidragssak ---
 
     @Test
     fun `POST transaksjoner bidragssak returnerer 403 når tilgangskontroll nekter tilgang`() {
@@ -148,8 +141,6 @@ class TilgangskontrollIT {
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    // --- Slice 4: POST /transaksjoner/person ---
-
     @Test
     fun `POST transaksjoner person returnerer 403 når tilgangskontroll nekter tilgang`() {
         val svar = httpHeaderTestRestTemplate.postForEntity<ProblemDetail>(
@@ -173,8 +164,6 @@ class TilgangskontrollIT {
 
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
-
-    // --- Slice 5: GET /transaksjoner/transaksjonsid ---
 
     @Test
     fun `GET transaksjoner transaksjonsid returnerer 403 når tilgangskontroll nekter tilgang på saksnummer i svaret`() {
@@ -200,8 +189,6 @@ class TilgangskontrollIT {
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    // --- Slice 6: POST /innkrevingsinformasjon ---
-
     @Test
     fun `POST innkrevingsinformasjon returnerer 403 når tilgangskontroll nekter tilgang`() {
         val svar = httpHeaderTestRestTemplate.postForEntity<ProblemDetail>(
@@ -225,8 +212,6 @@ class TilgangskontrollIT {
 
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
-
-    // --- Slice 7: PATCH /endreRmForSak ---
 
     @Test
     fun `PATCH endreRmForSak returnerer 403 når tilgangskontroll nekter tilgang`() {
@@ -259,8 +244,6 @@ class TilgangskontrollIT {
 
         assertThat(svar.statusCode).isEqualTo(HttpStatus.OK)
     }
-
-    // --- Hjelpemetoder for testdata ---
 
     private fun lagBidragssakOutput(saksnummer: Long) = ReskontroConsumerOutput(
         innParametre = ReskontroConsumerInput(aksjonskode = 1, bidragssaksnummer = saksnummer),
