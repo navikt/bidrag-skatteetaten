@@ -55,6 +55,12 @@
             <version>${springdoc-openapi-ui.version}</version>
         </dependency>
 
+        <!-- AspectJ for TilgangAdvice AOP -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
         <!-- Nav -->
         <dependency>
             <groupId>no.nav.bidrag</groupId>

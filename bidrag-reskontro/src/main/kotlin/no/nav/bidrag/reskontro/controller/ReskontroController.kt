@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.bidrag.commons.tilgang.TilgangClient
+import no.nav.bidrag.commons.tilgang.Tilgangskontroll
 import no.nav.bidrag.domene.enums.regnskap.Transaksjonskode
 import no.nav.bidrag.reskontro.service.ReskontroService
 import no.nav.bidrag.transport.person.PersonRequest
@@ -21,6 +23,7 @@ import no.nav.bidrag.transport.reskontro.response.innkrevingssaksinformasjon.Inn
 import no.nav.bidrag.transport.reskontro.response.transaksjoner.TransaksjonerDto
 import no.nav.bidrag.transport.reskontro.tilDto
 import no.nav.security.token.support.core.api.Protected
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.client.HttpClientErrorException
 
 @RestController
 @Protected
@@ -38,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController
 )
 class ReskontroController(
     private val reskontroService: ReskontroService,
+    private val tilgangClient: TilgangClient,
 ) {
     @PostMapping("/innkrevningssak/bidragssak")
     @Operation(
@@ -80,6 +85,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun hentInnkrevingssakPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<BidragssakDto> {
         val innkrevingssakPåSak = reskontroService.hentInnkrevingssakPåSak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
@@ -127,6 +133,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun hentInnkrevingssakPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<BidragssakMedSkyldnerDto> {
         val innkrevingssakPåPerson = reskontroService.hentInnkrevingssakPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
@@ -174,6 +181,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun hentTransaksjonerPåBidragssak(@RequestBody saksnummerRequest: SaksnummerRequest): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåBidragssak = reskontroService.hentTransaksjonerPåBidragssak(saksnummerRequest)
             ?: return ResponseEntity.notFound().build()
@@ -221,6 +229,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun hentTransaksjonerPåPerson(@RequestBody personRequest: PersonRequest): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåPerson = reskontroService.hentTransaksjonerPåPerson(personRequest)
             ?: return ResponseEntity.notFound().build()
@@ -274,6 +283,11 @@ class ReskontroController(
     ): ResponseEntity<TransaksjonerDto> {
         val transaksjonerPåTransaksjonsid = reskontroService.hentTransaksjonerPåTransaksjonsid(transaksjonsid)
             ?: return ResponseEntity.notFound().build()
+        val saksnummer = transaksjonerPåTransaksjonsid.transaksjoner.firstOrNull()?.saksnummer
+            ?: return ResponseEntity.noContent().build()
+        if (!tilgangClient.harTilgangSaksnummer(saksnummer)) {
+            throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til sak: $saksnummer.")
+        }
         return ResponseEntity.ok(transaksjonerPåTransaksjonsid)
     }
 
@@ -318,6 +332,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun hentInformasjonOmInnkrevingssaken(@RequestBody personRequest: PersonRequest): ResponseEntity<InnkrevingssaksinformasjonDto> {
         val informasjonOmInnkrevingssaken = reskontroService.hentInformasjonOmInnkrevingssaken(personRequest)
             ?: return ResponseEntity.notFound().build()
@@ -360,6 +375,7 @@ class ReskontroController(
             ),
         ],
     )
+    @Tilgangskontroll
     fun endreRmForSak(@RequestBody endreRmForSak: EndreRmForSakRequest) {
         reskontroService.endreRmForSak(endreRmForSak.saksnummer, endreRmForSak.barn, endreRmForSak.nyttFødselsnummer)
     }
