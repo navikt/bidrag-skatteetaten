@@ -15,8 +15,15 @@ env:
   SKATT_URL: https://ske-elin-api-bisysresk.synt.elin.innkreving.skatteetaten-test.no
   SKATT_HOST: ske-elin-api-bisysresk.synt.elin.innkreving.skatteetaten-test.no
   MASKINPORTEN_SCOPES: "skatteetaten:barnebidragreskontro"
+  BIDRAG_TILGANG_URL: https://bidrag-tilgangskontroll.intern.dev.nav.no
+  BIDRAG_TILGANG_SCOPE: dev-gcp.bidrag.bidrag-tilgangskontroll
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
+  outbound:
+    rules:
+      - application: bidrag-tilgangskontroll
+        namespace: bidrag
+        cluster: dev-gcp
   inbound:
     rules:
       - application: bisys

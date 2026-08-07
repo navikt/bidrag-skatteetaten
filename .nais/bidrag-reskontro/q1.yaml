@@ -16,8 +16,15 @@ env:
   SKATT_URL: https://bidrag-elin-stub.intern.dev.nav.no
   SKATT_HOST: bidrag-elin-stub.intern.dev.nav.no
   MASKINPORTEN_SCOPES: "nav:bidrag/v1/bidragskrav"
+  BIDRAG_TILGANG_URL: https://bidrag-tilgangskontroll-feature.intern.dev.nav.no
+  BIDRAG_TILGANG_SCOPE: dev-gcp.bidrag.bidrag-tilgangskontroll-feature
   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:MaxRAMPercentage=80.0
 azure:
+  outbound:
+    rules:
+      - application: bidrag-tilgangskontroll-feature
+        namespace: bidrag
+        cluster: dev-gcp
   inbound:
     rules:
       - application: bisys
