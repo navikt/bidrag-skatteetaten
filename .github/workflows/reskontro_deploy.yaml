@@ -34,7 +34,7 @@ on:
 
 jobs:
   bygg_og_test:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
     name: "Bygg og test"
     runs-on: ubuntu-latest
     permissions:
