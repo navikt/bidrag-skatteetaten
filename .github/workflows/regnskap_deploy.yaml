@@ -46,6 +46,16 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          servers: |
+            [
+              {
+                "id": "github",
+                "username": "x-access-token",
+                "password": "${{ secrets.READER_TOKEN }}"
+              }
+            ]
       - name: Bygg og kjør tester (inkl. ktlint)
         run: mvn -B -fae verify -f apps/bidrag-regnskap -Pit
 
