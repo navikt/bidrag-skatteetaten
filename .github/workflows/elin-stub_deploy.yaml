@@ -10,44 +10,9 @@ on:
       - '.github/workflows/elin-stub_deploy.yaml'
       - 'pom.xml'
       - 'apps/bidrag-elin-stub/**'
-  pull_request:
-    branches:
-      - 'main'
-    paths:
-      - '.nais/bidrag-elin-stub/**.yaml'
-      - '.github/workflows/elin-stub_deploy.yaml'
-      - 'pom.xml'
-      - 'apps/bidrag-elin-stub/**'
 
 jobs:
-  bygg_og_test:
-    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
-    name: "Bygg og test"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: "read"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-      - uses: s4u/maven-settings-action@v4.0.0
-        with:
-          servers: |
-            [
-              {
-                "id": "github",
-                "username": "x-access-token",
-                "password": "${{ secrets.READER_TOKEN }}"
-              }
-            ]
-      - name: Bygg og kjør tester (inkl. ktlint)
-        run: mvn -B -fae verify -f apps/bidrag-elin-stub
-
   build_and_deploy:
-    if: github.event_name != 'pull_request'
     name: "Build and deploy"
     permissions:
       contents: "read"

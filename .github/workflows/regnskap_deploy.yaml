@@ -13,19 +13,7 @@ on:
           - q1+q2
   push:
     branches:
-      - 'main'
-      - 'q1/**'
-      - 'Q1/**'
-      - 'q2/**'
-      - 'Q2/**'
-    paths:
-      - '.nais/bidrag-regnskap/**.yaml'
-      - '.github/workflows/regnskap_deploy.yaml'
-      - 'pom.xml'
-      - 'apps/bidrag-regnskap/**'
-  pull_request:
-    branches:
-      - 'main'
+      - '**'
     paths:
       - '.nais/bidrag-regnskap/**.yaml'
       - '.github/workflows/regnskap_deploy.yaml'
@@ -34,7 +22,7 @@ on:
 
 jobs:
   bygg_og_test:
-    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+    if: github.event_name == 'push' && github.actor != 'dependabot[bot]' && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/q1/') && !startsWith(github.ref, 'refs/heads/Q1/') && !startsWith(github.ref, 'refs/heads/q2/') && !startsWith(github.ref, 'refs/heads/Q2/')
     name: "Bygg og test"
     runs-on: ubuntu-latest
     permissions:
