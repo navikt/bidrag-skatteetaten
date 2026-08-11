@@ -48,10 +48,10 @@
     </dependencies>
 
     <modules>
-        <module>bidrag-regnskap</module>
-        <module>bidrag-aktoerregister</module>
-        <module>bidrag-reskontro</module>
-        <module>bidrag-elin-stub</module>
+        <module>apps/bidrag-regnskap</module>
+        <module>apps/bidrag-aktoerregister</module>
+        <module>apps/bidrag-reskontro</module>
+        <module>apps/bidrag-elin-stub</module>
     </modules>
 
     <repositories>

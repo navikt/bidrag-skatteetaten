@@ -1,0 +1,116 @@
+name: Deploy reskontro
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Miljø som skal deployes til"
+        required: true
+        type: choice
+        options:
+          - prod
+          - q1
+          - q2
+          - q1+q2
+  push:
+    branches:
+      - 'main'
+      - 'q1/**'
+      - 'Q1/**'
+      - 'q2/**'
+      - 'Q2/**'
+    paths:
+      - '.nais/bidrag-reskontro/**.yaml'
+      - '.github/workflows/reskontro_deploy.yaml'
+      - 'pom.xml'
+      - 'apps/bidrag-reskontro/**'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - '.nais/bidrag-reskontro/**.yaml'
+      - '.github/workflows/reskontro_deploy.yaml'
+      - 'pom.xml'
+      - 'apps/bidrag-reskontro/**'
+
+jobs:
+  bygg_og_test:
+    if: github.event_name == 'pull_request'
+    name: "Bygg og test"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Bygg og kjør tester (inkl. ktlint)
+        run: mvn -B -fae verify -f apps/bidrag-reskontro
+
+  sjekk_sync_med_main:
+    if: (github.event_name == 'push' && github.ref != 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment != 'prod')
+    uses: ./.github/workflows/sjekk_sync_med_main.yaml
+
+  deploy_prod:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
+    name: "Build and deploy to prod"
+    concurrency:
+      group: deploy-reskontro-prod-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "write"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy_prod.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-reskontro
+      ktlint_options: -f apps/bidrag-reskontro
+      docker_context: ./apps/bidrag-reskontro
+      nais_variabler_filnavn: bidrag-reskontro/prod.yaml
+      nais_hovedfil_navn: bidrag-reskontro/nais.yaml
+      image_suffix: bidrag-reskontro
+      tag: bidrag-reskontro
+
+  deploy_q1:
+    needs: sjekk_sync_med_main
+    if: success() && ((github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/q1/') || startsWith(github.ref, 'refs/heads/Q1/'))) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'q1' || github.event.inputs.environment == 'q1+q2')))
+    name: "Build and deploy to Q1"
+    concurrency:
+      group: deploy-reskontro-q1-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-reskontro
+      ktlint_options: -f apps/bidrag-reskontro
+      docker_context: ./apps/bidrag-reskontro
+      nais_variabler_filnavn: bidrag-reskontro/q1.yaml
+      nais_hovedfil_navn: bidrag-reskontro/nais.yaml
+      image_suffix: bidrag-reskontro
+      tag: bidrag-reskontro
+
+  deploy_q2:
+    needs: sjekk_sync_med_main
+    if: success() && ((github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/q2/') || startsWith(github.ref, 'refs/heads/Q2/'))) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'q2' || github.event.inputs.environment == 'q1+q2')))
+    name: "Build and deploy to Q2"
+    concurrency:
+      group: deploy-reskontro-q2-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-reskontro
+      ktlint_options: -f apps/bidrag-reskontro
+      docker_context: ./apps/bidrag-reskontro
+      nais_variabler_filnavn: bidrag-reskontro/q2.yaml
+      nais_hovedfil_navn: bidrag-reskontro/nais.yaml
+      image_suffix: bidrag-reskontro
+      tag: bidrag-reskontro
