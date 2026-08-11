@@ -6,7 +6,6 @@ import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,8 +22,7 @@ class TestRestTemplateConfiguration {
     private lateinit var clientId: String
 
     @Bean
-    fun httpHeaderTestRestTemplate(): HttpHeaderTestRestTemplate {
-        val testRestTemplate = TestRestTemplate(RestTemplateBuilder())
+    fun httpHeaderTestRestTemplate(testRestTemplate: TestRestTemplate): HttpHeaderTestRestTemplate {
         val httpHeaderTestRestTemplate = HttpHeaderTestRestTemplate(testRestTemplate)
         httpHeaderTestRestTemplate.add(HttpHeaders.AUTHORIZATION) { generateBearerToken() }
         return httpHeaderTestRestTemplate
