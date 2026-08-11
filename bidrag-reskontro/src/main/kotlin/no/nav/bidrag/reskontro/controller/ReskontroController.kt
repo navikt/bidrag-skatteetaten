@@ -54,11 +54,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = BidragssakDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen innkrevingssak funnet for oppgitt saksnummer.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller feil format på saksnummer.",
                 content = [Content()],
@@ -66,6 +61,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen innkrevingssak funnet for oppgitt saksnummer.",
                 content = [Content()],
             ),
             ApiResponse(
@@ -101,11 +101,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = BidragssakMedSkyldnerDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen innkrevingssaker funnet for oppgitt personident.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller feil format på personident.",
                 content = [Content()],
@@ -113,6 +108,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen innkrevingssaker funnet for oppgitt personident.",
                 content = [Content()],
             ),
             ApiResponse(
@@ -148,11 +148,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = TransaksjonerDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen transaksjoner funnet for oppgitt saksnummer.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller feil format på saksnummer.",
                 content = [Content()],
@@ -160,6 +155,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen transaksjoner funnet for oppgitt saksnummer.",
                 content = [Content()],
             ),
             ApiResponse(
@@ -195,11 +195,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = TransaksjonerDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen transaksjoner funnet for oppgitt personident.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller feil format på personident.",
                 content = [Content()],
@@ -207,6 +202,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen transaksjoner funnet for oppgitt personident.",
                 content = [Content()],
             ),
             ApiResponse(
@@ -242,11 +242,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = TransaksjonerDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen transaksjoner funnet for oppgitt transaksjons-ID.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller ikke-numerisk transaksjons-ID.",
                 content = [Content()],
@@ -254,6 +249,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen transaksjoner funnet for oppgitt transaksjons-ID.",
                 content = [Content()],
             ),
             ApiResponse(
@@ -292,11 +292,6 @@ class ReskontroController(
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = InnkrevingssaksinformasjonDto::class))],
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "Ingen innkrevingsinformasjon funnet for oppgitt personident.",
-                content = [Content()],
-            ),
-            ApiResponse(
                 responseCode = "400",
                 description = "Ugyldig forespørsel – f.eks. manglende eller feil format på personident.",
                 content = [Content()],
@@ -304,6 +299,11 @@ class ReskontroController(
             ApiResponse(
                 responseCode = "401",
                 description = "Manglende eller ugyldig Bearer-token. Autentiser på nytt og prøv igjen.",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Ingen innkrevingsinformasjon funnet for oppgitt personident.",
                 content = [Content()],
             ),
             ApiResponse(
