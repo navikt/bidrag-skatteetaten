@@ -1,0 +1,184 @@
+name: Bygg og deploy
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: 21
+        description: Hvilken versjon av java applikasjonen skal bygges med
+      produksjon:
+        required: false
+        type: boolean
+        default: false
+        description: Skal være true hvis det skal deployes til produksjon
+      nais_cluster:
+        required: false
+        type: string
+        default: gcp
+        description: Nais cluster som applikasjonen skal deployes til. Skal enten være 'gcp' eller 'fss'
+      nais_variabler_filnavn:
+        required: false
+        type: string
+        default: feature.yaml
+        description: Navnet på miljøvariabler filen som skal brukes ved deploy. Parameter skal inkludere filending som feks .yaml
+      nais_hovedfil_navn:
+        required: false
+        type: string
+        default: nais.yaml
+        description: Navnet på nais filen som skal brukes. Parameter skal inkludere filending og evt path om det ikke ligger på root i .nais folder.
+      maven_options:
+        required: false
+        type: string
+        default: -B -q -fae
+        description: Ekstra options ved kjøring av maven bygget. Dette kan være lag eller profiler. Default -B (Batchmode, non-interactive), -q (Quiet, kun logging ved errors), -fae (Fail at end).
+      maven_test_lifecycle:
+        required: false
+        type: string
+        default: test
+        description: Mulighet for å endre hvilken maven lifecycle som kjøres sammen med testene. For å kunne kjøre integrasjonstester må verify/install/deploy brukes.
+      ktlint_options:
+        required: false
+        type: string
+        description: Ektra parametere ved kjøring av ktlint.
+      dockerfile_with_path:
+        required: false
+        type: string
+        default: Dockerfile
+        description: Kan settes for å spesifisere path for dockerfile.
+      docker_context:
+        required: false
+        type: string
+        default: .
+        description: Kan settes for å spesifisere docker context for build files.
+      image_suffix:
+        required: false
+        type: string
+        description: Suffix for docker image om det er multimodul repo.
+      tag:
+        required: false
+        type: string
+        description: Custom docker tag
+    outputs:
+      deploy_suksess:
+        description: "Om deploy har gått gjennom OK"
+        value: ${{ jobs.deploy.outputs.deploy_suksess }}
+      image:
+        description: "Docker Image navnet som blir deployet til miljø"
+        value: ${{ jobs.build.outputs.image }}
+      tag:
+        description: "Docker tag som blir deployet til miljø"
+        value: ${{ jobs.build.outputs.tag }}
+env:
+  GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
+  CLUSTER: ${{ inputs.produksjon && 'prod' || 'dev' }}-${{ inputs.nais_cluster }}
+
+jobs:
+  build:
+    name: Build with maven and docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          servers: |
+            [
+              {
+                "id": "github",
+                "username": "x-access-token",
+                "password": "${{secrets.READER_TOKEN}}"
+              },
+              {
+                "id": "github2",
+                "username": "x-access-token",
+                "password": "${{secrets.READER_TOKEN}}"
+              }
+            ]
+      - name: Verifiser formatering med ktlint
+        if: ${{ inputs.produksjon == false }}
+        run: mvn antrun:run@ktlint ${{ inputs.ktlint_options }} -Dparallel=all -DperCoreThreadCount=true
+      - name: Kjør tester
+        if: ${{ inputs.produksjon == false }}
+        run: mvn ${{ inputs.maven_options }} ${{ inputs.maven_test_lifecycle }} -Dparallel=all -DperCoreThreadCount=true
+      - name: Bygg uten test
+        if: ${{ inputs.produksjon == false }}
+        run: mvn -Dmaven.test.skip=true ${{ inputs.maven_options }} -Dparallel=all -DperCoreThreadCount=true -DthreadCount=10 clean install
+      - name: Bygg med test
+        if: ${{ inputs.produksjon == true }}
+        run: mvn ${{ inputs.maven_options }} -Dparallel=all -DperCoreThreadCount=true clean install
+      - uses: nais/docker-build-push@v0
+        if: github.actor != 'dependabot[bot]'
+        id: docker-push
+        env:
+          TRIVY_JAVA_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-java-db:1"
+        with:
+          team: bidrag
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          dockerfile: ${{ inputs.dockerfile_with_path }}
+          docker_context: ${{ inputs.docker_context }}
+          image_suffix: ${{ inputs.image_suffix }}
+          tag: ${{ inputs.tag }}
+          salsa: false
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
+      tag: ${{ steps.docker-push.outputs.tag }}
+      digest: ${{ steps.docker-push.outputs.digest }}
+
+  salsa:
+    name: Generate SBOM, attest and sign image
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: "write"
+    steps:
+      - name: NAIS login
+        uses: nais/login@v0
+        id: login
+        with:
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          team: bidrag
+      - id: setup
+        shell: bash
+        run: |
+          suffix="${{ inputs.image_suffix }}"
+          suffix=${suffix:+-$suffix} # Ensure we only add a dash if suffix is set
+          repo_name="${GITHUB_REPOSITORY/$GITHUB_REPOSITORY_OWNER\//}$suffix"
+          repo_name="$(tr '[:upper:]' '[:lower:]' <<< "$repo_name")"
+          echo "REPO_NAME=$repo_name" >> $GITHUB_OUTPUT
+      - name: Generate SBOM, attest and sign image
+        id: attest-sign
+        uses: nais/attest-sign@v2.0.4
+        with:
+          image_ref: ${{ steps.login.outputs.registry }}/${{ steps.setup.outputs.REPO_NAME }}@${{ needs.build.outputs.digest }}
+    outputs:
+        description: "SBOM.json in cyclonedx format"
+        value: ${{ steps.attest-sign.outputs.sbom }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy ${{ inputs.nais_variabler_filnavn }}
+    if: github.actor != 'dependabot[bot]'
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: deploy
+      - name: Deploy to ${{ env.CLUSTER }} with ${{ inputs.nais_variabler_filnavn }}
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: ${{ env.CLUSTER }}
+          RESOURCE: deploy/.nais/${{ inputs.nais_hovedfil_navn }}
+          VARS: deploy/.nais/${{ inputs.nais_variabler_filnavn }}
+          IMAGE: ${{ needs.build.outputs.image }}
+      - id: generate_outputs
+        run: echo "deploy_suksess=true" >> $GITHUB_OUTPUT
+    outputs:
+      deploy_suksess: ${{ steps.generate_outputs.outputs.deploy_suksess }}

@@ -62,7 +62,7 @@ jobs:
     permissions:
       contents: "write"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy_prod.yaml@main
+    uses: ./.github/workflows/bygg_og_deploy_prod.yaml
     secrets: inherit
     with:
       maven_options: -B -q -fae -Pit -f apps/bidrag-regnskap
@@ -83,7 +83,7 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    uses: ./.github/workflows/bygg_og_deploy.yaml
     secrets: inherit
     with:
       maven_options: -B -q -fae -Pit -f apps/bidrag-regnskap
@@ -105,7 +105,7 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    uses: ./.github/workflows/bygg_og_deploy.yaml
     secrets: inherit
     with:
       maven_options: -B -q -fae -Pit -f apps/bidrag-regnskap

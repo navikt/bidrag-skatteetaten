@@ -42,7 +42,7 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
+    uses: ./.github/workflows/bygg_og_deploy.yaml
     secrets: inherit
     with:
       maven_options: -B -q -fae -f apps/bidrag-elin-stub
