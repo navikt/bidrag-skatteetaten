@@ -35,7 +35,7 @@ on:
       maven_test_lifecycle:
         required: false
         type: string
-        default: test
+        default: install
         description: Mulighet for å endre hvilken maven lifecycle som kjøres sammen med testene. For å kunne kjøre integrasjonstester må verify/install/deploy brukes.
       ktlint_options:
         required: false
@@ -100,17 +100,9 @@ jobs:
               }
             ]
       - name: Verifiser formatering med ktlint
-        if: ${{ inputs.produksjon == false }}
         run: mvn antrun:run@ktlint ${{ inputs.ktlint_options }} -Dparallel=all -DperCoreThreadCount=true
-      - name: Kjør tester
-        if: ${{ inputs.produksjon == false }}
-        run: mvn ${{ inputs.maven_options }} ${{ inputs.maven_test_lifecycle }} -Dparallel=all -DperCoreThreadCount=true
-      - name: Bygg uten test
-        if: ${{ inputs.produksjon == false }}
-        run: mvn -Dmaven.test.skip=true ${{ inputs.maven_options }} -Dparallel=all -DperCoreThreadCount=true -DthreadCount=10 clean install
-      - name: Bygg med test
-        if: ${{ inputs.produksjon == true }}
-        run: mvn ${{ inputs.maven_options }} -Dparallel=all -DperCoreThreadCount=true clean install
+      - name: Bygg og kjør tester
+        run: mvn ${{ inputs.maven_options }} clean ${{ inputs.maven_test_lifecycle }} -Dparallel=all -DperCoreThreadCount=true -DthreadCount=10
       - uses: nais/docker-build-push@v0
         if: github.actor != 'dependabot[bot]'
         id: docker-push
