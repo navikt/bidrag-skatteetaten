@@ -14,6 +14,7 @@ on:
   push:
     branches:
       - '**'
+      - '!dependabot/**'
     paths:
       - '.nais/bidrag-regnskap/**.yaml'
       - '.github/workflows/regnskap_deploy.yaml'

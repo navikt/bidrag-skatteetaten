@@ -14,6 +14,7 @@ on:
   push:
     branches:
       - '**'
+      - '!dependabot/**'
     paths:
       - '.nais/bidrag-aktoerregister/**.yaml'
       - '.github/workflows/aktoerregister_deploy.yaml'
