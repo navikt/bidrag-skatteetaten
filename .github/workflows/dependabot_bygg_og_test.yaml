@@ -1,8 +1,8 @@
 name: Dependabot - bygg og test
 on:
-  pull_request:
+  push:
     branches:
-      - 'main'
+      - 'dependabot/**'
     paths:
       - 'pom.xml'
       - 'apps/**/pom.xml'
@@ -10,11 +10,10 @@ on:
 
 jobs:
   bygg_og_test:
-    if: github.actor == 'dependabot[bot]'
     name: "Bygg og test alle moduler"
     runs-on: ubuntu-latest
     concurrency:
-      group: dependabot-bygg-test-${{ github.event.pull_request.number }}
+      group: dependabot-bygg-test-${{ github.ref }}
       cancel-in-progress: true
     permissions:
       contents: "read"
