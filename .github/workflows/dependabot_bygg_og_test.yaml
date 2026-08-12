@@ -13,6 +13,9 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     name: "Bygg og test alle moduler"
     runs-on: ubuntu-latest
+    concurrency:
+      group: dependabot-bygg-test-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: "read"
     steps:
