@@ -1,0 +1,114 @@
+name: Deploy aktoerregister
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Miljø som skal deployes til"
+        required: true
+        type: choice
+        options:
+          - prod
+          - q1
+          - q2
+          - q1+q2
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.nais/bidrag-aktoerregister/**.yaml'
+      - '.github/workflows/aktoerregister_deploy.yaml'
+      - 'pom.xml'
+      - 'apps/bidrag-aktoerregister/**'
+
+jobs:
+  bygg_og_test:
+    if: github.event_name == 'push' && github.actor != 'dependabot[bot]' && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/q1/') && !startsWith(github.ref, 'refs/heads/Q1/') && !startsWith(github.ref, 'refs/heads/q2/') && !startsWith(github.ref, 'refs/heads/Q2/')
+    name: "Bygg og test"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          servers: |
+            [
+              {
+                "id": "github",
+                "username": "x-access-token",
+                "password": "${{ secrets.READER_TOKEN }}"
+              }
+            ]
+      - name: Bygg og kjør tester (inkl. ktlint)
+        run: mvn -B -fae verify -f apps/bidrag-aktoerregister
+
+  sjekk_sync_med_main:
+    if: (github.event_name == 'push' && github.ref != 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment != 'prod')
+    uses: ./.github/workflows/sjekk_sync_med_main.yaml
+
+  deploy_prod:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
+    name: "Build and deploy to prod"
+    concurrency:
+      group: deploy-aktoerregister-prod-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "write"
+      id-token: "write"
+    uses: ./.github/workflows/bygg_og_deploy_prod.yaml
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-aktoerregister
+      ktlint_options: -f apps/bidrag-aktoerregister
+      docker_context: ./apps/bidrag-aktoerregister
+      nais_variabler_filnavn: bidrag-aktoerregister/prod.yaml
+      nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
+      image_suffix: bidrag-aktoerregister
+      tag: bidrag-aktoerregister
+
+  deploy_q1:
+    needs: sjekk_sync_med_main
+    if: success() && ((github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/q1/') || startsWith(github.ref, 'refs/heads/Q1/'))) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'q1' || github.event.inputs.environment == 'q1+q2')))
+    name: "Build and deploy to Q1"
+    concurrency:
+      group: deploy-aktoerregister-q1-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: ./.github/workflows/bygg_og_deploy.yaml
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-aktoerregister
+      ktlint_options: -f apps/bidrag-aktoerregister
+      docker_context: ./apps/bidrag-aktoerregister
+      nais_variabler_filnavn: bidrag-aktoerregister/q1.yaml
+      nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
+      image_suffix: bidrag-aktoerregister
+      tag: bidrag-aktoerregister
+
+  deploy_q2:
+    needs: sjekk_sync_med_main
+    if: success() && ((github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/q2/') || startsWith(github.ref, 'refs/heads/Q2/'))) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'q2' || github.event.inputs.environment == 'q1+q2')))
+    name: "Build and deploy to Q2"
+    concurrency:
+      group: deploy-aktoerregister-q2-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: "read"
+      id-token: "write"
+    uses: ./.github/workflows/bygg_og_deploy.yaml
+    secrets: inherit
+    with:
+      maven_options: -B -q -fae -f apps/bidrag-aktoerregister
+      ktlint_options: -f apps/bidrag-aktoerregister
+      docker_context: ./apps/bidrag-aktoerregister
+      nais_variabler_filnavn: bidrag-aktoerregister/q2.yaml
+      nais_hovedfil_navn: bidrag-aktoerregister/nais.yaml
+      image_suffix: bidrag-aktoerregister
+      tag: bidrag-aktoerregister

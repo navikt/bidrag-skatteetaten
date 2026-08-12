@@ -1,0 +1,29 @@
+name: Tag utgivelse
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+        description: Docker image tag som ble deployet til miljø
+
+jobs:
+  tag_utgivelse:
+    runs-on: ubuntu-latest
+    name: Tag release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Push latest image tag as github tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ inputs.tag }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
