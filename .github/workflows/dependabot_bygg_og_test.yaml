@@ -7,6 +7,7 @@ on:
       - 'pom.xml'
       - 'apps/**/pom.xml'
       - '.github/dependabot.yml'
+      - '.github/workflows/**'
 
 jobs:
   bygg_og_test:

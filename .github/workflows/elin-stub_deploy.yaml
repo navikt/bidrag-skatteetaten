@@ -5,6 +5,7 @@ on:
     branches:
       - '**'
       - '!main'
+      - '!dependabot/**'
     paths:
       - '.nais/bidrag-elin-stub/**.yaml'
       - '.github/workflows/elin-stub_deploy.yaml'
